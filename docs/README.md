@@ -1,12 +1,11 @@
 # starglow docs
 
-1. [Getting started](01-getting-started.md)
-2. [Configuration](02-configuration.md)
-3. [Content model](03-content-model.md)
-4. [Writing posts](04-writing.md)
-5. [Customising](05-customising.md)
-6. [Removing features](06-removing-features.md)
-7. [Development, checks and CI](07-development.md)
-8. [Deploying to GitHub Pages](08-deploying.md)
+Read them in this order, from an empty folder to a published site:
 
-Upgrading between releases: [UPGRADING.md](../UPGRADING.md).
+1. [Install](01-getting-started.md): create the site and run it locally.
+2. [Configure](02-configuration.md): every key in `starglow.config.ts` and the environment variables.
+3. Write content: [the content model](03-content-model.md) (collections, frontmatter, drafts) and [writing](04-writing.md) (code, callouts, tables, images, MDX, Obsidian).
+4. [Customise](05-customising.md): where to change what, colours, fonts, language, turning features off.
+5. [Deploy](06-deploying.md): GitHub Pages and other static hosts.
+6. [Develop](07-development.md): `./dev.sh`, the checks, CI, unit tests and agent skills.
+7. [Upgrade](../UPGRADING.md): merge new starglow releases into your site.

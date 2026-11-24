@@ -2,6 +2,17 @@
 
 Everything you write is Markdown in `src/content/`. There are four collections. Their schemas are in `src/content.config.ts`, and they are strict: an unknown or misspelled frontmatter key fails `astro check`.
 
+## Replace the demo content
+
+starglow ships with the demo site's content. To start your own:
+
+- Delete the posts in `src/content/blog/`, the notes in `src/content/notes/` and the projects in `src/content/projects/`, with their `_assets/` folders.
+- Rewrite `home.md` and `about.md` in `src/content/pages/`.
+- Rewrite `contact.md`, or delete it: `/contact/` then lists only your profile badges, and without those there is no contact page.
+- Rewrite or delete `impressum.md` and `privacy.md`, and their `footer.links` entries in `starglow.config.ts`.
+
+Sections without published content stay hidden: no nav entry, no search icon and no filler text. An empty site shows its intro, the about page and the footer.
+
 ## Posts
 
 Posts are the long-form writing. They live in a year folder:
@@ -70,7 +81,7 @@ All projects are listed on `/projects/`: featured first, then by status (active,
 
 `/contact/` lists your [profile badges](./02-configuration.md#links) with their URLs, under the text of the optional `contact.md`. The page exists, and is linked from the footer and the about page, when `contact.md` exists or `links` has a profile badge; without either there is no contact page and no link. Without `contact.md` it is titled "Contact" and shows only the list. Write in `contact.md` what the badges do not show, such as an email address or how you prefer to be reached.
 
-Any other file there becomes a standalone page at `/<name>/`, laid out like the about page: `privacy.md` is published at `/privacy/` and `impressum.md` at `/impressum/`. A file in a folder keeps the folder in its URL, and a name starting with `_` is skipped. Standalone pages are listed in the sitemap but not in search. Names the theme already uses (`blog`, `notes`, `projects`, `tags`, `search`) stop the build. Link the pages from the footer with [`footer.links`](./02-configuration.md#footer).
+Any other file there becomes a standalone page at `/<name>/`, laid out like the about page: `privacy.md` is published at `/privacy/` and `impressum.md` at `/impressum/`. A file in a folder keeps the folder in its URL, and a name starting with `_` is skipped. Standalone pages are listed in the sitemap but not in search. A name whose first part the theme already uses stops the build: `404`, `blog`, `notes`, `og.png`, `pagefind`, `projects`, `robots.txt`, `rss.xml`, `search`, `tags`, or a folder named `home` or `about`. Link the pages from the footer with [`footer.links`](./02-configuration.md#footer).
 
 | Key            | What it does                                                                                                        |
 | :------------- | :------------------------------------------------------------------------------------------------------------------ |
@@ -91,7 +102,7 @@ Any other file there becomes a standalone page at `/<name>/`, laid out like the 
 
 It sets the date to now in the site timezone and marks the entry as a draft. It needs GNU `date`.
 
-In VS Code, `.vscode/starglow.code-snippets` adds the snippets `frontmatter` (post), `note-frontmatter` and `project-frontmatter`. For templates in Obsidian, see [Writing in Obsidian](./04-writing.md#writing-in-obsidian).
+In VS Code, `.vscode/starglow.code-snippets` adds the snippets `frontmatter` (post), `note-frontmatter` and `project-frontmatter`. For templates in Obsidian, see [Templates in Obsidian](./04-writing.md#templates-in-obsidian).
 
 ### Drafts
 

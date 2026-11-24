@@ -24,8 +24,8 @@ below say how to move it.
 
 ## How to upgrade
 
-If you cloned starglow as in the README, the `starglow` remote is already
-there. Sites created another way (the npm template, "Use this template") add
+If you cloned starglow as in [Install](docs/01-getting-started.md), the
+`starglow` remote is already there. Sites created another way (the npm template, "Use this template") add
 it once:
 
 ```sh

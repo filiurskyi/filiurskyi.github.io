@@ -1,39 +1,40 @@
-# Customising starglow
+# Customise
 
 Most changes need no theme code at all: the config file covers the switches, and three slot files cover your own markup. This guide covers what to edit when you want more.
 
 ## Where to change what
 
-| I want to change…                                 | Edit                                                                                       |
-| :------------------------------------------------ | :----------------------------------------------------------------------------------------- |
-| Site title, description, author                   | `site` in `starglow.config.ts`                                                             |
-| Header wordmark text                              | `site.wordmark` in `starglow.config.ts`                                                    |
-| The HTML comment at the top of every page         | `site.sourceBanner` in `starglow.config.ts`                                                |
-| The site URL or a project-site subpath            | `SITE_URL` and `BASE_PATH` in the environment, see [Configuration](./02-configuration.md)  |
-| Colours                                           | `appearance.palette` and `appearance.palettes`; built-in palettes are in `src/palettes.ts` |
-| First-visit mode, header glow, statusline         | `appearance` in `starglow.config.ts`                                                       |
-| Fonts, including the wordmark face                | `fonts` in `astro.config.ts` and the files in `src/assets/fonts/`, see [Fonts](#fonts)     |
-| Type sizes and spacing                            | The `--t-*` and `--s*` tokens in `src/styles/site-theme.css`                               |
-| Prose styles: headings, lists, code in posts      | `src/styles/typography.css`                                                                |
-| Interface strings, or the language                | `src/i18n/lang/<lang>.ts` and `site.lang`, see [Language](#language)                       |
-| Homepage intro and specialties                    | `src/content/pages/home.md`                                                                |
-| The about, contact or another standalone page     | `src/content/pages/<name>.md`, see [Content model](./03-content-model.md#pages)            |
-| Entries per page, featured projects on the home   | `posts.perPage` and `posts.perIndex` in `starglow.config.ts`                               |
-| Footer badges and `rel="me"` profiles             | `links` in `starglow.config.ts`; badge icons are in `src/utils/badges.ts`                  |
-| Footer text links (Impressum, privacy, …)         | `footer.links` in `starglow.config.ts`                                                     |
-| The footer credit                                 | `footer.credit: false` in `starglow.config.ts`                                             |
-| Extra `<head>` tags                               | `src/custom/Head.astro`                                                                    |
-| Analytics                                         | `analytics.cloudflareToken`, or another script in `src/custom/Head.astro`                  |
-| Scripts or widgets at the end of every page       | `src/custom/BodyEnd.astro`                                                                 |
-| Comments, a newsletter or a bio under posts       | `src/custom/PostEnd.astro`                                                                 |
-| The favicon                                       | `public/favicon.svg`                                                                       |
-| The default social image                          | `site.ogImage` and a file in `public/`, or `features.dynamicOgImage`                       |
-| The layout of generated social images             | `src/utils/og/renderOg.ts`                                                                 |
-| Search, table of contents, back link, edit link   | `features` in `starglow.config.ts`                                                         |
-| Frontmatter fields and their rules                | `src/content.config.ts`                                                                    |
-| What `./dev.sh new` writes                        | `templates/post.md`, `templates/note.md`, `templates/project.md`                           |
-| Markdown and MDX plugins                          | `markdown.processor` in `astro.config.ts`                                                  |
-| Remove search, social images or the example posts | [Removing features](./06-removing-features.md)                                             |
+| I want to change…                               | Edit                                                                                                 |
+| :---------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
+| Site title, description, author                 | `site` in `starglow.config.ts`                                                                       |
+| Header wordmark text                            | `site.wordmark` in `starglow.config.ts`                                                              |
+| The HTML comment at the top of every page       | `site.sourceBanner` in `starglow.config.ts`                                                          |
+| The site URL or a project-site subpath          | `SITE_URL` and `BASE_PATH`, see [Environment variables](./02-configuration.md#environment-variables) |
+| Colours                                         | `appearance.palette` and `appearance.palettes`; built-in palettes are in `src/palettes.ts`           |
+| First-visit mode, header glow, statusline       | `appearance` in `starglow.config.ts`                                                                 |
+| Fonts, including the wordmark face              | `fonts` in `astro.config.ts` and the files in `src/assets/fonts/`, see [Fonts](#fonts)               |
+| Type sizes and spacing                          | The `--t-*` and `--s*` tokens in `src/styles/site-theme.css`                                         |
+| Prose styles: headings, lists, code in posts    | `src/styles/typography.css`                                                                          |
+| Interface strings, or the language              | `src/i18n/lang/<lang>.ts` and `site.lang`, see [Language](#language)                                 |
+| Homepage intro and specialties                  | `src/content/pages/home.md`                                                                          |
+| The about, contact or another standalone page   | `src/content/pages/<name>.md`, see [Content model](./03-content-model.md#pages)                      |
+| Entries per page, featured projects on the home | `posts.perPage` and `posts.perIndex` in `starglow.config.ts`                                         |
+| Footer badges and `rel="me"` profiles           | `links` in `starglow.config.ts`; badge icons are in `src/utils/badges.ts`                            |
+| Footer text links (Impressum, privacy, …)       | `footer.links` in `starglow.config.ts`                                                               |
+| The footer credit                               | `footer.credit: false` in `starglow.config.ts`                                                       |
+| Extra `<head>` tags                             | `src/custom/Head.astro`                                                                              |
+| Analytics                                       | `analytics.cloudflareToken`, or another script in `src/custom/Head.astro`                            |
+| Scripts or widgets at the end of every page     | `src/custom/BodyEnd.astro`                                                                           |
+| Comments, a newsletter or a bio under posts     | `src/custom/PostEnd.astro`                                                                           |
+| The favicon                                     | `public/favicon.svg`                                                                                 |
+| The default social image                        | `site.ogImage` and a file in `public/`, or `features.dynamicOgImage`                                 |
+| The layout of generated social images           | `src/utils/og/renderOg.ts`                                                                           |
+| Search, table of contents, back link, edit link | `features` in `starglow.config.ts`                                                                   |
+| Frontmatter fields and their rules              | `src/content.config.ts`                                                                              |
+| What `./dev.sh new` writes                      | `templates/post.md`, `templates/note.md`, `templates/project.md`                                     |
+| Markdown and MDX plugins                        | `markdown.processor` in `astro.config.ts`                                                            |
+| The 404 page                                    | `src/pages/404.astro`; its text is `notFound` in `src/i18n/lang/<lang>.ts`                           |
+| Turn search, social images or decoration off    | [Turn features off](#turn-features-off)                                                              |
 
 Header navigation needs no edit: Blog, Notes and Projects appear once their section has published content, next to About.
 
@@ -58,10 +59,6 @@ const { post } = Astro.props;
 
 {!post.data.tags.includes("no-comments") && <section>Comments go here</section>}
 ```
-
-## Extra pages
-
-Pages such as an Impressum or a privacy policy need no theme code: add `impressum.md` or `privacy.md` to `src/content/pages/` (see [Content model](./03-content-model.md#pages)) and link them from the footer with `footer.links` in `starglow.config.ts`.
 
 ## Colours
 
@@ -132,12 +129,17 @@ const t = useTranslations(useLocale(Astro));
 ---
 ```
 
-## Checking your changes
+## Turn features off
 
-Run the full check set before you publish:
+Most extras are a config switch in `starglow.config.ts`:
 
-```bash
-./dev.sh ci
-```
+| To turn off                | Set                                                                       | Note                                                                                                                                                                   |
+| :------------------------- | :------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Search                     | `features: { search: false }`                                             | The header search link goes away and `/search/` shows the 404 page. To skip the index too, remove `scripts/build-search-index.ts` from `build:site` in `package.json`. |
+| Generated social images    | `features: { dynamicOgImage: false }`                                     | Pages without their own `ogImage` use `site.ogImage`, a file in `public/`. The build fails while that file is missing.                                                 |
+| Header glow and statusline | `appearance: { ambient: "none", wordmarkGlow: false, statusline: false }` | These are the defaults, so you can remove the keys instead.                                                                                                            |
+| The credit line            | `footer: { credit: false }`                                               |                                                                                                                                                                        |
 
-It runs the formatter check, the linter, the unit tests, `astro check`, the build, an offline link check, `pnpm verify` on the built site and the placeholder check. `pnpm verify` covers things like canonical links, heading order, the search index, structured data and the type scale.
+Docker is optional too: see [Without Docker](./07-development.md#without-docker).
+
+Run `./dev.sh ci` before you publish; [Develop](./07-development.md#checks-and-ci) lists what it checks.

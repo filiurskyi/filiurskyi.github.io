@@ -15,23 +15,13 @@ feature: it saves both of us time.
 
 ## Setup
 
-```sh
-pnpm install
-pnpm dev          # http://localhost:4321
-```
-
-Or, with only Docker on the host, `./dev.sh`. See
-[docs/07-development.md](docs/07-development.md) for every command.
+Install as in [docs/01-getting-started.md](docs/01-getting-started.md);
+[docs/07-development.md](docs/07-development.md) lists every command.
 
 ## Before you open a pull request
 
-Run the same checks as CI:
-
-```sh
-./dev.sh ci       # format, lint, unit tests, astro check, build, links, dist assertions
-```
-
-Natively: `pnpm format:check && pnpm lint && pnpm test && pnpm build && pnpm verify`.
+Run the same checks as CI: `./dev.sh ci`, or natively
+`pnpm format:check && pnpm lint && pnpm test && pnpm build && pnpm verify`.
 
 Release notes are generated on GitHub from pull request labels, so label
 user-visible changes `enhancement`, `bug` or `documentation`. If a change
@@ -43,8 +33,7 @@ breaks an existing site, label it `breaking` and add upgrade steps to
 [Conventional Commits](https://www.conventionalcommits.org/):
 `feat(footer): …`, `fix(search): …`, `docs: …`. Header only: one line of at
 most 72 characters, no body and no trailers; put the why in the pull request.
-Run
-`git config core.hooksPath .githooks` once to have the format checked on
+Run `git config core.hooksPath .githooks` once to have the format checked on
 every commit.
 
 ## Licence

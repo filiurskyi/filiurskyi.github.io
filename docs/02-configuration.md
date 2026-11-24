@@ -1,4 +1,4 @@
-# Configuring starglow
+# Configure
 
 All site settings live in one typed file, `starglow.config.ts`, at the root of the repository. It is wrapped in `defineStarglowConfig()`, so your editor completes the keys and `astro check` reports a wrong type. The keys, their comments and their defaults are defined once, as a Zod schema in `src/types/config.ts`; `src/config.ts` adds the values that depend on others or on the environment. Each key's comment ends with a `Used by:` line that names the files reading it, so you can see what a change affects.
 
@@ -11,7 +11,7 @@ Every build validates the file against that schema before anything else runs. An
   - socials: removed in v0.1.1 (see UPGRADING.md): add each profile to `links` as a badge, ...
 ```
 
-The site URL is not in this file. It comes from `SITE_URL`, see [Getting started](./01-getting-started.md).
+Keys removed in a release fail the same way and name their replacement; [UPGRADING.md](../UPGRADING.md) says how to move them. The site URL is not in this file: it comes from [`SITE_URL`](#environment-variables).
 
 ## site
 
@@ -50,15 +50,15 @@ Both must be whole numbers above 0; anything else fails the build.
 
 ## features
 
-| Key                | Default      | What it does                                                                                      |
-| :----------------- | :----------- | :------------------------------------------------------------------------------------------------ |
-| `lightAndDarkMode` | `true`       | The light and dark toggle. The first visit uses `appearance.defaultMode`.                         |
-| `dynamicOgImage`   | `true`       | Generated social images per post, note and project, plus `/og.png`.                               |
-| `showBackButton`   | `true`       | The back link on posts and notes: "Back" after a page of this site, "Home" on a direct visit.     |
-| `editPost`         | disabled     | `{ enabled: true }` adds an edit link to posts: `site.sourceUrl` + `path` + the file path.        |
-| `search`           | `"pagefind"` | Full-text search on `/search/`; `/` opens it from any page. `false` removes it.                   |
-| `toc`              | `true`       | A table of contents on posts with two or more `h2` or `h3` headings.                              |
-| `obsidian`         | `false`      | Obsidian syntax in `.md` content, see [Writing in Obsidian](./04-writing.md#writing-in-obsidian). |
+| Key                | Default      | What it does                                                                                  |
+| :----------------- | :----------- | :-------------------------------------------------------------------------------------------- |
+| `lightAndDarkMode` | `true`       | The light and dark toggle. The first visit uses `appearance.defaultMode`.                     |
+| `dynamicOgImage`   | `true`       | Generated social images per post, note and project, plus `/og.png`.                           |
+| `showBackButton`   | `true`       | The back link on posts and notes: "Back" after a page of this site, "Home" on a direct visit. |
+| `editPost`         | disabled     | `{ enabled: true }` adds an edit link to posts: `site.sourceUrl` + `path` + the file path.    |
+| `search`           | `"pagefind"` | Full-text search on `/search/`; `/` opens it from any page. `false` removes it.               |
+| `toc`              | `true`       | A table of contents on posts with two or more `h2` or `h3` headings.                          |
+| `obsidian`         | `false`      | Obsidian syntax in `.md` content, see [Obsidian](./04-writing.md#obsidian).                   |
 
 `editPost.path` defaults to `"edit/main/"`, which suits GitHub and a `main` branch; GitLab uses `"-/edit/main/"`. Turning `editPost` on without `site.sourceUrl` fails the build.
 
@@ -136,7 +136,7 @@ Unset means no script at all, and the demo ships without one. The beacon runs in
 
 | Variable                          | What it does                                                                                 |
 | :-------------------------------- | :------------------------------------------------------------------------------------------- |
-| `SITE_URL`                        | The site origin.                                                                             |
+| `SITE_URL`                        | The site origin. Unset = the default at the top of `astro.config.ts`.                        |
 | `BASE_PATH`                       | Subpath for a project site, e.g. `/repo` for `https://<user>.github.io/repo/`. Unset = root. |
 | `PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional Search Console token, used when `site.googleVerification` is empty.                 |
 | `PUBLIC_CF_WEB_ANALYTICS_TOKEN`   | Optional Cloudflare Web Analytics token, used when `analytics.cloudflareToken` is empty.     |
@@ -144,7 +144,7 @@ Unset means no script at all, and the demo ships without one. The beacon runs in
 
 Set a variable in the shell (`SITE_URL=https://example.org ./dev.sh build`) or copy `.env.example` to `.env` and uncomment or add the line (copying alone changes nothing, because the lines ship commented out). A variable set in the shell wins over `.env`.
 
-- `SITE_URL` must be an origin only. A value with a path, query or hash fails the build with an error message. Put a subpath in `BASE_PATH` instead.
+- `SITE_URL` is the only source of the origin: canonical links, the sitemap, RSS and social images use it. It must be an origin only; a value with a path, query or hash fails the build. Put a subpath in `BASE_PATH` instead. For the GitHub Pages workflow, set it as a repository variable, see [Deploy](./06-deploying.md).
 - `BASE_PATH` is a path such as `/repo`. Links in Markdown should be relative (`../other-post/`) or start with the base, because root links like `/blog/` are not rewritten.
 - `PUBLIC_GOOGLE_SITE_VERIFICATION` is public by design, because it ends up in the HTML. Set it in the environment to keep it out of the repository, or commit it as `site.googleVerification`, which wins. An empty value renders no meta tag. Compose forwards it, like `SITE_URL`, into the container.
 - `PUBLIC_CF_WEB_ANALYTICS_TOKEN` is public too: the token is written into every page. Compose forwards it like the Search Console token.

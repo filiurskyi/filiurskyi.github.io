@@ -1,10 +1,10 @@
-# Writing posts
+# Writing
 
-What Markdown and MDX render to in starglow.
+What Markdown and MDX turn into in starglow. For the collections and their frontmatter, see [The content model](./03-content-model.md).
 
-## Writing code blocks
+## Code blocks
 
-Fenced code blocks are highlighted by Shiki at build time, so no highlighting script runs in the browser. Each block gets a small label with its language and a copy button. Write the language after the opening fence:
+Fenced code blocks are highlighted by Shiki at build time, so no highlighting script runs in the browser. Write the language after the opening fence:
 
 ````md
 ```rust
@@ -12,196 +12,49 @@ fn main() {}
 ```
 ````
 
-A block without a language, or with `text`, gets the label `text`. Code blocks are left out of the search index, so search results quote your prose, not your code.
+- Each block gets a label with its language and a copy button. A block without a language, or with `text`, gets the label `text`.
+- Long lines scroll inside the block; the page never gets wider.
+- Inline code uses the same monospace font at body size, and wraps on narrow screens.
+- Code blocks are left out of the search index, so search results quote your prose.
 
-### Shell
+## Callouts
 
-```bash
-#!/usr/bin/env bash
-set -euo pipefail
-
-for f in ./*.log; do
-  gzip -9 "$f"
-done
-```
-
-### TypeScript
-
-```ts
-type Post = { slug: string; title: string; draft?: boolean };
-
-export function visible(posts: Post[]): Post[] {
-  return posts.filter(post => !post.draft);
-}
-```
-
-### Rust
-
-```rust
-fn main() {
-    let words = ["alpha", "beta", "gamma"];
-    for (i, w) in words.iter().enumerate() {
-        println!("{i}: {w}");
-    }
-}
-```
-
-### Python
-
-```python
-from pathlib import Path
-
-
-def count_lines(path: Path) -> int:
-    with path.open(encoding="utf-8") as handle:
-        return sum(1 for _ in handle)
-```
-
-### YAML
-
-```yaml
-services:
-  dev:
-    image: example-dev:local
-    ports:
-      - "4321:4321"
-```
-
-### Long lines
-
-Long lines scroll inside their block instead of wrapping or widening the page. Try this one on a phone:
-
-```text
-This is one very long line of text that keeps going well past two hundred characters, so that horizontal scrolling inside the code block can be checked on a phone, a tablet and a desktop browser alike.
-```
-
-A long shell pipeline:
-
-```bash
-find /var/log -type f -name '*.log' -mtime -7 -print0 | xargs -0 grep -h 'ERROR' | sed -E 's/^[0-9-]+ [0-9:]+ //' | sort | uniq -c | sort -rn | head -n 20 | awk '{ printf "%-6s %s\n", $1, substr($0, index($0, $2)) }'
-```
-
-Inline code such as `pnpm build` uses the same monospace font at body size.
-
-## Writing callouts
-
-Callouts use the GitHub alert syntax, so the same Markdown renders on GitHub too:
+Callouts use the GitHub alert syntax, so the same Markdown renders on GitHub too. The five types are `NOTE`, `TIP`, `IMPORTANT`, `WARNING` and `CAUTION`; each is tinted with its own colour from the palette.
 
 ```md
 > [!TIP]
 > Optional information to help a reader be more successful.
 ```
 
-### Alert types
+A title can follow the type on the same line: `> [!TIP] Faster builds`. GitHub ignores it, starglow shows it. A callout can hold several paragraphs, lists and inline code.
 
-> [!NOTE]
-> Highlights information that readers should take into account, even when skimming.
+## Headings
 
-> [!TIP]
-> Optional information to help a reader be more successful.
+Every heading from `##` down gets a link anchor at build time. The table of contents is built from the `h2` and `h3` headings, see [`features.toc`](./02-configuration.md#features).
 
-> [!IMPORTANT]
-> Crucial information necessary for readers to succeed.
+## Tables
 
-> [!WARNING]
-> Critical content demanding immediate reader attention because of potential risks.
+Tables use the usual Markdown pipe syntax. Colons in the separator row set the alignment of each column. A table wider than the text column scrolls sideways inside its box.
 
-> [!CAUTION]
-> Negative potential consequences of an action.
-
-### Custom title
-
-A title can follow the alert type on the same line:
-
-> [!TIP] Faster builds
-> Run `pnpm build:site` to skip `astro check` while you iterate on styles.
-
-### Several paragraphs and inline code
-
-> [!NOTE] Two paragraphs
-> The first paragraph mentions `inline code`, so its colours and size can be checked in both themes.
->
-> The second paragraph checks the spacing between paragraphs inside a callout.
-
-#### Headings get anchors
-
-Every heading from `##` down gets a link anchor at build time. Hover a heading to see it.
-
-## Writing tables
-
-Tables use the usual Markdown pipe syntax. Colons in the separator row set the alignment of each column.
-
-### Small table
-
-| Command       | What it does                  |
-| :------------ | :---------------------------- |
-| `pnpm dev`    | Runs the dev server.          |
-| `pnpm build`  | Builds the site into `dist/`. |
-| `pnpm verify` | Checks the built site.        |
-
-### Alignment
-
-| Left aligned | Centered | Right aligned |
-| :----------- | :------: | ------------: |
-| one          |   two    |             1 |
-| three        |   four   |            22 |
-| five         |   six    |           333 |
-
-### Wide table
-
-A table wider than the text column scrolls sideways inside its box. The page itself never gets wider.
-
-| Left aligned | Centered | Right aligned | First long column                                             | Second long column                                                   | Third long column                                                       | Fourth long column                                                | Notes |
-| :----------- | :------: | ------------: | ------------------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------- | ----- |
-| alpha        |   beta   |             1 | A fairly long cell of text that forces this column to be wide | Another long cell of text that keeps the row from fitting on a phone | A third long cell of text that keeps widening the table past the column | A fourth long cell of text so that horizontal scrolling is needed | none  |
-| gamma        |  delta   |            22 | Short                                                         | Short                                                                | Short                                                                   | Short                                                             | none  |
-| epsilon      |   zeta   |           333 | More long text for the first column in this last row          | More long text for the second column in this last row                | More long text for the third column in this last row                    | More long text for the fourth column in this last row             | none  |
-
-## Writing with images
+## Images
 
 Put images next to the post, in a folder whose name starts with `_`, such as `_assets/`. Astro optimises them at build time, and the underscore keeps the folder out of the content loader.
 
 ```md
 ![Three boxes joined by arrows, from left to right](./_assets/three-boxes.svg)
+
+_Figure 1: an italic line under the image works as a caption._
 ```
 
-### Figure
+- Every image needs alt text that describes what it shows. `pnpm verify` fails on an image without it.
+- Images in posts open in a larger preview on click.
+- A post's social image is generated from its title. To use your own, set `ogImage: ./_assets/cover.png` in the frontmatter.
 
-![Three boxes joined by arrows, from left to right](./assets/three-boxes.svg)
+## MDX
 
-_Figure 1: three boxes joined by arrows. A caption is an italic line right under the image._
+Name a post `.mdx` instead of `.md` to use MDX: expressions such as `{6 + 7}` and components work, and everything from Markdown still does. Plain Markdown is easier to read, diff and move to another tool, so use MDX only when a post needs a component.
 
-### Alt text
-
-Every image needs alt text that describes what it shows. `pnpm verify` fails on an image without it. If an image is purely decorative, leave it out of the post instead.
-
-### Social images
-
-A post's social preview image is generated from its title by default. To use your own, put an image next to the post and set `ogImage: ./_assets/cover.png` in the frontmatter.
-
-## Writing in MDX
-
-Name a post `.mdx` instead of `.md` to use MDX. Everything that works in Markdown still works, and you can add expressions and components.
-
-For example, `{6 + 7}` in an MDX post renders as 13.
-
-### Code
-
-```ts
-const answer: number = 6 * 7;
-console.log(answer);
-```
-
-### Callout
-
-> [!NOTE]
-> Alerts like this one render the same way in Markdown and MDX posts.
-
-### When to use it
-
-Plain Markdown is easier to read, to diff and to move to another tool later. Reach for MDX only when a post really needs a component.
-
-## Writing in Obsidian
+## Obsidian
 
 Set `features.obsidian: true` in `starglow.config.ts` to copy posts, notes and projects from an Obsidian vault unchanged. The build converts Obsidian syntax in `.md` files and never rewrites them. MDX files are left alone.
 

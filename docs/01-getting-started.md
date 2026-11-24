@@ -1,12 +1,14 @@
-# Getting started with starglow
+# Install
 
-starglow is an Astro theme for a personal site with a blog, short notes and a project list. This guide takes you from an empty folder to a built site.
+This guide takes you from an empty folder to starglow running on your machine.
 
 ## Requirements
 
-- Node.js 22.23.4 or later. The exact version used in CI is in `.node-version`.
-- pnpm. The version is pinned in the `packageManager` field of `package.json`.
-- Git. Note dates come from git history, so the site should live in a repository.
+- Node.js 22.23.4 or later. The version used in CI is in `.node-version`.
+- pnpm. The version is pinned in the `packageManager` field of `package.json`; `corepack enable` provides it.
+- Git. Note dates come from git history, so the site must live in a repository.
+
+Instead of Node and pnpm, you can use Docker with the compose plugin: `./dev.sh` runs every command in a container. See [Develop](./07-development.md).
 
 ## Create the site
 
@@ -18,51 +20,22 @@ cd my-site
 git remote rename origin starglow
 ```
 
-`npm create astro@latest -- --template glowing-space/starglow` and GitHub's "Use this template" button also work, but they copy the files without starglow's history, so every later update starts with a large merge.
+`npm create astro@latest -- --template glowing-space/starglow` and GitHub's "Use this template" button also work. They copy the files without starglow's history, so your first upgrade starts with a large merge.
 
-## Run it locally
+## Run it
 
 ```bash
 pnpm install
-pnpm dev
+pnpm dev            # http://localhost:4321/
 ```
 
-The dev server runs at `http://localhost:4321/`. Drafts are visible there with a Draft badge, and they never reach a production build.
+With Docker, `./dev.sh dev` starts the same dev server.
 
-### With Docker instead
-
-If you prefer not to install Node on the host, `./dev.sh` runs every command in a container. It needs Docker with the compose plugin.
-
-```bash
-./dev.sh          # dev server on port 4321
-./dev.sh build    # production build into dist/
-./dev.sh ci       # the full check set that CI runs
-```
-
-`./dev.sh pnpm <args>` runs any pnpm command in the same container.
-
-## Set your site URL
-
-The site origin has exactly one source: the `SITE_URL` environment variable, read by `astro.config.ts`. Canonical links, the sitemap, RSS and social images all use it.
-
-```bash
-SITE_URL=https://example.com pnpm build
-```
-
-You can also put `SITE_URL=https://example.com` in a local `.env` file. For the included GitHub Pages workflow, add a repository variable named `SITE_URL` (Settings, Secrets and variables, Actions, Variables). When the variable is not set anywhere, the default at the top of `astro.config.ts` is used. The value must be an origin only: no path, query or hash. To serve the site from a subpath, such as a GitHub project site at `https://<user>.github.io/<repo>/`, also set `BASE_PATH=/<repo>`; see [Configuration](./02-configuration.md) and [Deploying](./08-deploying.md).
+The dev server shows drafts with a Draft badge. Drafts never reach a production build.
 
 ## Make it yours
 
-1. Edit `starglow.config.ts`: title, author, description, timezone, and your profiles as footer badges in `links`. See [Configuring starglow](./02-configuration.md).
-2. Replace the pages in `src/content/pages/` (home intro, about, and contact if you want text above the profiles on `/contact/`), and rewrite or delete the demo's `impressum.md` and `privacy.md` together with their `footer.links` entries.
-3. Delete the example posts, notes and projects, then add your own. See [The content model](./03-content-model.md).
-
-## Build and deploy
-
-```bash
-pnpm build
-```
-
-The build runs `astro check`, the Astro build, the search index and a placeholder check. The output in `dist/` is plain static files. Any static host works: GitHub Pages, Cloudflare Pages, Netlify or your own server.
-
-The repository ships two GitHub Actions workflows in `.github/workflows/`: `checks.yml` for pull requests and `deploy.yml`, which publishes to GitHub Pages on a push to `main`. The deploy runs the placeholder check in strict mode, so it fails while any placeholder marker is left in your content.
+1. Set your details in `starglow.config.ts`. See [Configure](./02-configuration.md).
+2. Set `SITE_URL` to your origin before you publish. See [Environment variables](./02-configuration.md#environment-variables).
+3. Replace the demo content with your own. See [Replace the demo content](./03-content-model.md#replace-the-demo-content).
+4. Publish. See [Deploy](./06-deploying.md).
