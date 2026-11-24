@@ -13,7 +13,6 @@ tags: []
 draft: true
 # Optional keys. Remove the leading "# " to use one. The schema is strict, so a typo fails `astro check`.
 # modDatetime: 2026-01-02T09:00:00+01:00   # Last update. Shown as "Updated" when later than pubDatetime. Default: none.
-# featured: true                           # Accepted by the schema, but nothing on the site reads it yet. Default: none.
 # hideToc: true                            # Hides the inline table of contents. Default: shown.
 # hideEditPost: true                       # Hides the edit link when edit links are enabled in starglow.config.ts. Default: shown.
 # ogImage: ./_assets/cover.png             # Link preview image, next to the post. Default: a generated image with the title.

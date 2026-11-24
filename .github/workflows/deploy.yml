@@ -23,6 +23,8 @@ jobs:
     env:
       # Public value for the optional Search Console meta tag. An unset variable is empty and renders nothing.
       PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_SITE_VERIFICATION }}
+      # Optional Cloudflare Web Analytics token. Unset = no beacon.
+      PUBLIC_CF_WEB_ANALYTICS_TOKEN: ${{ vars.PUBLIC_CF_WEB_ANALYTICS_TOKEN }}
       # Site origin, e.g. https://example.com. Unset = the default in astro.config.ts.
       SITE_URL: ${{ vars.SITE_URL }}
       # Subpath for a project site, e.g. /repo for https://<user>.github.io/repo/. Unset = root.

@@ -25,6 +25,7 @@ export type Props = {
 };
 
 const { site } = config;
+const { cloudflareToken } = config.analytics;
 
 const {
   title = site.title,
@@ -38,8 +39,15 @@ const {
 } = Astro.props;
 
 const socialImageURL = new URL(ogImage, Astro.site ?? Astro.url);
-const { ambient, wordmarkGlow, statusline, palette, palettes, preview } =
-  config.appearance;
+const {
+  defaultMode,
+  ambient,
+  wordmarkGlow,
+  statusline,
+  palette,
+  palettes,
+  preview,
+} = config.appearance;
 // Only the two configured palettes ship, unless the preview panel needs all.
 const paletteStyles = preview
   ? paletteCss(palettes.dark, palettes.light)
@@ -49,6 +57,20 @@ const paletteStyles = preview
     );
 const sourceBanner = site.sourceBanner ? `<!--\n${site.sourceBanner}\n-->` : "";
 const rssHref = getAssetPath("rss.xml");
+// A stored toggle choice, else appearance.defaultMode. theme.ts reads __theme.
+const THEME_BOOT = `(function () {
+  var mode = ${JSON.stringify(defaultMode)};
+  var theme = localStorage.getItem("theme");
+  if (!theme) {
+    theme = mode === "system"
+      ? matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+      : mode;
+  }
+  var root = document.documentElement;
+  root.setAttribute("data-theme", theme);
+  root.classList.toggle("dark", theme === "dark");
+  window.__theme = { value: theme, mode: mode };
+})();`;
 // Applies the preview panel's session overrides before the first paint.
 const PREVIEW_BOOT = `(function () {
   try {
@@ -60,6 +82,11 @@ const PREVIEW_BOOT = `(function () {
     ["glow", "statusline"].forEach(function (k) {
       if (typeof s[k] === "boolean") r.toggleAttribute("data-" + k, s[k]);
     });
+    if (s.theme === "dark" || s.theme === "light") {
+      r.setAttribute("data-theme", s.theme);
+      r.classList.toggle("dark", s.theme === "dark");
+      if (window.__theme) window.__theme.value = s.theme;
+    }
   } catch (e) {}
 })();`;
 ---
@@ -104,17 +131,12 @@ const PREVIEW_BOOT = `(function () {
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={socialImageURL} />
-    {
-      ogImageSize && (
-        <>
-          <meta property="og:image:width" content={String(ogImageSize.width)} />
-          <meta
-            property="og:image:height"
-            content={String(ogImageSize.height)}
-          />
-        </>
-      )
-    }
+    {ogImageSize && (
+      <>
+        <meta property="og:image:width" content={String(ogImageSize.width)} />
+        <meta property="og:image:height" content={String(ogImageSize.height)} />
+      </>
+    )}
     <meta property="og:image:alt" content={ogImageAlt} />
 
     <meta name="twitter:card" content="summary_large_image" />
@@ -136,31 +158,12 @@ const PREVIEW_BOOT = `(function () {
 
     <slot name="head" />
 
-    {
-      site.googleVerification && (
-        <meta
-          name="google-site-verification"
-          content={site.googleVerification}
-        />
-      )
-    }
+    {site.googleVerification && (
+      <meta name="google-site-verification" content={site.googleVerification} />
+    )}
 
     <!-- Sets data-theme before first paint: must stay inline and synchronous. -->
-    <script is:inline>
-      (function () {
-        const stored = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches;
-        const theme = stored ?? (prefersDark ? "dark" : "light");
-        const root = document.firstElementChild;
-        root?.setAttribute("data-theme", theme);
-        root?.classList.toggle("dark", theme === "dark");
-        // Expose value so theme.ts can skip re-detection.
-        window.__theme = { value: theme };
-      })();
-    </script>
-
+    <script is:inline set:html={THEME_BOOT} />
     {preview && <script is:inline set:html={PREVIEW_BOOT} />}
 
     <ClientRouter />
@@ -179,6 +182,14 @@ const PREVIEW_BOOT = `(function () {
       import "@/scripts/theme";
     </script>
     {preview && <PreviewPanel />}
+    {cloudflareToken && (
+      <script
+        is:inline
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={JSON.stringify({ token: cloudflareToken, spa: true })}
+      />
+    )}
     <CustomBodyEnd />
   </body>
 </html>

@@ -65,54 +65,51 @@ const navItems = [
         class="wordmark"
         aria-current={currentPath === "/" ? "page" : undefined}
       >
-        {site.wordmark}<span class="cursor" aria-hidden="true">_</span>
+        {site.wordmark}
+        <span class="cursor" aria-hidden="true">
+          _
+        </span>
       </a>
       <div class="site-tools">
-        {
-          features.search !== false && (
-            <a
-              id="search-link"
-              href={getRelativeLocaleUrl(locale, "search")}
-              class="icon-btn"
-              title={t.nav.search}
-              aria-label={t.nav.search}
-              aria-current={isActive("/search") ? "page" : undefined}
-            >
-              <IconSearch aria-hidden="true" />
-            </a>
-          )
-        }
-        {
-          features.lightAndDarkMode && (
-            <button
-              id="theme-btn"
-              type="button"
-              class="icon-btn"
-              title={t.a11y.toggleTheme}
-              aria-label={t.a11y.toggleTheme}
-              aria-pressed="false"
-            >
-              <IconMoon class="icon-moon" aria-hidden="true" />
-              <IconSunHigh class="icon-sun" aria-hidden="true" />
-            </button>
-          )
-        }
+        {features.search !== false && (
+          <a
+            id="search-link"
+            href={getRelativeLocaleUrl(locale, "search")}
+            class="icon-btn"
+            title={t.nav.search}
+            aria-label={t.nav.search}
+            aria-current={isActive("/search") ? "page" : undefined}
+          >
+            <IconSearch aria-hidden="true" />
+          </a>
+        )}
+        {features.lightAndDarkMode && (
+          <button
+            id="theme-btn"
+            type="button"
+            class="icon-btn"
+            title={t.a11y.toggleTheme}
+            aria-label={t.a11y.toggleTheme}
+            aria-pressed="false"
+          >
+            <IconMoon class="icon-moon" aria-hidden="true" />
+            <IconSunHigh class="icon-sun" aria-hidden="true" />
+          </button>
+        )}
       </div>
     </div>
     <nav class="site-nav" aria-label={t.a11y.mainNav}>
       <ul>
-        {
-          navItems.map(item => (
-            <li>
-              <a
-                href={item.href}
-                aria-current={isActive(item.path) ? "page" : undefined}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
+        {navItems.map(item => (
+          <li>
+            <a
+              href={item.href}
+              aria-current={isActive(item.path) ? "page" : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
       </ul>
     </nav>
   </div>

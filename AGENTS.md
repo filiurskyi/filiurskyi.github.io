@@ -11,7 +11,7 @@ starglow is an Astro 7 + Tailwind 4 static theme. Read this before changing it.
 
 - Config: `starglow.config.ts` (user), types and docs in `src/types/config.ts`, defaults resolved in `src/config.ts`.
 - Content: `src/content/{blog,notes,projects,pages}`; schemas in `src/content.config.ts` (strict).
-- Palettes: `src/palettes.ts` (the only place colours live). Theme styles: `src/styles/site-theme.css`. `theme.css`, `typography.css` and `global.css` stay close to upstream.
+- Palettes: `src/palettes.ts` (the only place colours live). Theme styles: `src/styles/site-theme.css`; `theme.css` registers the Tailwind colour tokens, `typography.css` styles prose and `global.css` holds base rules. starglow does not track AstroPaper (see `NOTICE`), so edit them freely.
 - User slots, never overwritten: `src/custom/*.astro`.
 - Build assertions: `scripts/verify-dist.ts`; placeholder check: `scripts/check-markers.ts`.
 
@@ -34,6 +34,6 @@ starglow is an Astro 7 + Tailwind 4 static theme. Read this before changing it.
 ## Rules
 
 - Minimal client JS; no framework islands.
-- WCAG AA contrast; honour `prefers-reduced-motion`; hover never shifts layout.
+- WCAG AA contrast; honour `prefers-reduced-motion` (except the slow ambient pulse and wordmark glow); hover never shifts layout.
 - No build may depend on a network service.
 - GitHub Actions are pinned to full commit SHAs.

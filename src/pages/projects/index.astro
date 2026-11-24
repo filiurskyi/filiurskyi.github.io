@@ -29,33 +29,31 @@ const githubUrl = config.socials
   <Header />
 
   <Main pageTitle={t.pages.projectsTitle} pageDesc={t.pages.projectsDesc}>
-    {
-      projects.length > 0 ? (
-        <ul class="index">
-          {projects.map(project => (
-            <ProjectRow project={project} />
-          ))}
-        </ul>
-      ) : githubUrl ? (
-        <EmptyState
-          id="empty-projects"
-          heading={t.empty.projectsHeading}
-          text={t.empty.projectsBody}
-          linkLabel={t.empty.projectsGithub}
-          href={githubUrl}
-          suffix="."
-        />
-      ) : (
-        <EmptyState
-          id="empty-projects"
-          heading={t.empty.projectsHeading}
-          text={t.empty.projectsFallback}
-          linkLabel={t.empty.readTheBlog}
-          href={getRelativeLocaleUrl(locale, "blog")}
-          suffix="."
-        />
-      )
-    }
+    {projects.length > 0 ? (
+      <ul class="index">
+        {projects.map(project => (
+          <ProjectRow project={project} withDescription />
+        ))}
+      </ul>
+    ) : githubUrl ? (
+      <EmptyState
+        id="empty-projects"
+        heading={t.empty.projectsHeading}
+        text={t.empty.projectsBody}
+        linkLabel={t.empty.projectsGithub}
+        href={githubUrl}
+        suffix="."
+      />
+    ) : (
+      <EmptyState
+        id="empty-projects"
+        heading={t.empty.projectsHeading}
+        text={t.empty.projectsFallback}
+        linkLabel={t.empty.readTheBlog}
+        href={getRelativeLocaleUrl(locale, "blog")}
+        suffix="."
+      />
+    )}
   </Main>
 
   <Footer />

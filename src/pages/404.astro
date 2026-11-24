@@ -14,14 +14,14 @@ const t = useTranslations(locale);
 
 // A terminal that cannot find the page; <b> marks the accent parts.
 const MONITOR = [
-  "   .-----------------------.",
-  "   |  $ cd /requested/page |",
-  "   |  <b>cd: no such file or</b>  |",
-  "   |  <b>directory</b>            |",
-  "   |  $ <b>_</b>                  |",
-  "   '-----------------------'",
-  "        _|___________|_",
-  "       /_______________\\",
+  ".-----------------------.",
+  "|  $ cd /requested/page |",
+  "|  <b>cd: no such file or</b>  |",
+  "|  <b>directory</b>            |",
+  "|  $ <b>_</b>                  |",
+  "'-----------------------'",
+  "     _|___________|_",
+  "    /_______________\\",
 ].join("\n");
 
 const suggestions = [
@@ -45,11 +45,9 @@ const suggestions = [
     <pre class="ascii" aria-hidden="true" set:html={MONITOR} />
     <p class="not-found-text">{t.notFound.body}</p>
     <ul class="index">
-      {
-        suggestions.map(({ label, href }) => (
-          <IndexRow href={href} title={label} end={href} />
-        ))
-      }
+      {suggestions.map(({ label, href }) => (
+        <IndexRow href={href} title={label} end={href} />
+      ))}
     </ul>
   </Main>
 

@@ -72,12 +72,14 @@ const noteJsonLd = toJsonLd(
   ogType="article"
   canonicalURL={canonical}
   ogImage={image}
-  ogImageAlt={generatedOg
-    ? tplStr(t.og.imageAlt, {
-        type: t.content.typeNote,
-        title: note.data.title,
-      })
-    : undefined}
+  ogImageAlt={
+    generatedOg
+      ? tplStr(t.og.imageAlt, {
+          type: t.content.typeNote,
+          title: note.data.title,
+        })
+      : undefined
+  }
 >
   <Fragment slot="head">
     <script type="application/ld+json" is:inline set:html={noteJsonLd} />
@@ -101,13 +103,11 @@ const noteJsonLd = toJsonLd(
       <BackButton />
     </Fragment>
 
-    {
-      import.meta.env.DEV && note.data.draft && (
-        <p class="draft-note" data-pagefind-ignore>
-          {t.post.draftNotice}
-        </p>
-      )
-    }
+    {import.meta.env.DEV && note.data.draft && (
+      <p class="draft-note" data-pagefind-ignore>
+        {t.post.draftNotice}
+      </p>
+    )}
 
     <div class="post-body">
       <PostToc headings={config.features.toc ? headings : []} />
@@ -117,15 +117,13 @@ const noteJsonLd = toJsonLd(
     </div>
     <ArticleEnhancements />
 
-    {
-      note.data.tags.length > 0 && (
-        <ul class="post-tags" aria-label={t.post.tagLabel}>
-          {note.data.tags.map(tag => (
-            <Tag tag={slugifyStr(tag)} tagName={tag} />
-          ))}
-        </ul>
-      )
-    }
+    {note.data.tags.length > 0 && (
+      <ul class="post-tags" aria-label={t.post.tagLabel}>
+        {note.data.tags.map(tag => (
+          <Tag tag={slugifyStr(tag)} tagName={tag} />
+        ))}
+      </ul>
+    )}
 
     <div
       class:list={[

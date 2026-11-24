@@ -5,7 +5,7 @@ Dark first, its own colour palettes, a little 2000s glow.
 
 <picture>
   <source media="(prefers-color-scheme: light)" srcset=".github/assets/home-light.png">
-  <img alt="Home page of the demo site: a pixel wordmark, a short intro and a list of posts and notes" src=".github/assets/home-dark.png">
+  <img alt="Home page of the demo site in the dark starglow palette: a pixel wordmark under a softly glowing header band, a short intro, a list of posts and notes, and the preview tab in the bottom left corner" src=".github/assets/home-dark.png">
 </picture>
 
 **[Live demo](https://glowing-space.github.io/starglow/)** · [Docs](docs/) · [Releases](https://github.com/glowing-space/starglow/releases)
@@ -15,6 +15,7 @@ Dark first, its own colour palettes, a little 2000s glow.
 - Posts, short notes, projects and a lab of experiments, with tags and related content
 - Banded page header with an optional ambient glow and a pixel wordmark
 - Labelled code, table and callout blocks; GitHub alert callouts; MDX
+- Optional Obsidian-flavoured Markdown: wikilinks, image embeds, comments
 - Vim-style statusline on posts, 88x31 footer badges, a terminal 404 page
 - Pagefind search, RSS, sitemap, generated Open Graph images, JSON-LD
 - 4 dark and 5 light palettes, chosen separately; your own in a few lines; WCAG AA checked at build
@@ -25,11 +26,13 @@ Dark first, its own colour palettes, a little 2000s glow.
 
 ## Screenshots
 
-| Dark                                                                                                             | Light                                                                   |
-| ---------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
-| ![A post with a dithered image, a caption and a GLSL code block, starglow palette](.github/assets/post-dark.png) | ![The same post, starglow light palette](.github/assets/post-light.png) |
+| Dark                                                                                                                                         | Light                                                                                 |
+| -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| ![A post in the dark starglow palette: a bash code block, an "important" callout and the vim-style statusline](.github/assets/post-dark.png) | ![The same part of the post in the light sand palette](.github/assets/post-light.png) |
 
-![The same home page in the void, aurora, paper and sand palettes](.github/assets/palettes.png)
+![The same post section in all nine palettes, three by three: dark starglow, void, aurora and ember, then light starglow, paper, petal, frost and sand](.github/assets/palettes.png)
+
+![The preview panel open on the home page in the aurora palette, with selects for the dark and light palette and the ambient light, checkboxes for wordmark glow and statusline, and a reset button](.github/assets/preview-open.png)
 
 ## Quick start
 

@@ -26,24 +26,22 @@ const t = useTranslations(locale);
   <Header />
 
   <Main pageTitle={t.pages.postsTitle} pageDesc={t.pages.postsDesc}>
-    {
-      page.data.length > 0 ? (
-        <ul class="index">
-          {page.data.map(item => (
-            <ItemRow item={item} />
-          ))}
-        </ul>
-      ) : (
-        <EmptyState
-          id="empty-posts"
-          heading={t.empty.postsHeading}
-          text={t.empty.postsBody}
-          linkLabel={t.empty.rssLabel}
-          href={getAssetPath("rss.xml")}
-          suffix="."
-        />
-      )
-    }
+    {page.data.length > 0 ? (
+      <ul class="index">
+        {page.data.map(item => (
+          <ItemRow item={item} />
+        ))}
+      </ul>
+    ) : (
+      <EmptyState
+        id="empty-posts"
+        heading={t.empty.postsHeading}
+        text={t.empty.postsBody}
+        linkLabel={t.empty.rssLabel}
+        href={getAssetPath("rss.xml")}
+        suffix="."
+      />
+    )}
     <Pagination {page} />
   </Main>
 

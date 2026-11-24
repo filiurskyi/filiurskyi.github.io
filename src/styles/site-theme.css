@@ -1,7 +1,7 @@
 /*
- * Site design: tokens and every component rule. Upstream theme.css and
- * typography.css stay untouched; this file is imported last in global.css and
- * its rules are unlayered, so they win over both. Colours: src/palettes.ts.
+ * Site design: tokens and every component rule. This file is imported last in
+ * global.css and its rules are unlayered, so they win over theme.css and
+ * typography.css. Colours: src/palettes.ts.
  */
 
 /* Font tokens: the Astro fonts API (astro.config.ts) exposes --font-inter,
@@ -49,11 +49,6 @@
  * derived from those tokens, so a palette never needs more than its 18 values.
  */
 :root {
-  --peach: var(--orange);
-  --mauve: var(--purple);
-  --lavender: var(--purple);
-  --sapphire: var(--cyan);
-  --sky: var(--cyan);
   --status-active: var(--green);
   --status-maintained: var(--blue);
   --status-experiment: var(--purple);
@@ -157,6 +152,7 @@
 /* ===== Page, browser surfaces ===== */
 
 html {
+  scrollbar-gutter: stable;
   font-synthesis-weight: none;
   caret-color: var(--accent);
   scrollbar-color: var(--border) var(--background);
@@ -225,7 +221,10 @@ time {
   font-variant-numeric: tabular-nums;
 }
 
-/* Mono shows the characters as typed: no "=>" or "<-" ligatures */
+/*
+ * Mono shows the characters as typed: no "=>" or "<-" ligatures. Important,
+ * because every later `font:` shorthand resets the ligature setting.
+ */
 code,
 pre,
 kbd,
@@ -233,9 +232,31 @@ samp,
 .meta,
 .end,
 .kind,
+.back-link,
+.section-head a,
+.draft-word,
+.status,
+.app-prose figcaption,
 .block-label,
-.copy-code {
-  font-variant-ligatures: none;
+.copy-code,
+.app-prose .callout::before,
+.post-toc-label,
+.app-prose th,
+.tag,
+.text-btn,
+.syndication,
+.pager,
+.facts dt,
+.colophon,
+.pagefind-ui__search-clear,
+.pagefind-ui__message,
+.pagefind-ui__button,
+.statusline,
+.ascii,
+.preview-panel,
+.toc-popover .toc-label,
+.toc-back-to-top {
+  font-variant-ligatures: none !important;
 }
 
 .col {
@@ -317,8 +338,7 @@ samp,
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cursor,
-  [data-glow] .wordmark {
+  .cursor {
     animation: none;
   }
 }
@@ -385,12 +405,6 @@ body {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  [data-ambient="breathe"] .band-light::before {
-    animation: none;
-  }
-}
-
 .site-tools {
   display: flex;
   align-items: center;
@@ -401,12 +415,25 @@ body {
   display: inline-flex;
   align-items: center;
   gap: var(--s2);
-  padding: var(--s2) 0;
+  padding: var(--s2);
+  margin-inline: calc(-1 * var(--s2));
   border: 0;
   background: none;
   color: var(--muted-foreground);
   font: inherit;
   cursor: pointer;
+}
+
+/* Hit area: 32px square, 40px on touch; negative margins keep the icon put */
+@media (pointer: coarse) {
+  .site-tools {
+    gap: var(--s5);
+  }
+
+  .icon-btn {
+    padding: var(--s3);
+    margin: calc(-1 * var(--s1)) calc(-1 * var(--s3));
+  }
 }
 
 .icon-btn:hover {
@@ -636,6 +663,13 @@ body {
   color: var(--muted-foreground);
 }
 
+.index-desc {
+  margin: calc(-1 * var(--s1)) 0 var(--s2);
+  font: var(--t-meta);
+  font-family: var(--font-app);
+  color: var(--muted-foreground);
+}
+
 .index-row:hover .name {
   color: var(--accent);
 }
@@ -765,6 +799,7 @@ body {
 .app-prose li {
   margin: var(--s1) 0;
   padding: 0;
+  text-wrap: pretty;
 }
 
 .app-prose li::marker {
@@ -867,6 +902,11 @@ body {
   opacity: 0.75;
 }
 
+/* Drawn by CSS so search does not index "#" as part of the heading */
+.app-prose .heading-mark::before {
+  content: "#";
+}
+
 @media (min-width: 48rem) {
   .app-prose .heading-link {
     opacity: 0;
@@ -897,7 +937,8 @@ body {
 .block-label,
 .copy-code,
 .app-prose .callout::before,
-.post-toc-label {
+.post-toc-label,
+.table-block::after {
   position: absolute;
   top: -10px;
   z-index: 1;
@@ -969,6 +1010,50 @@ body {
 
 .table-block .table-wrapper:focus-visible {
   outline-offset: -2px;
+}
+
+/*
+ * "scroll" cue on the top edge while a table overflows. The scroll timeline
+ * is inactive without overflow, so the label stays hidden then; it hides
+ * again once the table is scrolled to its end.
+ */
+.table-block {
+  timeline-scope: --table-scroll;
+}
+
+.table-block .table-wrapper {
+  scroll-timeline: --table-scroll inline;
+}
+
+.table-block::after {
+  content: none;
+  inset-inline-end: var(--s3);
+}
+
+@supports (animation-timeline: scroll()) {
+  .table-block::after {
+    content: "scroll \2192" / "";
+    visibility: hidden;
+    animation-name: table-scroll-cue;
+    animation-fill-mode: both;
+    animation-timing-function: linear;
+    animation-timeline: --table-scroll;
+  }
+
+  .table-block:dir(rtl)::after {
+    content: "\2190  scroll" / "";
+  }
+}
+
+@keyframes table-scroll-cue {
+  0%,
+  95% {
+    visibility: visible;
+  }
+
+  100% {
+    visibility: hidden;
+  }
 }
 
 /* Wide tables grow to their content and scroll; a cell wraps past 20rem */
@@ -1274,8 +1359,41 @@ body {
   color: var(--muted-foreground);
 }
 
-.colophon:has(+ .badges) {
+.colophon:has(+ .footer-base) {
   padding-bottom: var(--s4);
+}
+
+.footer-base {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s3) var(--s5);
+  padding-bottom: var(--s6);
+}
+
+.footer-base .badges {
+  padding-bottom: 0;
+}
+
+.footer-extra {
+  margin: 0 0 0 auto;
+  font: var(--t-meta);
+  color: var(--muted-foreground);
+}
+
+@media (max-width: 40rem) {
+  .site-footer .credit-sep {
+    display: none;
+  }
+
+  .site-footer .nowrap {
+    display: block;
+  }
+}
+
+.site-footer .nowrap {
+  white-space: nowrap;
 }
 
 /* 88x31 badges */
@@ -1328,6 +1446,10 @@ body {
   font-size: 15px;
   color: inherit;
   text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 70%, transparent);
+}
+
+[data-theme="light"] .site-footer .credit {
+  text-shadow: 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
 .site-footer .credit:hover {
@@ -1439,6 +1561,16 @@ body {
 #pagefind-search .pagefind-ui__button:hover {
   border-color: var(--accent);
   color: var(--accent);
+}
+
+/* Next step under a search without results; hidden otherwise */
+.search-next {
+  display: none;
+  margin: 0;
+}
+
+#pagefind-search:has(.pagefind-ui__results:empty) + .search-next {
+  display: block;
 }
 
 .search-notice {
@@ -1553,12 +1685,13 @@ html[data-statusline] body:has(.statusline) .toc-popover {
 
 /* ===== Preview panel (appearance.preview) ===== */
 
+/* The start corner: the post button and its TOC own the end corner */
 .preview-panel {
   position: fixed;
-  inset-inline-end: var(--s4);
+  inset-inline-start: var(--s4);
   inset-block-end: var(--s4);
   z-index: 60;
-  border: 1px solid var(--border);
+  border: 1px solid var(--accent);
   background: var(--background);
   font: var(--t-meta);
   color: var(--muted-foreground);
@@ -1568,10 +1701,34 @@ html[data-statusline] body:has(.statusline) .preview-panel {
   inset-block-end: calc(var(--s4) + var(--statusline-h));
 }
 
+/* Where the tab would sit over the footer, the page ends below it */
+@media (max-width: 70rem) {
+  body:has(> .preview-panel) .site-footer {
+    padding-bottom: var(--s7);
+  }
+}
+
 .preview-panel summary {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
   padding: var(--s1) var(--s3);
+  color: var(--foreground);
   cursor: pointer;
   list-style: none;
+}
+
+.preview-panel summary::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  background: var(--accent);
+}
+
+@media (max-width: 40rem) {
+  .preview-more {
+    display: none;
+  }
 }
 
 .preview-panel summary::-webkit-details-marker {
@@ -1583,12 +1740,33 @@ html[data-statusline] body:has(.statusline) .preview-panel {
   color: var(--accent);
 }
 
+/* Opens upwards, so the tab stays where it was */
 .preview-body {
+  position: absolute;
+  inset-inline-start: -1px;
+  inset-block-end: 100%;
   display: grid;
   gap: var(--s2);
-  min-width: 14rem;
+  width: max-content;
+  max-width: calc(100vw - var(--s4) - 4rem);
   padding: var(--s2) var(--s3) var(--s3);
-  border-top: 1px solid var(--border);
+  border: 1px solid var(--accent);
+  background: var(--background);
+}
+
+.preview-note {
+  margin: 0 0 var(--s1);
+  color: var(--muted-foreground);
+}
+
+.preview-note a {
+  color: var(--foreground);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.preview-note a:hover {
+  color: var(--accent);
 }
 
 .preview-body label {
@@ -1624,4 +1802,16 @@ html[data-statusline] body:has(.statusline) .preview-panel {
 
 .preview-body button:hover {
   color: var(--accent);
+}
+
+@media (pointer: coarse) {
+  .preview-panel summary {
+    padding-block: var(--s2);
+  }
+
+  .preview-body select,
+  .preview-body button,
+  .preview-body .preview-check {
+    min-height: 32px;
+  }
 }

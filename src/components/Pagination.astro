@@ -15,28 +15,26 @@ const status = tplStr(t.pagination.status, {
 });
 ---
 
-{
-  page.lastPage > 1 && (
-    <nav class="pager" aria-label={t.pagination.page}>
-      {page.url.prev ? (
-        <a href={page.url.prev} aria-label={t.a11y.goToPreviousPage}>
-          <span aria-hidden="true">←</span> {t.pagination.prev.toLowerCase()}
-        </a>
-      ) : (
-        <span aria-disabled="true">
-          <span aria-hidden="true">←</span> {t.pagination.prev.toLowerCase()}
-        </span>
-      )}
-      <span>{status}</span>
-      {page.url.next ? (
-        <a href={page.url.next} aria-label={t.a11y.goToNextPage}>
-          {t.pagination.next.toLowerCase()} <span aria-hidden="true">→</span>
-        </a>
-      ) : (
-        <span aria-disabled="true">
-          {t.pagination.next.toLowerCase()} <span aria-hidden="true">→</span>
-        </span>
-      )}
-    </nav>
-  )
-}
+{page.lastPage > 1 && (
+  <nav class="pager" aria-label={t.pagination.page}>
+    {page.url.prev ? (
+      <a href={page.url.prev} aria-label={t.a11y.goToPreviousPage}>
+        <span aria-hidden="true">←</span> {t.pagination.prev.toLowerCase()}
+      </a>
+    ) : (
+      <span aria-disabled="true">
+        <span aria-hidden="true">←</span> {t.pagination.prev.toLowerCase()}
+      </span>
+    )}
+    <span>{status}</span>
+    {page.url.next ? (
+      <a href={page.url.next} aria-label={t.a11y.goToNextPage}>
+        {t.pagination.next.toLowerCase()} <span aria-hidden="true">→</span>
+      </a>
+    ) : (
+      <span aria-disabled="true">
+        {t.pagination.next.toLowerCase()} <span aria-hidden="true">→</span>
+      </span>
+    )}
+  </nav>
+)}

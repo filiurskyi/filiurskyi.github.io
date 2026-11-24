@@ -200,3 +200,15 @@ console.log(answer);
 ### When to use it
 
 Plain Markdown is easier to read, to diff and to move to another tool later. Reach for MDX only when a post really needs a component.
+
+## Writing in Obsidian
+
+Set `features.obsidian: true` in `starglow.config.ts` to copy posts, notes and projects from an Obsidian vault unchanged. The build converts Obsidian syntax in `.md` files and never rewrites them. MDX files are left alone.
+
+- `[[Note]]`, `[[Note|text]]` and `[[Note#Heading]]` link to the post, note or project with that file name, `title` or alias (case-insensitive). With no match they render as plain text. In a production build, drafts and posts scheduled for later count as no match.
+- `![[Note]]` renders as a link, not as an embedded note.
+- `![[image.png|alt text]]` embeds an image from `_assets/` next to the file. Copy images there by hand from the vault. A size such as `|400` is ignored. The build fails when the alt text is missing or the file is not in `_assets/`, and on any embed other than an image or a note.
+- `%%comments%%` are removed. Code blocks and inline code are left as written.
+- The Obsidian-only properties `aliases`, `alias`, `cssclasses`, `cssclass`, `publish`, `permalink`, `created` and `modified` are accepted and dropped. Any other unknown property still fails the build. `tags: rust`, `#rust` and an empty `tags:` are accepted.
+
+`./dev.sh ci` checks the formatting of `src/content/` with Prettier. If Obsidian's formatting gets in the way, add `/src/content/` to `.prettierignore`.

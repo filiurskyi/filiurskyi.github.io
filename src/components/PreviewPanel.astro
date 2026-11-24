@@ -7,33 +7,62 @@ import config from "@/config";
  * sessionStorage for this browser tab only; the inline script in Layout
  * applies them before the first paint.
  */
-const { palettes } = config.appearance;
+const { palettes, palette, ambient, wordmarkGlow, statusline } =
+  config.appearance;
 const options = (record: Record<string, { label: string }>) =>
   Object.entries(record).map(([value, { label }]) => ({ value, label }));
 const dark = options(palettes.dark);
 const light = options(palettes.light);
-const ambient = ["none", "light", "breathe", "dawn"];
+const ambientLabels = {
+  none: "off",
+  light: "glow",
+  breathe: "breathing glow",
+  dawn: "dawn tint",
+};
+// What "reset" goes back to.
+const defaults = JSON.stringify({
+  dark: palette.dark,
+  light: palette.light,
+  ambient,
+  glow: wordmarkGlow,
+  statusline,
+});
+const docsUrl =
+  "https://github.com/glowing-space/starglow/blob/main/docs/02-configuration.md";
 ---
 
-<details class="preview-panel" data-pagefind-ignore>
-  <summary>preview</summary>
+<details class="preview-panel" data-defaults={defaults} data-pagefind-ignore>
+  <summary>
+    <span>
+      preview<span class="preview-more">: palette · effects</span>
+    </span>
+  </summary>
   <form class="preview-body" aria-label="Theme preview">
+    <p class="preview-note">
+      <a href={docsUrl}>starglow theme options</a> · this&nbsp;tab&nbsp;only
+    </p>
     <label>
       <span>dark</span>
       <select name="dark">
-        {dark.map(o => <option value={o.value}>{o.label}</option>)}
+        {dark.map(o => (
+          <option value={o.value}>{o.label}</option>
+        ))}
       </select>
     </label>
     <label>
       <span>light</span>
       <select name="light">
-        {light.map(o => <option value={o.value}>{o.label}</option>)}
+        {light.map(o => (
+          <option value={o.value}>{o.label}</option>
+        ))}
       </select>
     </label>
     <label>
       <span>ambient</span>
       <select name="ambient">
-        {ambient.map(value => <option value={value}>{value}</option>)}
+        {Object.entries(ambientLabels).map(([value, label]) => (
+          <option value={value}>{label}</option>
+        ))}
       </select>
     </label>
     <label class="preview-check">
@@ -63,16 +92,9 @@ const ambient = ["none", "light", "breathe", "dawn"];
   const write = (state: State) =>
     sessionStorage.setItem(KEY, JSON.stringify(state));
 
-  /** The attributes as they are now: configured defaults plus overrides. */
-  function current(): State {
-    return {
-      dark: root.dataset.dark ?? "",
-      light: root.dataset.light ?? "",
-      ambient: root.dataset.ambient ?? "none",
-      glow: root.hasAttribute("data-glow"),
-      statusline: root.hasAttribute("data-statusline"),
-    };
-  }
+  /** Session mode for theme.ts; null goes back to the visitor's own. */
+  const setMode = (mode: string | null) =>
+    document.dispatchEvent(new CustomEvent("starglow:theme", { detail: mode }));
 
   function apply(state: State) {
     for (const key of ["dark", "light", "ambient"]) {
@@ -85,14 +107,11 @@ const ambient = ["none", "light", "breathe", "dawn"];
   }
 
   function setup() {
-    const form = document.querySelector<HTMLFormElement>(".preview-panel form");
-    if (!form) return;
-    const defaults = { ...current(), ...read() };
-    // Configured values, before any override: what "reset" goes back to.
-    const initial = root.dataset.previewDefaults
-      ? (JSON.parse(root.dataset.previewDefaults) as State)
-      : current();
-    root.dataset.previewDefaults = JSON.stringify(initial);
+    const panel = document.querySelector<HTMLDetailsElement>(".preview-panel");
+    const form = panel?.querySelector("form");
+    const summary = panel?.querySelector("summary");
+    if (!panel || !form || !summary) return;
+    const initial = JSON.parse(panel.dataset.defaults ?? "{}") as State;
 
     const fill = (state: State) => {
       for (const [key, value] of Object.entries(state)) {
@@ -102,33 +121,52 @@ const ambient = ["none", "light", "breathe", "dawn"];
           field.value = String(value);
       }
     };
-    fill(defaults);
+    fill({ ...initial, ...read() });
+    panel.open = read().open === true;
+
+    panel.addEventListener("toggle", () =>
+      write({ ...read(), open: panel.open })
+    );
+    panel.addEventListener("keydown", event => {
+      if (event.key !== "Escape" || !panel.open) return;
+      panel.open = false;
+      summary.focus();
+    });
 
     form.addEventListener("change", event => {
       const target = event.target as HTMLInputElement | HTMLSelectElement;
-      const state = { ...read() };
+      const state = read();
       state[target.name] =
         target instanceof HTMLInputElement && target.type === "checkbox"
           ? target.checked
           : target.value;
+      // Show the palette just picked: switch to its mode for this tab.
+      if (
+        (target.name === "dark" || target.name === "light") &&
+        root.dataset.theme !== target.name
+      ) {
+        state.theme = target.name;
+        setMode(target.name);
+      }
       write(state);
       apply(state);
-      // Show the palette just picked: switch to its mode.
-      const mode = root.dataset.theme;
-      if (
-        (target.name === "dark" && mode !== "dark") ||
-        (target.name === "light" && mode !== "light")
-      ) {
-        document.querySelector<HTMLButtonElement>("#theme-btn")?.click();
-      }
     });
     form.addEventListener("reset", event => {
       event.preventDefault();
-      sessionStorage.removeItem(KEY);
+      write({ open: panel.open });
       apply(initial);
       fill(initial);
+      setMode(null);
     });
   }
+
+  // The visitor's own toggle wins over the session mode.
+  document.addEventListener("click", event => {
+    if (!(event.target as Element).closest?.("#theme-btn")) return;
+    const state = read();
+    delete state.theme;
+    write(state);
+  });
 
   setup();
   document.addEventListener("astro:after-swap", () => {

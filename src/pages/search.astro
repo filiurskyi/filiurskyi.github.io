@@ -47,19 +47,21 @@ const noscriptLinks: Record<string, { href: string; label: string }> = {
     href: getRelativeLocaleUrl(locale, "projects"),
     label: t.search.projects,
   },
+  tags: { href: getRelativeLocaleUrl(locale, "tags"), label: t.search.tags },
 };
 const splitTokens = (text: string) =>
-  text.split(/\{\{(blog|notes|projects)\}\}/);
+  text.split(/\{\{(blog|notes|projects|tags)\}\}/);
 const noscriptParts = splitTokens(t.search.noscript);
 const emptyParts = splitTokens(t.search.emptyBrowse);
+const noResultsParts = splitTokens(t.search.noResults);
 ---
 
 <Layout title={`${t.pages.searchTitle} | ${config.site.title}`}>
   <Header />
 
   <Main pageTitle={t.pages.searchTitle} pageDesc={t.pages.searchDesc}>
-    {
-      searchable ? (
+    {searchable ? (
+      <>
         <div
           id="pagefind-search"
           transition:persist
@@ -97,24 +99,36 @@ const emptyParts = splitTokens(t.search.emptyBrowse);
             </p>
           </template>
         </div>
-      ) : (
-        <div id="pagefind-search" data-search-empty>
-          <p>
-            {t.search.empty}{" "}
-            {emptyParts.map((part, index) => {
-              const link = index % 2 === 1 ? noscriptLinks[part] : undefined;
-              return link ? (
-                <a href={link.href} class={linkClass}>
-                  {link.label}
-                </a>
-              ) : (
-                part
-              );
-            })}
-          </p>
-        </div>
-      )
-    }
+        <p class="search-next">
+          {noResultsParts.map((part, index) => {
+            const link = index % 2 === 1 ? noscriptLinks[part] : undefined;
+            return link ? (
+              <a href={link.href} class={linkClass}>
+                {link.label}
+              </a>
+            ) : (
+              part
+            );
+          })}
+        </p>
+      </>
+    ) : (
+      <div id="pagefind-search" data-search-empty>
+        <p>
+          {t.search.empty}{" "}
+          {emptyParts.map((part, index) => {
+            const link = index % 2 === 1 ? noscriptLinks[part] : undefined;
+            return link ? (
+              <a href={link.href} class={linkClass}>
+                {link.label}
+              </a>
+            ) : (
+              part
+            );
+          })}
+        </p>
+      </div>
+    )}
   </Main>
 
   <Footer />
@@ -220,6 +234,8 @@ const emptyParts = splitTokens(t.search.emptyBrowse);
         const clearButton = document.querySelector(
           ".pagefind-ui__search-clear"
         );
+        searchInput?.setAttribute("id", "search-input");
+        searchInput?.setAttribute("name", "q");
         searchInput?.addEventListener("input", resetSearchParam);
         clearButton?.addEventListener("click", resetSearchParam);
 

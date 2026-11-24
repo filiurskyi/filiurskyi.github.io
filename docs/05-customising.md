@@ -24,6 +24,10 @@ const { post } = Astro.props;
 {!post.data.tags.includes("no-comments") && <section>Comments go here</section>}
 ```
 
+## Extra pages
+
+Pages such as an Impressum or a privacy policy need no theme code: add `impressum.md` or `privacy.md` to `src/content/pages/` (see [Content model](./03-content-model.md#pages)) and link them from the footer with `footer.links` in `starglow.config.ts`.
+
 ## Colours
 
 Colours come in palettes, and dark and light palettes are chosen separately in `starglow.config.ts`:
@@ -34,7 +38,7 @@ appearance: {
 },
 ```
 
-Built in are four dark palettes, `starglow` (the default), `void`, `aurora` and `ember`, and five light ones, `starglow`, `paper`, `petal`, `frost` and `sand`. The demo's preview panel, bottom right, switches between them live.
+Built in are four dark palettes, `starglow` (the default), `void`, `aurora` and `ember`, and five light ones, `starglow`, `paper`, `petal`, `frost` and `sand`. The demo's preview panel, bottom left, switches between them live.
 
 To use your own colours, add a palette under `appearance.palettes` and select it. A palette is 18 colours; everything else (code highlighting, callouts, status colours, badges, social images) is derived from them:
 

@@ -16,15 +16,14 @@ const { id, heading, text, linkLabel, href, suffix } = Astro.props;
   <h2 class="section-title">{heading}</h2>
   <p>
     {text}
-    {
-      linkLabel && href && (
-        <>
-          {" "}
-          <a href={href} class="text-link">
-            {linkLabel}
-          </a>
-        </>
-      )
-    }{suffix}
+    {linkLabel && href && (
+      <>
+        {" "}
+        <a href={href} class="text-link">
+          {linkLabel}
+        </a>
+      </>
+    )}
+    {suffix}
   </p>
 </section>

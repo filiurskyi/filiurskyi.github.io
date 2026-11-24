@@ -39,13 +39,11 @@ const hasMeta = Astro.slots.has("meta");
 >
   <div class="band page-head">
     <div class="col">
-      {
-        hasMeta && (
-          <div class="head-row">
-            <slot name="meta" />
-          </div>
-        )
-      }
+      {hasMeta && (
+        <div class="head-row">
+          <slot name="meta" />
+        </div>
+      )}
       <h1
         class:list={["page-title", { "sr-only": hideTitle }]}
         style={titleStyle}

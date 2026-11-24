@@ -234,9 +234,6 @@ export const lightPalettes = {
   },
 } satisfies Record<string, Palette>;
 
-export type DarkPaletteName = keyof typeof darkPalettes;
-export type LightPaletteName = keyof typeof lightPalettes;
-
 /** CSS custom property set by each palette token. */
 const VARIABLES: Record<Exclude<keyof Palette, "label">, string> = {
   bg: "--background",

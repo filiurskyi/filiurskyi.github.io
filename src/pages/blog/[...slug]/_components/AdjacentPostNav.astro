@@ -19,32 +19,27 @@ const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
 ---
 
-{
-  (prevPost || nextPost) && (
-    <nav
-      class="adjacent"
-      aria-label={`${t.post.previousPost} / ${t.post.nextPost}`}
-      data-pagefind-ignore
-    >
-      {prevPost && (
-        <a href={getPostUrl(prevPost.id, prevPost.filePath, locale)}>
-          <span class="meta">
-            <span aria-hidden="true">←</span> {t.post.previousPost}
-          </span>
-          {prevPost.title}
-        </a>
-      )}
-      {nextPost && (
-        <a
-          class="next"
-          href={getPostUrl(nextPost.id, nextPost.filePath, locale)}
-        >
-          <span class="meta">
-            {t.post.nextPost} <span aria-hidden="true">→</span>
-          </span>
-          {nextPost.title}
-        </a>
-      )}
-    </nav>
-  )
-}
+{(prevPost || nextPost) && (
+  <nav
+    class="adjacent"
+    aria-label={`${t.post.previousPost} / ${t.post.nextPost}`}
+    data-pagefind-ignore
+  >
+    {prevPost && (
+      <a href={getPostUrl(prevPost.id, prevPost.filePath, locale)}>
+        <span class="meta">
+          <span aria-hidden="true">←</span> {t.post.previousPost}
+        </span>
+        {prevPost.title}
+      </a>
+    )}
+    {nextPost && (
+      <a class="next" href={getPostUrl(nextPost.id, nextPost.filePath, locale)}>
+        <span class="meta">
+          {t.post.nextPost} <span aria-hidden="true">→</span>
+        </span>
+        {nextPost.title}
+      </a>
+    )}
+  </nav>
+)}

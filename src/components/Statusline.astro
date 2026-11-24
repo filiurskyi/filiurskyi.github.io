@@ -16,20 +16,18 @@ const file = filePath.replace(/^(?:.*\/)?content\//, "");
 const type = file.endsWith(".mdx") ? "mdx" : "markdown";
 ---
 
-{
-  (config.appearance.statusline || config.appearance.preview) && file && (
-    <div class="statusline" aria-hidden="true" data-pagefind-ignore>
-      <span class="statusline-mode">NORMAL</span>
-      <span class="statusline-file">{file}</span>
-      <span class="statusline-ro">[RO]</span>
-      <span class="statusline-fill" />
-      <span class="statusline-type">{type}</span>
-      <span class="statusline-pos" data-statusline-pos>
-        Top
-      </span>
-    </div>
-  )
-}
+{(config.appearance.statusline || config.appearance.preview) && file && (
+  <div class="statusline" aria-hidden="true" data-pagefind-ignore>
+    <span class="statusline-mode">NORMAL</span>
+    <span class="statusline-file">{file}</span>
+    <span class="statusline-ro">[RO]</span>
+    <span class="statusline-fill" />
+    <span class="statusline-type">{type}</span>
+    <span class="statusline-pos" data-statusline-pos>
+      Top
+    </span>
+  </div>
+)}
 
 <script>
   // Vim's ruler: Top, NN%, Bot, or All when the page does not scroll.

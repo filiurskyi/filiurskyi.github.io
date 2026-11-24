@@ -22,6 +22,7 @@ const CONTENT_ROOTS = [
   "src/content/blog",
   "src/content/notes",
   "src/content/projects",
+  "src/content/pages",
 ];
 const EXTRA_FILES = ["starglow.config.ts"];
 const DIST = "dist";

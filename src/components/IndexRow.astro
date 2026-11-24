@@ -21,6 +21,8 @@ type Props = {
   /** Accessible name of the plain end text, e.g. "3 entries". */
   endLabel?: string;
   rel?: string;
+  /** Muted line under the row, e.g. a project description. */
+  desc?: string;
   /** view-transition-name of the title, shared with the page's h1. */
   transitionName?: string;
 };
@@ -35,6 +37,7 @@ const {
   end,
   endLabel,
   rel,
+  desc,
   transitionName,
 } = Astro.props;
 const t = useTranslations(Astro.currentLocale);
@@ -45,35 +48,30 @@ const t = useTranslations(Astro.currentLocale);
     {kind && <span class="kind">{kind}</span>}
     <span
       class="name"
-      style={transitionName
-        ? { viewTransitionName: transitionName }
-        : undefined}
+      style={
+        transitionName ? { viewTransitionName: transitionName } : undefined
+      }
     >
       {title}
-      {
-        import.meta.env.DEV && draft && (
-          <span class="draft-word">{t.post.draft.toLowerCase()}</span>
-        )
-      }
+      {import.meta.env.DEV && draft && (
+        <span class="draft-word">{t.post.draft.toLowerCase()}</span>
+      )}
     </span>
     <span class="lead" aria-hidden="true"></span>
-    {
-      time && (
-        <time class="end" datetime={time.iso}>
-          {time.text}
-        </time>
-      )
-    }
-    {
-      end && (
-        <span
-          class:list={["end", { status }]}
-          data-status={status}
-          aria-label={endLabel}
-        >
-          {end}
-        </span>
-      )
-    }
+    {time && (
+      <time class="end" datetime={time.iso}>
+        {time.text}
+      </time>
+    )}
+    {end && (
+      <span
+        class:list={["end", { status }]}
+        data-status={status}
+        aria-label={endLabel}
+      >
+        {end}
+      </span>
+    )}
   </a>
+  {desc && <p class="index-desc">{desc}</p>}
 </li>

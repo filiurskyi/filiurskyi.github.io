@@ -37,7 +37,6 @@ export default {
     website: "Website",
   },
   post: {
-    publishedAt: "Published",
     updatedAt: "Updated",
     readingTime: "{{minutes}} min read",
     draft: "Draft",
@@ -120,6 +119,8 @@ export default {
     empty: "Nothing is published yet, so there is nothing to search.",
     emptyBrowse:
       "Once something is published, find it in the {{blog}}, {{notes}} or {{projects}}.",
+    noResults: "Try other words, or browse the {{tags}} or the {{blog}}.",
+    tags: "tags",
   },
   empty: {
     postsHeading: "No posts yet",
@@ -148,13 +149,9 @@ export default {
     mainNav: "Main",
     footerNav: "Footer",
     toggleTheme: "Toggle theme",
-    rssFeed: "RSS feed",
-    searchPlaceholder: "Search posts...",
-    noResults: "No results found",
     goToPreviousPage: "Go to previous page",
     goToNextPage: "Go to next page",
     headingLink: "Link to section: {{heading}}",
-    socialLink: "{{author}} on {{label}}",
     scrollableTable: "Scrollable table",
     copySuccess: "Code copied to clipboard.",
     copyFailure:

@@ -3,3 +3,8 @@ packages: ["."]
 allowBuilds:
   esbuild: true
   sharp: true
+# rolldown's optional wasm binding pins @emnapi 2.0 betas; pnpm then pairs them
+# with @emnapi/core 1.x in astro2tsx and eslint crashes. Drop once rolldown is on 2.x stable.
+overrides:
+  "@emnapi/core": ^1.11.3
+  "@emnapi/runtime": ^1.11.3

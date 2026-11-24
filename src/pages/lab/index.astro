@@ -26,24 +26,22 @@ const experiments = sortProjects(
   <Header />
 
   <Main pageTitle={t.pages.labTitle} pageDesc={t.pages.labDesc}>
-    {
-      experiments.length > 0 ? (
-        <ul class="index">
-          {experiments.map(project => (
-            <ProjectRow project={project} />
-          ))}
-        </ul>
-      ) : (
-        <EmptyState
-          id="empty-lab"
-          heading={t.empty.labHeading}
-          text={t.empty.labBody}
-          linkLabel={t.empty.readTheBlog}
-          href={getRelativeLocaleUrl(locale, "blog")}
-          suffix="."
-        />
-      )
-    }
+    {experiments.length > 0 ? (
+      <ul class="index">
+        {experiments.map(project => (
+          <ProjectRow project={project} withDescription />
+        ))}
+      </ul>
+    ) : (
+      <EmptyState
+        id="empty-lab"
+        heading={t.empty.labHeading}
+        text={t.empty.labBody}
+        linkLabel={t.empty.readTheBlog}
+        href={getRelativeLocaleUrl(locale, "blog")}
+        suffix="."
+      />
+    )}
   </Main>
 
   <Footer />

@@ -6,10 +6,12 @@ import { useTranslations } from "@/i18n";
 
 type Props = {
   project: CollectionEntry<"projects">;
+  /** Show the description under the row (full lists, not the home page). */
+  withDescription?: boolean;
 };
 
-const { project } = Astro.props;
-const { title, status, draft } = project.data;
+const { project, withDescription = false } = Astro.props;
+const { title, description, status, draft } = project.data;
 const t = useTranslations(Astro.currentLocale);
 ---
 
@@ -19,4 +21,5 @@ const t = useTranslations(Astro.currentLocale);
   draft={draft}
   end={t.project.status[status].toLowerCase()}
   status={status}
+  desc={withDescription ? description : undefined}
 />

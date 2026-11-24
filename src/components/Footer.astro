@@ -23,50 +23,67 @@ const links = [
     ? [{ href: config.site.sourceUrl, label: t.footer.source }]
     : []),
 ];
+
+const extraLinks = config.footer.links.map(link => ({
+  href: /^\/(?!\/)/.test(link.href) ? getAssetPath(link.href) : link.href,
+  label: link.label,
+}));
 ---
 
 <footer class:list={["site-footer col", className]} {...attrs}>
   <div class="colophon">
     <span>
       {`© ${currentYear} ${config.site.author}`}
-      {
-        config.footer.credit && (
-          <>
-            <span aria-hidden="true"> · </span>
+      {config.footer.credit && (
+        <>
+          <span class="credit-sep" aria-hidden="true">
+            {" · "}
+          </span>
+          <span class="nowrap">
             {t.footer.poweredBy}{" "}
             <a class="credit" href={STARGLOW_REPO}>
               starglow
             </a>
-          </>
-        )
-      }
+          </span>
+        </>
+      )}
     </span>
     <nav aria-label={t.a11y.footerNav}>
-      {
-        links.map((link, index) => (
-          <>
-            {index > 0 && <span aria-hidden="true"> · </span>}
-            <a href={link.href}>{link.label}</a>
-          </>
-        ))
-      }
+      {links.map((link, index) => (
+        <>
+          {index > 0 && <span aria-hidden="true"> · </span>}
+          <a href={link.href}>{link.label}</a>
+        </>
+      ))}
     </nav>
   </div>
-  {
-    config.links.length > 0 && (
-      <ul class="badges" aria-label={t.footer.elsewhere}>
-        {config.links.map(link => (
-          <li>
-            <Badge88
-              type={link.type}
-              href={link.url}
-              label={link.label}
-              title={link.title}
-              rel={PROFILE_BADGES.has(link.type) ? "me" : undefined}
-            />
-          </li>
-        ))}
-      </ul>
-    )
-  }
+  {(config.links.length > 0 || extraLinks.length > 0) && (
+    <div class="footer-base">
+      {config.links.length > 0 && (
+        <ul class="badges" aria-label={t.footer.elsewhere}>
+          {config.links.map(link => (
+            <li>
+              <Badge88
+                type={link.type}
+                href={link.url}
+                label={link.label}
+                title={link.title}
+                rel={PROFILE_BADGES.has(link.type) ? "me" : undefined}
+              />
+            </li>
+          ))}
+        </ul>
+      )}
+      {extraLinks.length > 0 && (
+        <p class="footer-extra">
+          {extraLinks.map((link, index) => (
+            <>
+              {index > 0 && <span aria-hidden="true"> · </span>}
+              <a href={link.href}>{link.label}</a>
+            </>
+          ))}
+        </p>
+      )}
+    </div>
+  )}
 </footer>

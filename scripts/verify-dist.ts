@@ -23,6 +23,7 @@ import { findDraftOnlyAssets } from "./draft-assets.ts";
 if (existsSync(".env")) process.loadEnvFile(".env");
 
 const DIST = process.argv[2] ?? "dist";
+const CONFIG_FILE = "starglow.config.ts";
 const DEMO_MARKER = "[DEMO]";
 const CONTENT_ROUTE_PATTERNS = [
   /^\/(blog|notes)\/\d{4}\/[a-z0-9-]+\/$/,
@@ -92,6 +93,22 @@ function stopSetup(message: string): never {
   return process.exit(1);
 }
 
+/**
+ * Value of the first `key: "value"` in starglow.config.ts, trimmed, or
+ * undefined. Lines commented out with `//` are skipped. The config wins over
+ * the environment, as in src/config.ts.
+ */
+function configString(key: string): string | undefined {
+  const source = existsSync(CONFIG_FILE)
+    ? readFileSync(CONFIG_FILE, "utf8")
+    : "";
+  const value = new RegExp(
+    `^(?![ \\t]*//)[^\\n]*?\\b${key}:\\s*(["'])(.*?)\\1`,
+    "m"
+  ).exec(source)?.[2];
+  return value?.trim() || undefined;
+}
+
 // --- Files and routes -------------------------------------------------------
 
 function walk(dir: string, out: string[] = []): string[] {
@@ -135,6 +152,8 @@ type Entry = {
 const CANONICAL_OVERRIDES = new Map<string, string>();
 /** Pages whose frontmatter sets `ogImage`, by route: the author's own preview image. */
 const OG_OVERRIDES = new Map<string, string>();
+/** Routes of the `pages` collection: /, /about/, /contact/ and standalone pages. */
+const PAGE_ROUTES: string[] = [];
 
 function frontmatter(file: string): string {
   const match = /^---\r?\n([\s\S]*?)\r?\n---/.exec(read(file));
@@ -208,6 +227,7 @@ function sourceEntries(): Entry[] {
       .join("/")
       .replace(/\.mdx?$/, "");
     const route = id === "home" ? "/" : `/${id}/`;
+    PAGE_ROUTES.push(route);
     const override = frontmatterValue(fm, "canonicalUrl");
     if (override) CANONICAL_OVERRIDES.set(route, override);
     const ogOverride = frontmatterValue(fm, "ogImage");
@@ -311,6 +331,9 @@ function checkSourceEntriesBuilt(entries: Entry[]): void {
     if (!entry.draft && !entry.future && !built)
       fail("", `published entry missing: ${entry.route}`);
   }
+  for (const route of PAGE_ROUTES)
+    if (!existsSync(join(DIST, route, "index.html")))
+      fail("", `page missing: ${route}`);
 }
 
 function checkTextFiles(
@@ -819,7 +842,9 @@ function checkPageHead(
   if (route === "/404.html" && !noindex) fail(name, "missing robots noindex");
   if (route !== "/404.html" && noindex) fail(name, "unexpected robots noindex");
 
-  const verification = process.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
+  const verification =
+    configString("googleVerification") ||
+    process.env.PUBLIC_GOOGLE_SITE_VERIFICATION?.trim();
   const verifications = count("google-site-verification");
   const matching = verifications.filter(
     meta => meta.content === verification
@@ -978,10 +1003,28 @@ function isThirdParty(url: string, origin: string): boolean {
   }
 }
 
+const CF_BEACON = "https://static.cloudflareinsights.com/beacon.min.js";
+const CF_TOKEN =
+  configString("cloudflareToken") ||
+  process.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN?.trim();
+
+/** The Cloudflare Web Analytics beacon for the configured token, and only that. */
+function isAllowedBeacon(tag: string): boolean {
+  if (!CF_TOKEN || !/^<script\b/i.test(tag) || attr(tag, "src") !== CF_BEACON)
+    return false;
+  try {
+    const beacon = JSON.parse(attr(tag, "data-cf-beacon") ?? "");
+    return beacon.token === CF_TOKEN && beacon.spa === true;
+  } catch {
+    return false;
+  }
+}
+
 function checkThirdParties(file: string, html: string, origin: string): void {
   const name = rel(file);
   for (const [tag] of html.matchAll(/<script\b[^>]*>/gi)) {
     const src = attr(tag, "src");
+    if (isAllowedBeacon(tag)) continue;
     if (src !== undefined && isThirdParty(src, origin))
       fail(name, `third-party script ${src}`);
   }
@@ -1010,7 +1053,8 @@ const URL_ATTRIBUTES: Record<string, string[]> = {
 };
 
 /**
- * No comment or analytics connector and no share-intent link. Only
+ * No comment or analytics connector and no share-intent link, except exactly
+ * one Cloudflare Web Analytics beacon per page while a token is set. Only
  * markup counts: script and iframe sources, link and anchor targets, form
  * actions, element names and the beacon attribute. Prose and code that mention
  * Giscus or a share URL are allowed.
@@ -1019,7 +1063,12 @@ function checkConnectorMarkers(file: string, html: string): void {
   const name = rel(file);
   const markers = new Set<string>();
   const intents = new Set<string>();
+  let beacons = 0;
   for (const { tag } of pageTags(html)) {
+    if (isAllowedBeacon(tag)) {
+      beacons += 1;
+      continue;
+    }
     const element = /^<([a-z][a-z0-9-]*)/i.exec(tag)?.[1]?.toLowerCase() ?? "";
     const connector = element.match(CONNECTOR_MARKER)?.[0];
     if (connector) markers.add(connector.toLowerCase());
@@ -1038,6 +1087,8 @@ function checkConnectorMarkers(file: string, html: string): void {
         intents.add(match[0].toLowerCase());
     }
   }
+  if (CF_TOKEN && beacons !== 1)
+    fail(name, `${beacons} Cloudflare Web Analytics beacons (expected 1)`);
   for (const marker of markers)
     fail(name, `Giscus/Cloudflare marker "${marker}"`);
   for (const intent of intents) fail(name, `share-intent link ${intent}`);

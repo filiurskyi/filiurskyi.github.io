@@ -62,6 +62,15 @@ Projects with `status: experiment` are listed on `/lab/` instead of `/projects/`
 
 `src/content/pages/` holds the text of three pages: `home.md` (the homepage intro and an optional `specialties` list), `about.md` and `contact.md`. Edit them in place.
 
+Any other file there becomes a standalone page at `/<name>/`, laid out like the about page: `privacy.md` is published at `/privacy/` and `impressum.md` at `/impressum/`. A file in a folder keeps the folder in its URL, and a name starting with `_` is skipped. Standalone pages are listed in the sitemap but not in search. Names the theme already uses (`blog`, `notes`, `projects`, `lab`, `tags`, `search`) stop the build. Link the pages from the footer with [`footer.links`](./02-configuration.md#footer).
+
+| Key            | What it does                                               |
+| :------------- | :--------------------------------------------------------- |
+| `title`        | Required. Page title and heading.                          |
+| `description`  | Meta description and the line under the heading.           |
+| `ogImage`      | Social preview image, instead of the site default.         |
+| `canonicalUrl` | Canonical URL, when the text is published elsewhere first. |
+
 ## Creating content
 
 `templates/` holds a commented starting file for each type. Every optional key is listed there with an explanation, so you can uncomment what you need. With Docker set up, one command copies a template:

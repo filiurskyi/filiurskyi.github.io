@@ -27,28 +27,26 @@ const t = useTranslations(locale);
   <Header />
 
   <Main pageTitle={t.pages.tagsTitle} pageDesc={t.pages.tagsDesc}>
-    {
-      tags.length > 0 ? (
-        <ul class="index">
-          {tags.map(({ tag, tagName, count }) => (
-            <IndexRow
-              href={getRelativeLocaleUrl(locale, `tags/${tag}/`)}
-              title={`#${tagName}`}
-              end={String(count)}
-              endLabel={tplStr(t.pages.tagCount, { count })}
-            />
-          ))}
-        </ul>
-      ) : (
-        <EmptyState
-          id="empty-tags"
-          heading={t.empty.tagsHeading}
-          text={t.empty.tagsBody}
-          linkLabel={t.empty.goToBlog}
-          href={getRelativeLocaleUrl(locale, "blog")}
-        />
-      )
-    }
+    {tags.length > 0 ? (
+      <ul class="index">
+        {tags.map(({ tag, tagName, count }) => (
+          <IndexRow
+            href={getRelativeLocaleUrl(locale, `tags/${tag}/`)}
+            title={`#${tagName}`}
+            end={String(count)}
+            endLabel={tplStr(t.pages.tagCount, { count })}
+          />
+        ))}
+      </ul>
+    ) : (
+      <EmptyState
+        id="empty-tags"
+        heading={t.empty.tagsHeading}
+        text={t.empty.tagsBody}
+        linkLabel={t.empty.goToBlog}
+        href={getRelativeLocaleUrl(locale, "blog")}
+      />
+    )}
   </Main>
 
   <Footer />

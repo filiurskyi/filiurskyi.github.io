@@ -35,7 +35,6 @@ export interface UIStrings {
     website: string;
   };
   post: {
-    publishedAt: string;
     updatedAt: string;
     /** `{{minutes}}` is replaced with the rounded-up reading time. */
     readingTime: string;
@@ -47,8 +46,7 @@ export interface UIStrings {
     alsoOn: string;
     tagLabel: string;
     backToTop: string;
-    /** Optional until v8, so older locale files still type-check. */
-    tableOfContents?: string;
+    tableOfContents: string;
     goBack: string;
     editPage: string;
     previousPost: string;
@@ -129,6 +127,9 @@ export interface UIStrings {
     empty: string;
     /** Follows `empty`; `{{blog}}`, `{{notes}}` and `{{projects}}` become links. */
     emptyBrowse: string;
+    /** Under a search without results; `{{tags}}` and `{{blog}}` become links. */
+    noResults: string;
+    tags: string;
   };
   empty: {
     postsHeading: string;
@@ -157,15 +158,10 @@ export interface UIStrings {
     mainNav: string;
     footerNav: string;
     toggleTheme: string;
-    rssFeed: string;
-    searchPlaceholder: string;
-    noResults: string;
     goToPreviousPage: string;
     goToNextPage: string;
     /** `{{heading}}` is replaced with the heading text. */
     headingLink: string;
-    /** `{{author}}` and `{{label}}` are replaced, e.g. "Ada Lovelace on GitHub". */
-    socialLink: string;
     scrollableTable: string;
     copySuccess: string;
     copyFailure: string;

@@ -2,7 +2,7 @@
  * Rehype plugin that wraps each table in a focusable scrolling region
  * (`div.table-wrapper`), inside a `div.table-block` that carries the numbered
  * label outside the scroller so it is never clipped. Options: `{ label }`, the
- * region's accessible name. Tables inside `<ResponsiveTable>` are skipped.
+ * region's accessible name.
  */
 export const rehypeTableWrapper =
   (options = {}) =>
@@ -11,8 +11,6 @@ export const rehypeTableWrapper =
     let count = 0;
     const wrap = node => {
       if (!node.children) return;
-      if (node.type === "mdxJsxFlowElement" && node.name === "ResponsiveTable")
-        return;
 
       node.children = node.children.map(child => {
         if (child.type === "element" && child.tagName === "table") {

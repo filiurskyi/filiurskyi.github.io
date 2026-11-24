@@ -12,6 +12,50 @@ import {
 
 export const BLOG_PATH = "src/content/blog";
 
+// Properties Obsidian writes that the site has no use for: accepted, then
+// dropped, with `features.obsidian` on.
+const OBSIDIAN_ONLY = [
+  "aliases",
+  "alias",
+  "cssclasses",
+  "cssclass",
+  "publish",
+  "permalink",
+  "created",
+  "modified",
+] as const;
+
+const frontmatter = <T extends z.ZodRawShape>(shape: T) =>
+  config.features.obsidian
+    ? z
+        .strictObject({
+          ...shape,
+          ...Object.fromEntries(
+            OBSIDIAN_ONLY.map(key => [key, z.unknown().optional()])
+          ),
+        })
+        .transform(data => {
+          const out: Record<string, unknown> = { ...data };
+          for (const key of OBSIDIAN_ONLY) delete out[key];
+          return out as z.output<z.ZodObject<T>>;
+        })
+    : z.strictObject(shape);
+
+// Obsidian also writes `tags: rust`, `#rust` or an empty `tags:`.
+const normaliseTags = (value: unknown): unknown => {
+  if (value === null) return [];
+  const list = typeof value === "string" ? value.split(/[\s,]+/) : value;
+  if (!Array.isArray(list)) return value;
+  return list
+    .map(tag => (typeof tag === "string" ? tag.replace(/^#/, "") : tag))
+    .filter(tag => tag !== "");
+};
+const tags = () =>
+  (config.features.obsidian
+    ? z.preprocess(normaliseTags, z.array(z.string()))
+    : z.array(z.string())
+  ).default([]);
+
 const posts = defineCollection({
   loader: glob({
     pattern: "**/[^_]*.{md,mdx}",
@@ -20,14 +64,13 @@ const posts = defineCollection({
       postEntryId(entry, data, config.site.timezone),
   }),
   schema: ({ image }) =>
-    z.strictObject({
+    frontmatter({
       author: z.string().default(config.site.author),
       pubDatetime: z.date(),
       modDatetime: z.date().optional().nullable(),
       title: z.string(),
-      featured: z.boolean().optional(),
       draft: z.boolean().optional(),
-      tags: z.array(z.string()).default([]),
+      tags: tags(),
       ogImage: image().or(z.string()).optional(),
       description: z.string(),
       canonicalUrl: z.httpUrl().optional(),
@@ -48,10 +91,10 @@ const notes = defineCollection({
     base: `./${NOTE_PATH}`,
     generateId: ({ entry }) => noteEntryId(entry),
   }),
-  schema: z.strictObject({
+  schema: frontmatter({
     title: z.string(),
     description: z.string().optional(),
-    tags: z.array(z.string()).default([]),
+    tags: tags(),
     updated: z.date().optional(),
     canonicalUrl: z.httpUrl().optional(),
     syndication: z.array(z.httpUrl()).default([]),
@@ -65,7 +108,7 @@ const projects = defineCollection({
     base: `./${PROJECT_PATH}`,
     generateId: ({ entry }) => projectEntryId(entry),
   }),
-  schema: z.strictObject({
+  schema: frontmatter({
     title: z.string(),
     description: z.string(),
     stack: z.array(z.string()).default([]),

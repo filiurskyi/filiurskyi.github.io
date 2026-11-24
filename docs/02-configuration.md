@@ -6,20 +6,20 @@ The site URL is not in this file. It comes from `SITE_URL`, see [Getting started
 
 ## site
 
-| Key                | Required | Default         | What it does                                                                           |
-| :----------------- | :------- | :-------------- | :------------------------------------------------------------------------------------- |
-| `title`            | yes      |                 | Site title in the header, page titles and meta tags.                                   |
-| `description`      | yes      |                 | Default meta description and RSS description.                                          |
-| `author`           | yes      |                 | Default author of posts.                                                               |
-| `profile`          | no       | none            | Author profile URL, used in structured data.                                           |
-| `sourceUrl`        | no       | none            | Source repository of the site, linked from the footer. Empty means no link.            |
-| `wordmark`         | no       | `title`         | Text of the header wordmark, set in the pixel font.                                    |
-| `sourceBanner`     | no       | none            | An HTML comment with `art` and `message` lines, printed at the top of every page.      |
-| `ogImage`          | no       | generated image | Fallback social image filename in `public/`. Only needed with `dynamicOgImage: false`. |
-| `lang`             | no       | `"en"`          | The `lang` attribute of every page.                                                    |
-| `timezone`         | no       | `"UTC"`         | IANA zone used to read and show post dates.                                            |
-| `dir`              | no       | `"ltr"`         | Text direction: `ltr`, `rtl` or `auto`.                                                |
-| `fediverseCreator` | no       | none            | Handle as `@user@instance`. Adds the `fediverse:creator` meta tag.                     |
+| Key                  | Required | Default         | What it does                                                                           |
+| :------------------- | :------- | :-------------- | :------------------------------------------------------------------------------------- |
+| `title`              | yes      |                 | Site title in the header, page titles and meta tags.                                   |
+| `description`        | yes      |                 | Default meta description and RSS description.                                          |
+| `author`             | yes      |                 | Default author of posts.                                                               |
+| `sourceUrl`          | no       | none            | Source repository of the site, linked from the footer. Empty means no link.            |
+| `wordmark`           | no       | `title`         | Text of the header wordmark, set in the pixel font.                                    |
+| `sourceBanner`       | no       | none            | An HTML comment with `art` and `message` lines, printed at the top of every page.      |
+| `ogImage`            | no       | generated image | Fallback social image filename in `public/`. Only needed with `dynamicOgImage: false`. |
+| `lang`               | no       | `"en"`          | The `lang` attribute of every page.                                                    |
+| `timezone`           | no       | `"UTC"`         | IANA zone used to read and show post dates.                                            |
+| `dir`                | no       | `"ltr"`         | Text direction: `ltr`, `rtl` or `auto`.                                                |
+| `fediverseCreator`   | no       | none            | Handle as `@user@instance`. Adds the `fediverse:creator` meta tag.                     |
+| `googleVerification` | no       | none            | Search Console verification value. Wins over `PUBLIC_GOOGLE_SITE_VERIFICATION`.        |
 
 The `sourceBanner` text ends up inside an HTML comment, so it must not contain two hyphens in a row, start with `>` or end with `-`. The build fails with a clear message if it does.
 
@@ -36,21 +36,23 @@ Optional `Person` structured data on the homepage: `jobTitle` and `description`.
 
 ## features
 
-| Key                | Default      | What it does                                                                                   |
-| :----------------- | :----------- | :--------------------------------------------------------------------------------------------- |
-| `lightAndDarkMode` | `true`       | The light and dark toggle. The first visit follows the system preference.                      |
-| `dynamicOgImage`   | `true`       | Generated social images per post, note and project, plus `/og.png`.                            |
-| `showBackButton`   | `true`       | The back link on posts and inner pages.                                                        |
-| `editPost`         | disabled     | `{ enabled: true, url: "https://github.com/you/repo/edit/main/" }` adds an edit link to posts. |
-| `search`           | `"pagefind"` | Full-text search on `/search/`. `false` removes it.                                            |
-| `toc`              | `true`       | A table of contents on posts with two or more `h2` or `h3` headings.                           |
+| Key                | Default      | What it does                                                                                      |
+| :----------------- | :----------- | :------------------------------------------------------------------------------------------------ |
+| `lightAndDarkMode` | `true`       | The light and dark toggle. The first visit uses `appearance.defaultMode`.                         |
+| `dynamicOgImage`   | `true`       | Generated social images per post, note and project, plus `/og.png`.                               |
+| `showBackButton`   | `true`       | The back link on posts and inner pages.                                                           |
+| `editPost`         | disabled     | `{ enabled: true, url: "https://github.com/you/repo/edit/main/" }` adds an edit link to posts.    |
+| `search`           | `"pagefind"` | Full-text search on `/search/`. `false` removes it.                                               |
+| `toc`              | `true`       | A table of contents on posts with two or more `h2` or `h3` headings.                              |
+| `obsidian`         | `false`      | Obsidian syntax in `.md` content, see [Writing in Obsidian](./04-writing.md#writing-in-obsidian). |
 
 ## appearance
 
-These keys control the small amount of motion and decoration in the theme. All motion stops under `prefers-reduced-motion`.
+These keys control the small amount of motion and decoration in the theme. The ambient pulse and the wordmark glow are slow decoration and keep running under `prefers-reduced-motion`; the blinking cursor and the back-to-top slide stop.
 
 | Key            | Default                                   | What it does                                                                                       |
 | :------------- | :---------------------------------------- | :------------------------------------------------------------------------------------------------- |
+| `defaultMode`  | `"dark"`                                  | Mode on a first visit: `dark`, `light`, or `system` to follow the OS. A stored toggle choice wins. |
 | `ambient`      | `"none"`                                  | Inner light of the header band: `none`, `light` (static), `breathe` (slow pulse), `dawn`.          |
 | `wordmarkGlow` | `false`                                   | A soft pulsing glow on the header wordmark.                                                        |
 | `statusline`   | `false`                                   | A vim-style status bar on post and note pages: source path, file type and scroll position.         |
@@ -89,7 +91,29 @@ Profiles appear on `/contact/`, in the footer badges and in the homepage structu
 
 ## footer
 
-`footer.credit` shows "powered by `starglow`" in the footer, linked to the theme repository. It is on by default. Set it to `false` to remove the line. Keeping it is a nice way to say thanks.
+| Key      | Default | What it does                                                                                                                                                                        |
+| :------- | :------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `credit` | `true`  | Shows "powered by `starglow`", linked to the theme repository. Set it to `false` to remove the line; keeping it is a nice way to say thanks.                                        |
+| `links`  | `[]`    | Text links `{ label, href }` on the right of the badge row, below contact, rss and source. A root-relative `href` such as `/impressum/` gets the base path; others stay as written. |
+
+Footer links pair well with [standalone pages](./03-content-model.md#pages), for example an Impressum and a privacy policy:
+
+```ts
+footer: {
+  links: [
+    { label: "impressum", href: "/impressum/" },
+    { label: "privacy", href: "/privacy/" },
+  ],
+},
+```
+
+## analytics
+
+| Key               | Default | What it does                                                                                                                                  |
+| :---------------- | :------ | :-------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cloudflareToken` | none    | Cloudflare Web Analytics site token. Loads Cloudflare's cookieless beacon on every page. Empty falls back to `PUBLIC_CF_WEB_ANALYTICS_TOKEN`. |
+
+Unset means no script at all, and the demo ships without one. The beacon runs in single-page mode, so navigations through the view-transition router are counted too. `pnpm verify` accepts exactly this beacon while a token is set and still fails on any other analytics or comment connector.
 
 ## Environment variables
 
@@ -98,12 +122,14 @@ Profiles appear on `/contact/`, in the footer badges and in the homepage structu
 | `SITE_URL`                        | The site origin.                                                                             |
 | `BASE_PATH`                       | Subpath for a project site, e.g. `/repo` for `https://<user>.github.io/repo/`. Unset = root. |
 | `PUBLIC_GOOGLE_SITE_VERIFICATION` | Optional Search Console token, used when `site.googleVerification` is empty.                 |
+| `PUBLIC_CF_WEB_ANALYTICS_TOKEN`   | Optional Cloudflare Web Analytics token, used when `analytics.cloudflareToken` is empty.     |
 | `MARKERS_STRICT`                  | `true` makes the placeholder check fail instead of warn.                                     |
 
 Set a variable in the shell (`SITE_URL=https://example.org ./dev.sh build`) or copy `.env.example` to `.env` and uncomment or add the line (copying alone changes nothing, because the lines ship commented out). A variable set in the shell wins over `.env`.
 
 - `SITE_URL` must be an origin only. A value with a path, query or hash fails the build with an error message. Put a subpath in `BASE_PATH` instead.
 - `BASE_PATH` is a path such as `/repo`. Links in Markdown should be relative (`../other-post/`) or start with the base, because root links like `/blog/` are not rewritten.
-- `PUBLIC_GOOGLE_SITE_VERIFICATION` is public by design, because it ends up in the HTML, but it belongs in the environment and never in a committed file. An empty value renders no meta tag. Compose forwards it, like `SITE_URL`, into the container.
+- `PUBLIC_GOOGLE_SITE_VERIFICATION` is public by design, because it ends up in the HTML. Set it in the environment to keep it out of the repository, or commit it as `site.googleVerification`, which wins. An empty value renders no meta tag. Compose forwards it, like `SITE_URL`, into the container.
+- `PUBLIC_CF_WEB_ANALYTICS_TOKEN` is public too: the token is written into every page. Compose forwards it like the Search Console token.
 - `MARKERS_STRICT` is not forwarded into the container, and `scripts/check-markers.ts` never reads `.env`. Locally, use `./dev.sh pnpm markers --strict` instead.
 - The marker check also reads `GITHUB_ACTIONS`, which GitHub sets on its runners, to print one annotation per marker.

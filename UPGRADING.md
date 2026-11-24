@@ -47,6 +47,4 @@ skip below.
 
 ### Unreleased
 
-First version, nothing to migrate. Coming from AstroPaper: rename
-`astro-paper.config.ts` to `starglow.config.ts` and
-`defineAstroPaperConfig` to `defineStarglowConfig`.
+First version, nothing to migrate.

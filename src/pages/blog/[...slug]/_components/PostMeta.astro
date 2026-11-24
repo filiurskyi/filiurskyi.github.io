@@ -43,35 +43,29 @@ const isUpdated =
 const format = "YYYY-MM-DD";
 ---
 
-<p class="post-meta meta">
+<p class="post-meta meta" data-pagefind-ignore>
   <span>{kind}</span>
   <span aria-hidden="true"> · </span>
-  {
-    main ? (
-      <time datetime={main.toISOString()}>{main.format(format)}</time>
-    ) : (
-      <time datetime={year}>{year}</time>
-    )
-  }
-  {
-    isUpdated && updated && (
-      <>
-        <span aria-hidden="true"> · </span>
-        <span>
-          {t.post.updatedAt.toLowerCase()}{" "}
-          <time datetime={updated.toISOString()}>{updated.format(format)}</time>
-        </span>
-      </>
-    )
-  }
+  {main ? (
+    <time datetime={main.toISOString()}>{main.format(format)}</time>
+  ) : (
+    <time datetime={year}>{year}</time>
+  )}
+  {isUpdated && updated && (
+    <>
+      <span aria-hidden="true"> · </span>
+      <span>
+        {t.post.updatedAt.toLowerCase()}{" "}
+        <time datetime={updated.toISOString()}>{updated.format(format)}</time>
+      </span>
+    </>
+  )}
   <span aria-hidden="true"> · </span>
   <span>{tplStr(t.post.readingTime, { minutes })}</span>
-  {
-    import.meta.env.DEV && draft && (
-      <>
-        <span aria-hidden="true"> · </span>
-        <span>{t.post.draft.toLowerCase()}</span>
-      </>
-    )
-  }
+  {import.meta.env.DEV && draft && (
+    <>
+      <span aria-hidden="true"> · </span>
+      <span>{t.post.draft.toLowerCase()}</span>
+    </>
+  )}
 </p>

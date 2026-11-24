@@ -1,7 +1,7 @@
 import { defineStarglowConfig } from "./src/types/config";
 
 // starglow theme configuration. Every key is documented in src/types/config.ts
-// (hover it in your editor) and in the "Configuring starglow" post.
+// (hover it in your editor) and in docs/02-configuration.md.
 // The site origin is not set here: astro.config.ts reads it from SITE_URL.
 export default defineStarglowConfig({
   site: {
@@ -11,14 +11,15 @@ export default defineStarglowConfig({
       "Mira Solvik makes pictures with code: generative art, shaders, pixel art and pen plots.",
     // Default post author and the footer copyright name.
     author: "Mira Solvik",
-    // Author profile URL, used in structured data.
-    profile: "https://github.com/glowing-space",
     // Source repository of your site, linked from the footer. Empty = no link.
-    sourceUrl: "https://github.com/glowing-space/starglow",
+    sourceUrl: "",
     lang: "en",
     // IANA timezone for post dates. ./dev.sh reads this line too.
     timezone: "UTC",
     dir: "ltr",
+    // Search Console verification value. Empty = PUBLIC_GOOGLE_SITE_VERIFICATION
+    // from the environment, or no meta tag.
+    googleVerification: "",
     // Fediverse handle as @user@instance. Empty = no fediverse:creator meta.
     fediverseCreator: "",
     // Header wordmark in the pixel face. Defaults to title.
@@ -60,8 +61,12 @@ export default defineStarglowConfig({
     },
     search: "pagefind",
     toc: true,
+    // Obsidian wikilinks, image embeds, comments and properties in .md files.
+    obsidian: false,
   },
   appearance: {
+    // First-visit mode until the visitor toggles: "dark" | "light" | "system".
+    defaultMode: "dark",
     // Header band light: "none" | "light" | "breathe" | "dawn".
     ambient: "breathe",
     wordmarkGlow: true,
@@ -96,5 +101,10 @@ export default defineStarglowConfig({
   footer: {
     // "powered by starglow" in the footer. Keeping it is appreciated.
     credit: true,
+    // Text links on the badge row, e.g. pages from src/content/pages/.
+    // links: [{ label: "impressum", href: "/impressum/" }],
   },
+  // Cloudflare Web Analytics (cookieless). Unset = no script. The token may
+  // also come from PUBLIC_CF_WEB_ANALYTICS_TOKEN in the environment.
+  // analytics: { cloudflareToken: "" },
 });

@@ -8,7 +8,10 @@ import type {
   StarglowConfig,
 } from "./types/config";
 import { darkPalettes, lightPalettes } from "./palettes";
-import { PUBLIC_GOOGLE_SITE_VERIFICATION } from "astro:env/client";
+import {
+  PUBLIC_CF_WEB_ANALYTICS_TOKEN,
+  PUBLIC_GOOGLE_SITE_VERIFICATION,
+} from "astro:env/client";
 
 // public/default-og.jpg is intentionally absent. It is only used when
 // `dynamicOgImage` is false; add a real image here before turning that off.
@@ -149,7 +152,9 @@ const config: ResolvedStarglowConfig = {
     timezone: userConfig.site.timezone ?? "UTC",
     dir: userConfig.site.dir ?? "ltr",
     googleVerification:
-      userConfig.site.googleVerification || PUBLIC_GOOGLE_SITE_VERIFICATION,
+      userConfig.site.googleVerification?.trim() ||
+      PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() ||
+      undefined,
     fediverseCreator: resolveFediverseCreator(userConfig.site.fediverseCreator),
     wordmark: userConfig.site.wordmark?.trim() || userConfig.site.title,
     sourceBanner: resolveSourceBanner(userConfig.site.sourceBanner),
@@ -164,21 +169,19 @@ const config: ResolvedStarglowConfig = {
   posts: {
     perPage: userConfig.posts?.perPage ?? 4,
     perIndex: userConfig.posts?.perIndex ?? 4,
-    // Deprecated. Not read from userConfig, so builds don't warn about it.
-    scheduledPostMargin: 15 * 60 * 1000,
   },
   features: {
     lightAndDarkMode: userConfig.features?.lightAndDarkMode ?? true,
     dynamicOgImage: userConfig.features?.dynamicOgImage ?? true,
-    // Deprecated and unused.
-    showArchives: false,
     showBackButton: userConfig.features?.showBackButton ?? true,
     editPost: userConfig.features?.editPost ?? { enabled: false },
     search: userConfig.features?.search ?? "pagefind",
     toc: userConfig.features?.toc ?? true,
+    obsidian: userConfig.features?.obsidian ?? false,
   },
   socials: resolveSocials(userConfig.socials ?? []),
   appearance: {
+    defaultMode: userConfig.appearance?.defaultMode ?? "dark",
     ambient: userConfig.appearance?.ambient ?? "none",
     wordmarkGlow: userConfig.appearance?.wordmarkGlow ?? false,
     statusline: userConfig.appearance?.statusline ?? false,
@@ -188,6 +191,13 @@ const config: ResolvedStarglowConfig = {
   links: [],
   footer: {
     credit: userConfig.footer?.credit ?? true,
+    links: userConfig.footer?.links ?? [],
+  },
+  analytics: {
+    cloudflareToken:
+      userConfig.analytics?.cloudflareToken?.trim() ||
+      PUBLIC_CF_WEB_ANALYTICS_TOKEN?.trim() ||
+      undefined,
   },
 };
 config.links = resolveLinks(userConfig.links ?? [], config.socials);

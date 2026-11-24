@@ -18,15 +18,13 @@ const showEditPost = editPost.enabled && !hideEditPost && href.trim() !== "";
 const t = useTranslations(Astro.currentLocale);
 ---
 
-{
-  showEditPost && (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      class:list={["meta", className]}
-    >
-      {t.post.editPage}
-    </a>
-  )
-}
+{showEditPost && (
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    class:list={["meta", className]}
+  >
+    {t.post.editPage}
+  </a>
+)}

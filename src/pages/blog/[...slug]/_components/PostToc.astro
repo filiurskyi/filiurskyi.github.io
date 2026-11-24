@@ -10,17 +10,15 @@ const { headings } = Astro.props;
 const t = useTranslations(Astro.currentLocale);
 ---
 
-{
-  hasToc(headings) && (
-    <nav
-      class="post-toc"
-      aria-label={t.post.tableOfContents}
-      data-pagefind-ignore
-    >
-      <span class="post-toc-label" aria-hidden="true">
-        {t.post.contentsLabel}
-      </span>
-      <TocList items={buildTocTree(headings)} />
-    </nav>
-  )
-}
+{hasToc(headings) && (
+  <nav
+    class="post-toc"
+    aria-label={t.post.tableOfContents}
+    data-pagefind-ignore
+  >
+    <span class="post-toc-label" aria-hidden="true">
+      {t.post.contentsLabel}
+    </span>
+    <TocList items={buildTocTree(headings)} />
+  </nav>
+)}

@@ -1,0 +1,66 @@
+---
+import type { GetStaticPaths } from "astro";
+import { getCollection, render, type CollectionEntry } from "astro:content";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Main from "@/components/Main.astro";
+import Footer from "@/components/Footer.astro";
+import config from "@/config";
+
+// Every entry of src/content/pages/ but home, about and contact (which have
+// routes of their own) is a standalone page at /<id>/: privacy.md at /privacy/.
+// Astro hoists getStaticPaths, so its constants live inside it.
+export const getStaticPaths = (async () => {
+  const DEDICATED = new Set(["home", "about", "contact"]);
+  // First path segments the theme already uses.
+  const RESERVED = new Set([
+    "404",
+    "blog",
+    "lab",
+    "notes",
+    "og.png",
+    "pagefind",
+    "projects",
+    "robots.txt",
+    "rss.xml",
+    "search",
+    "tags",
+  ]);
+
+  const entries = await getCollection("pages");
+  return entries
+    .filter(entry => !DEDICATED.has(entry.id))
+    .map(entry => {
+      const first = entry.id.split("/")[0] ?? "";
+      if (RESERVED.has(first) || DEDICATED.has(first)) {
+        throw new Error(
+          `[pages] src/content/pages/${entry.id} would replace the theme's /${first}/ route; rename it`
+        );
+      }
+      return { params: { page: entry.id }, props: { entry } };
+    });
+}) satisfies GetStaticPaths;
+
+type Props = { entry: CollectionEntry<"pages"> };
+
+const { entry } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+---
+
+<Layout
+  title={`${data.title} | ${config.site.title}`}
+  description={data.description}
+  ogImage={data.ogImage}
+  canonicalURL={data.canonicalUrl}
+>
+  <Header />
+
+  <Main pageTitle={data.title} pageDesc={data.description}>
+    <article class="app-prose">
+      <Content />
+    </article>
+  </Main>
+
+  <Footer />
+</Layout>

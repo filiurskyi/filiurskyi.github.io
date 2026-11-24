@@ -83,9 +83,11 @@ const projectJsonLd = toJsonLd(
   description={description}
   canonicalURL={canonical}
   ogImage={image}
-  ogImageAlt={generatedOg
-    ? tplStr(t.og.imageAlt, { type: t.content.typeProject, title })
-    : undefined}
+  ogImageAlt={
+    generatedOg
+      ? tplStr(t.og.imageAlt, { type: t.content.typeProject, title })
+      : undefined
+  }
 >
   <Fragment slot="head">
     <script type="application/ld+json" is:inline set:html={projectJsonLd} />
@@ -100,64 +102,56 @@ const projectJsonLd = toJsonLd(
         <span class="status" data-status={status}>
           {t.project.status[status].toLowerCase()}
         </span>
-        {
-          import.meta.env.DEV && project.data.draft && (
-            <>
-              <span aria-hidden="true"> · </span>
-              <span>{t.post.draft.toLowerCase()}</span>
-            </>
-          )
-        }
+        {import.meta.env.DEV && project.data.draft && (
+          <>
+            <span aria-hidden="true"> · </span>
+            <span>{t.post.draft.toLowerCase()}</span>
+          </>
+        )}
       </p>
       <BackButton />
     </Fragment>
 
-    {
-      import.meta.env.DEV && project.data.draft && (
-        <p class="draft-note" data-pagefind-ignore>
-          {t.post.draftNotice}
-        </p>
-      )
-    }
+    {import.meta.env.DEV && project.data.draft && (
+      <p class="draft-note" data-pagefind-ignore>
+        {t.post.draftNotice}
+      </p>
+    )}
 
     <p class="plain-text">{description}</p>
 
-    {
-      (stack.length > 0 || links.length > 0) && (
-        <dl class="facts">
-          {stack.length > 0 && (
-            <>
-              <dt>{t.project.stack.toLowerCase()}</dt>
-              <dd class="meta">{stack.join(" · ")}</dd>
-            </>
-          )}
-          {links.length > 0 && (
-            <>
-              <dt>{t.project.links.toLowerCase()}</dt>
-              <dd>
-                <ul>
-                  {links.map(link => (
-                    <li>
-                      <a href={link.href} class="text-link">
-                        {link.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </dd>
-            </>
-          )}
-        </dl>
-      )
-    }
+    {(stack.length > 0 || links.length > 0) && (
+      <dl class="facts">
+        {stack.length > 0 && (
+          <>
+            <dt>{t.project.stack.toLowerCase()}</dt>
+            <dd class="meta">{stack.join(" · ")}</dd>
+          </>
+        )}
+        {links.length > 0 && (
+          <>
+            <dt>{t.project.links.toLowerCase()}</dt>
+            <dd>
+              <ul>
+                {links.map(link => (
+                  <li>
+                    <a href={link.href} class="text-link">
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </>
+        )}
+      </dl>
+    )}
 
-    {
-      related.length > 0 && (
-        <div data-pagefind-ignore>
-          <RelatedContent items={related} title={t.project.relatedPosts} />
-        </div>
-      )
-    }
+    {related.length > 0 && (
+      <div data-pagefind-ignore>
+        <RelatedContent items={related} title={t.project.relatedPosts} />
+      </div>
+    )}
   </Main>
   <Footer />
 </Layout>

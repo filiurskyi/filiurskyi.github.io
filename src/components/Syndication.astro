@@ -31,18 +31,16 @@ function labelOf(url: string): string {
 const links = urls.map(url => ({ url, label: labelOf(url) }));
 ---
 
-{
-  links.length > 0 && (
-    <p class="syndication">
-      <span class="syndication-label">{t.post.alsoOn}</span>{" "}
-      {links.map(({ url, label }, index) => (
-        <>
-          {index > 0 && ", "}
-          <a class="u-syndication" rel="syndication" href={url}>
-            {label}
-          </a>
-        </>
-      ))}
-    </p>
-  )
-}
+{links.length > 0 && (
+  <p class="syndication">
+    <span class="syndication-label">{t.post.alsoOn}</span>{" "}
+    {links.map(({ url, label }, index) => (
+      <>
+        {index > 0 && ", "}
+        <a class="u-syndication" rel="syndication" href={url}>
+          {label}
+        </a>
+      </>
+    ))}
+  </p>
+)}

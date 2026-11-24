@@ -16,9 +16,10 @@ services:
       # Empty falls back to the default in astro.config.
       SITE_URL: ${SITE_URL:-}
       BASE_PATH: ${BASE_PATH:-}
-      # Optional Search Console token. Key-only: compose takes the value from the
+      # Optional Search Console and Cloudflare Web Analytics tokens. Key-only: compose takes the value from the
       # host shell when it is set and leaves the variable out otherwise, so an
       # empty value never shadows a `.env` entry.
       PUBLIC_GOOGLE_SITE_VERIFICATION:
+      PUBLIC_CF_WEB_ANALYTICS_TOKEN:
     ports:
       - "4321:4321"

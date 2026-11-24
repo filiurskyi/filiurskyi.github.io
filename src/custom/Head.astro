@@ -13,8 +13,6 @@ type Props = {
 const fediverseCreator = config.site.fediverseCreator;
 ---
 
-{
-  fediverseCreator && (
-    <meta name="fediverse:creator" content={fediverseCreator} />
-  )
-}
+{fediverseCreator && (
+  <meta name="fediverse:creator" content={fediverseCreator} />
+)}

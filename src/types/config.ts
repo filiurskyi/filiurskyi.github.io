@@ -12,8 +12,6 @@ interface SiteConfig {
   description: string;
   /** Default post author name */
   author: string;
-  /** Author profile URL (used in structured data) */
-  profile?: string;
   /** Source repository of this site, linked from the footer. Empty = no link. */
   sourceUrl?: string;
   /** Header wordmark text (pixel face). Defaults to `title`. */
@@ -50,11 +48,6 @@ interface PostsConfig {
   perPage?: number;
   /** Posts shown on the index/home page */
   perIndex?: number;
-  /**
-   * @deprecated Has no effect: a post is listed from the start of its
-   * `pubDatetime` day in the site timezone. Safe to remove.
-   */
-  scheduledPostMargin?: number;
 }
 
 interface FeaturesConfig {
@@ -66,8 +59,6 @@ interface FeaturesConfig {
    * for the default layout OG image (build fails if missing).
    */
   dynamicOgImage?: boolean;
-  /** @deprecated Has no effect: there is no archives page. Safe to remove. */
-  showArchives?: boolean;
   /** Show back button on post detail pages. Defaults to true. */
   showBackButton?: boolean;
   /** "Edit page" link shown on post detail pages. */
@@ -89,6 +80,14 @@ interface FeaturesConfig {
    * for one post with `hideToc: true` in its frontmatter.
    */
   toc?: boolean;
+  /**
+   * Obsidian-flavoured Markdown in `.md` content: `[[wikilinks]]`, image
+   * embeds `![[img.png|alt]]` from `_assets/` next to the file, `%%comments%%`
+   * removed. Obsidian-only frontmatter (aliases, cssclasses, publish,
+   * permalink, created, modified) is dropped and `tags: rust` or `#rust` is
+   * accepted. Defaults to false.
+   */
+  obsidian?: boolean;
 }
 
 /** Header band glow behind the wordmark and page head. */
@@ -96,9 +95,15 @@ export type AmbientMode = "none" | "light" | "breathe" | "dawn";
 
 interface AppearanceConfig {
   /**
+   * Mode on a first visit, before the visitor uses the toggle: "dark",
+   * "light", or "system" to follow the OS setting. A stored toggle choice
+   * always wins. Defaults to "dark".
+   */
+  defaultMode?: "dark" | "light" | "system";
+  /**
    * Inner light of the header band: "light" a soft static glow, "breathe" the
    * same glow on a slow 10s pulse, "dawn" an accent-tinted glow. Defaults to
-   * "none". No animation under prefers-reduced-motion.
+   * "none". The pulse keeps running under prefers-reduced-motion.
    */
   ambient?: AmbientMode;
   /** Pulsing accent glow on the wordmark. Defaults to false. */
@@ -160,7 +165,7 @@ export interface BadgeLink {
   title?: string;
 }
 
-/** Supported social profiles. The name selects the icon file. */
+/** Supported social profiles. The name selects the badge type. */
 export type SocialName =
   | "github"
   | "linkedin"
@@ -173,17 +178,12 @@ export type SocialName =
   | "medium";
 
 export interface SocialLink {
-  /** Selects the icon: "github" → src/assets/icons/socials/github.svg */
+  /** Selects the badge type (bitmap and `--badge-<type>` colour), e.g. "github". */
   name: SocialName;
   /** Visible and accessible service name, e.g. "GitHub", "DEV.to". */
   label: string;
   /** Profile URL (http or https). Empty or missing = not configured, renders nowhere. */
   url?: string;
-  /**
-   * Accessible name for the icon link (title attribute and screen-reader text).
-   * Defaults to "{author} on {label}". Override when that wording doesn't fit.
-   */
-  linkTitle?: string;
 }
 
 /** A social link that passed config resolution: it has a usable http(s) URL. */
@@ -203,6 +203,28 @@ interface FooterConfig {
    * Defaults to true. Keeping it on is the easiest way to support the theme.
    */
   credit?: boolean;
+  /**
+   * Extra text links on the right of the badge row, for example an Impressum
+   * or a privacy policy. A root-relative `href` such as "/impressum/" gets
+   * the base path; other hrefs are used as written. Defaults to none.
+   */
+  links?: FooterLink[];
+}
+
+interface FooterLink {
+  /** Link text, shown as written. */
+  label: string;
+  /** "/impressum/", "https://..." or "mailto:...". */
+  href: string;
+}
+
+interface AnalyticsConfig {
+  /**
+   * Cloudflare Web Analytics site token: loads Cloudflare's cookieless beacon
+   * on every page. Empty = PUBLIC_CF_WEB_ANALYTICS_TOKEN from the
+   * environment, or no script at all.
+   */
+  cloudflareToken?: string;
 }
 
 /** Theme repository, linked from the footer credit. */
@@ -225,6 +247,8 @@ export interface StarglowConfig {
   links?: BadgeLink[];
   /** Footer options. */
   footer?: FooterConfig;
+  /** Optional visitor analytics. Off unless a token is set. */
+  analytics?: AnalyticsConfig;
 }
 
 type ResolvedSiteConfig = Required<
@@ -233,10 +257,7 @@ type ResolvedSiteConfig = Required<
     "title" | "description" | "author" | "lang" | "timezone" | "dir" | "ogImage"
   >
 > &
-  Pick<
-    SiteConfig,
-    "profile" | "sourceUrl" | "googleVerification" | "fediverseCreator"
-  > & {
+  Pick<SiteConfig, "sourceUrl" | "googleVerification" | "fediverseCreator"> & {
     /** Header wordmark text, `title` when not set */
     wordmark: string;
     /** The view-source comment body, or empty for none */
@@ -254,7 +275,7 @@ export interface ResolvedStarglowConfig {
   appearance: Required<
     Pick<
       AppearanceConfig,
-      "ambient" | "wordmarkGlow" | "statusline" | "preview"
+      "defaultMode" | "ambient" | "wordmarkGlow" | "statusline" | "preview"
     >
   > & {
     palette: { dark: string; light: string };
@@ -264,6 +285,7 @@ export interface ResolvedStarglowConfig {
   /** Badges with a usable URL: `links` first, then uncovered socials. */
   links: (BadgeLink & { url: string })[];
   footer: Required<FooterConfig>;
+  analytics: AnalyticsConfig;
 }
 
 /** Type helper for starglow.config.ts. */

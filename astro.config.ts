@@ -14,6 +14,10 @@ import { createCssVariablesTheme } from "shiki";
 import { rehypeBlockLabels } from "./src/utils/rehypeBlockLabels";
 import { rehypeTableWrapper } from "./src/utils/rehypeTableWrapper";
 import { rehypeTodoMarkers } from "./src/utils/rehypeTodoMarkers";
+import {
+  obsidianIntegration,
+  remarkObsidian,
+} from "./src/utils/remarkObsidian";
 import en from "./src/i18n/lang/en";
 import { tplStr } from "./src/i18n/format";
 import { existsSync } from "node:fs";
@@ -22,6 +26,7 @@ import config from "./starglow.config";
 // Single source of the site origin. Override per build with SITE_URL (shell or
 // .env); the default is the starglow demo origin; set your own.
 if (existsSync(".env")) process.loadEnvFile(".env");
+const OBSIDIAN = config.features?.obsidian ?? false;
 const SITE_URL = process.env.SITE_URL || "https://starglow.glowing.space";
 
 const siteUrl = (() => {
@@ -66,11 +71,9 @@ export default defineConfig({
   trailingSlash: "always",
   build: { format: "directory" },
   integrations: [
+    ...(OBSIDIAN ? [obsidianIntegration()] : []),
     mdx(),
-    sitemap({
-      filter: page =>
-        config.features?.showArchives !== false || !/\/archives\/?$/.test(page),
-    }),
+    sitemap(),
   ],
   i18n: {
     locales: ["en"],
@@ -84,6 +87,9 @@ export default defineConfig({
     // callouts, block labels and TODO markers after callouts, table wrapper
     // last. Shiki runs before all of them. MDX inherits this processor.
     processor: unified({
+      remarkPlugins: OBSIDIAN
+        ? [[remarkObsidian, { timezone: config.site.timezone }]]
+        : [],
       rehypePlugins: [
         rehypeHeadingIds,
         [
@@ -101,8 +107,8 @@ export default defineConfig({
             content: {
               type: "element",
               tagName: "span",
-              properties: { ariaHidden: "true" },
-              children: [{ type: "text", value: "#" }],
+              properties: { className: ["heading-mark"], ariaHidden: "true" },
+              children: [],
             },
           },
         ],
@@ -207,6 +213,11 @@ export default defineConfig({
   env: {
     schema: {
       PUBLIC_GOOGLE_SITE_VERIFICATION: envField.string({
+        access: "public",
+        context: "client",
+        optional: true,
+      }),
+      PUBLIC_CF_WEB_ANALYTICS_TOKEN: envField.string({
         access: "public",
         context: "client",
         optional: true,

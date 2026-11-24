@@ -58,61 +58,55 @@ const homeJsonLd = toJsonLd(
       <div class="page-lead">
         <Content />
       </div>
-      {
-        specialties.length > 0 && (
-          <p class="page-sub meta" aria-label={t.home.specialties}>
-            {specialties.map(({ label, marker }, index) => (
-              <>
-                {index > 0 && " · "}
-                {marker ? (
-                  <mark class="todo-marker" data-pagefind-ignore>
-                    {marker}
-                  </mark>
-                ) : (
-                  label
-                )}
-              </>
-            ))}
-          </p>
-        )
-      }
+      {specialties.length > 0 && (
+        <p class="page-sub meta" aria-label={t.home.specialties}>
+          {specialties.map(({ label, marker }, index) => (
+            <>
+              {index > 0 && " · "}
+              {marker ? (
+                <mark class="todo-marker" data-pagefind-ignore>
+                  {marker}
+                </mark>
+              ) : (
+                label
+              )}
+            </>
+          ))}
+        </p>
+      )}
     </Fragment>
 
-    {
-      writing.length > 0 && (
-        <section id="writing" aria-labelledby="writing-heading">
-          <div class="section-head">
-            <h2 id="writing-heading">{t.home.writing}</h2>
-            <a href={getRelativeLocaleUrl(locale, "blog")}>
-              {t.home.archive} <span aria-hidden="true">→</span>
-            </a>
-          </div>
-          <ul class="index">
-            {writing.map(item => (
-              <ItemRow item={item} showKind />
-            ))}
-          </ul>
-        </section>
-      )
-    }
+    {writing.length > 0 && (
+      <section id="writing" aria-labelledby="writing-heading">
+        <div class="section-head">
+          <h2 id="writing-heading">{t.home.writing}</h2>
+          <a href={getRelativeLocaleUrl(locale, "blog")}>
+            {t.home.archive} <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <ul class="index">
+          {writing.map(item => (
+            <ItemRow item={item} showKind />
+          ))}
+        </ul>
+      </section>
+    )}
 
-    {
-      projects.length > 0 && (
-        <section id="featured-projects" aria-labelledby="projects-heading">
-          <div class="section-head">
-            <h2 id="projects-heading">{t.home.projects}</h2>
-            <a href={getRelativeLocaleUrl(locale, "projects")}>
-              {t.home.allProjects} <span aria-hidden="true">→</span>
-            </a>
-          </div>
-          <ul class="index">
-            {projects.map(project => (
-              <ProjectRow project={project} />
-            ))}
-          </ul>
-        </section>
-      )
-    }
+    {projects.length > 0 && (
+      <section id="featured-projects" aria-labelledby="projects-heading">
+        <div class="section-head">
+          <h2 id="projects-heading">{t.home.projects}</h2>
+          <a href={getRelativeLocaleUrl(locale, "projects")}>
+            {t.home.allProjects} <span aria-hidden="true">→</span>
+          </a>
+        </div>
+        <ul class="index">
+          {projects.map(project => (
+            <ProjectRow project={project} />
+          ))}
+        </ul>
+      </section>
+    )}
   </Main>
   <Footer />
 </Layout>

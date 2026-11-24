@@ -49,7 +49,9 @@ const t = useTranslations(locale);
       </a>
     </Fragment>
     <ul class="index">
-      {page.data.map(item => <ItemRow item={item} showKind />)}
+      {page.data.map(item => (
+        <ItemRow item={item} showKind />
+      ))}
     </ul>
     <Pagination {page} />
   </Main>

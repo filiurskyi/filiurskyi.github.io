@@ -4,7 +4,7 @@ starglow is an Astro theme for a personal site with a blog, short notes and a pr
 
 ## Requirements
 
-- Node.js 22.18 or later. The exact version used in CI is in `.node-version`.
+- Node.js 22.23.4 or later. The exact version used in CI is in `.node-version`.
 - pnpm. The version is pinned in the `packageManager` field of `package.json`.
 - Git. Note dates come from git history, so the site should live in a repository.
 
@@ -49,7 +49,7 @@ The site origin has exactly one source: the `SITE_URL` environment variable, rea
 SITE_URL=https://example.com pnpm build
 ```
 
-You can also put `SITE_URL=https://example.com` in a local `.env` file. For the included GitHub Pages workflow, add a repository variable named `SITE_URL` (Settings, Secrets and variables, Actions, Variables). When the variable is not set anywhere, the default at the top of `astro.config.ts` is used. The value must be an origin only: no path, query or hash. starglow does not support an Astro `base` path, so host it at the root of a domain or subdomain.
+You can also put `SITE_URL=https://example.com` in a local `.env` file. For the included GitHub Pages workflow, add a repository variable named `SITE_URL` (Settings, Secrets and variables, Actions, Variables). When the variable is not set anywhere, the default at the top of `astro.config.ts` is used. The value must be an origin only: no path, query or hash. To serve the site from a subpath, such as a GitHub project site at `https://<user>.github.io/<repo>/`, also set `BASE_PATH=/<repo>`; see [Configuration](./02-configuration.md) and [Deploying](./08-deploying.md).
 
 ## Make it yours
 

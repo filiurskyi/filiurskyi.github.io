@@ -154,13 +154,11 @@ const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
       <BackButton />
     </Fragment>
 
-    {
-      import.meta.env.DEV && draft && (
-        <p class="draft-note" data-pagefind-ignore>
-          {t.post.draftNotice}
-        </p>
-      )
-    }
+    {import.meta.env.DEV && draft && (
+      <p class="draft-note" data-pagefind-ignore>
+        {t.post.draftNotice}
+      </p>
+    )}
 
     <div class="post-body">
       <PostToc headings={tocHeadings} />
@@ -172,15 +170,13 @@ const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
 
     <BackToTopButton />
 
-    {
-      tags.length > 0 && (
-        <ul class="post-tags" aria-label={t.post.tagLabel}>
-          {tags.map(tag => (
-            <Tag tag={slugifyStr(tag)} tagName={tag} />
-          ))}
-        </ul>
-      )
-    }
+    {tags.length > 0 && (
+      <ul class="post-tags" aria-label={t.post.tagLabel}>
+        {tags.map(tag => (
+          <Tag tag={slugifyStr(tag)} tagName={tag} />
+        ))}
+      </ul>
+    )}
 
     <div
       class:list={["share-row", { "share-row-solo": tags.length === 0 }]}
@@ -191,13 +187,11 @@ const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
       <EditPost {hideEditPost} {post} />
     </div>
 
-    {
-      related.length > 0 && (
-        <div data-pagefind-ignore>
-          <RelatedContent items={related} />
-        </div>
-      )
-    }
+    {related.length > 0 && (
+      <div data-pagefind-ignore>
+        <RelatedContent items={related} />
+      </div>
+    )}
 
     <div data-pagefind-ignore>
       <PostEnd {post} />
