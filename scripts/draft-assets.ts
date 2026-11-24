@@ -13,7 +13,7 @@
 //
 // Run: node scripts/draft-assets.ts --prune
 //
-// Zero dependencies: `node:` builtins only and erasable TypeScript only.
+// `node:` builtins plus src/utils/contentFiles.ts; erasable TypeScript only.
 import { createHash } from "node:crypto";
 import {
   existsSync,
@@ -23,35 +23,19 @@ import {
   statSync,
 } from "node:fs";
 import { basename, dirname, extname, join, resolve, sep } from "node:path";
+import {
+  frontmatterOf,
+  isDraft,
+  stringField,
+  walk,
+} from "../src/utils/contentFiles.ts";
 
 const COLLECTIONS = ["blog", "notes", "projects", "pages"];
 /** Astro names a built asset `<stem>.<hash>.<ext>`, the hash being one segment. */
 const BUILT_HASH = /^[A-Za-z0-9_-]+$/;
 const HASH_AND_EXT = /^[A-Za-z0-9_-]+\.[A-Za-z0-9]+$/;
 
-function walk(dir: string, out: string[] = []): string[] {
-  if (!existsSync(dir)) return out;
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const path = join(dir, entry.name);
-    if (entry.isDirectory()) walk(path, out);
-    else out.push(path);
-  }
-  return out;
-}
-
 const RELATIVE = /^\.{1,2}\//;
-
-/** The `ogImage:` value of a frontmatter line: quoted, or bare up to a ` #` comment. */
-function ogImageValue(line: string): string | undefined {
-  const raw = /^ogImage:[ \t]*(.*)$/.exec(line)?.[1]?.trim();
-  if (raw === undefined || raw === "") return undefined;
-  const quote = raw[0];
-  if (quote === '"' || quote === "'") {
-    const end = raw.indexOf(quote, 1);
-    return end === -1 ? undefined : raw.slice(1, end);
-  }
-  return raw.replace(/\s+#.*$/, "");
-}
 
 /** `./a%20b.png?x#y` -> `./a b.png`. The query and hash go before decoding. */
 function clean(target: string): string {
@@ -82,21 +66,14 @@ function relativeReferences(source: string): string[] {
       if (target !== undefined && RELATIVE.test(target))
         targets.push(clean(target));
     }
-  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source)?.[1] ?? "";
-  for (const line of frontmatter.split(/\r?\n/)) {
-    const value = ogImageValue(line);
-    if (value !== undefined && RELATIVE.test(value)) targets.push(clean(value));
-  }
+  const ogImage = stringField(frontmatterOf(source), "ogImage");
+  if (ogImage !== undefined && RELATIVE.test(ogImage))
+    targets.push(clean(ogImage));
   return targets;
 }
 
 function digest(file: string): string {
   return createHash("sha256").update(readFileSync(file)).digest("hex");
-}
-
-function isDraft(source: string): boolean {
-  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(source)?.[1] ?? "";
-  return /^draft:\s*true\s*$/m.test(frontmatter);
 }
 
 /** Files in `<dist>/_astro/` that belong only to draft entries. */

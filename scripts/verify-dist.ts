@@ -7,24 +7,31 @@
 // `verify-dist: {k} of {n} checks failed.` and exit 1. A missing dist or
 // origin prints `verify-dist: FAIL setup: ...`.
 //
-// Zero dependencies: `node:` builtins only and erasable TypeScript only, so
-// Node >= 22.18 strips the types natively. HTML is checked with regular
+// `node:` builtins plus the content readers in src/utils/contentFiles.ts
+// (Astro's own frontmatter parser); erasable TypeScript only, so Node >= 22.18
+// strips the types natively. HTML is checked with regular
 // expressions over Astro's deterministic output, not a parser.
 //
 // The origin comes from SITE_URL when set, else from the `Sitemap:` line of
 // the build's own robots.txt. No host is written in this file.
 //
 // The demo-marker rule assumes no published content contains that literal.
-import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative, sep } from "node:path";
 import { gunzipSync } from "node:zlib";
 import { findDraftOnlyAssets } from "./draft-assets.ts";
+import {
+  frontmatterOf,
+  isDraft,
+  stringField,
+  walk,
+} from "../src/utils/contentFiles.ts";
+import { DEMO_MARKER, PLACEHOLDER_MARKERS } from "../src/utils/markers.ts";
 
 if (existsSync(".env")) process.loadEnvFile(".env");
 
 const DIST = process.argv[2] ?? "dist";
 const CONFIG_FILE = "starglow.config.ts";
-const DEMO_MARKER = "[DEMO]";
 const CONTENT_ROUTE_PATTERNS = [
   /^\/(blog|notes)\/\d{4}\/[a-z0-9-]+\/$/,
   /^\/projects\/[a-z0-9-]+\/$/,
@@ -32,7 +39,6 @@ const CONTENT_ROUTE_PATTERNS = [
 const PROJECT_ROUTE = /^\/projects\/[a-z0-9-]+\/$/;
 const SHARE_INTENT_PATTERN =
   /wa\.me\/|facebook\.com\/sharer|x\.com\/intent|twitter\.com\/intent|t\.me\/share|pinterest\.com\/pin|linkedin\.com\/shareArticle|reddit\.com\/submit/gi;
-const PLACEHOLDER_MARKERS = ["[PLACEHOLDER]", "[[TODO", DEMO_MARKER];
 const POST_ROUTE = /^\/blog\/\d{4}\/[^/]+\/$/;
 const NOTE_ROUTE = /^\/notes\/\d{4}\/[^/]+\/$/;
 const ONE_DAY_MS = 86_400_000;
@@ -45,11 +51,9 @@ const STATIC_ROUTES = [
   "/blog/",
   "/notes/",
   "/projects/",
-  "/lab/",
   "/tags/",
   "/search/",
   "/about/",
-  "/contact/",
   "/rss.xml",
   "/404.html",
   "/robots.txt",
@@ -60,7 +64,7 @@ const TYPE_SCALE_FILES = /\.(astro|ts|tsx|js|md|mdx|css)$/;
 const OUT_OF_SCALE =
   /(?<![\w-])(?:(?:[a-z0-9-]+|\[[^\]\s]*\]):)*(text-[4-9]xl|text-\[[0-9.][^\]\s]*\]|font-(?:thin|extralight|black|\[[^\]\s]*\]))(?![\w-])/g;
 /** The font sizes (px) and weights of the type scale in site-theme.css. */
-const SCALE_SIZES = new Set([10, 12, 13, 14, 15, 16, 18, 20, 24, 28, 32]);
+const SCALE_SIZES = new Set([10, 12, 13, 14, 15, 17, 18, 20, 24, 28, 32]);
 const SCALE_WEIGHTS = new Set([400, 600]);
 /** CSS in stylesheets and Astro `<style>` blocks. */
 const STYLE_FILES = /\.(css|astro)$/;
@@ -111,16 +115,6 @@ function configString(key: string): string | undefined {
 
 // --- Files and routes -------------------------------------------------------
 
-function walk(dir: string, out: string[] = []): string[] {
-  if (!existsSync(dir)) return out;
-  for (const entry of readdirSync(dir, { withFileTypes: true })) {
-    const path = join(dir, entry.name);
-    if (entry.isDirectory()) walk(path, out);
-    else out.push(path);
-  }
-  return out;
-}
-
 function rel(file: string): string {
   return relative(DIST, file).split(sep).join("/");
 }
@@ -152,25 +146,8 @@ type Entry = {
 const CANONICAL_OVERRIDES = new Map<string, string>();
 /** Pages whose frontmatter sets `ogImage`, by route: the author's own preview image. */
 const OG_OVERRIDES = new Map<string, string>();
-/** Routes of the `pages` collection: /, /about/, /contact/ and standalone pages. */
+/** Routes of the `pages` collection: /, /about/ and standalone pages. */
 const PAGE_ROUTES: string[] = [];
-
-function frontmatter(file: string): string {
-  const match = /^---\r?\n([\s\S]*?)\r?\n---/.exec(read(file));
-  return match?.[1] ?? "";
-}
-
-/** A scalar frontmatter value: quoted, or bare up to a ` #` comment. */
-function frontmatterValue(fm: string, key: string): string | undefined {
-  const line = new RegExp(`^${key}:[ \\t]*(.*)$`, "m").exec(fm)?.[1]?.trim();
-  if (!line) return undefined;
-  const quote = line[0];
-  if (quote === '"' || quote === "'") {
-    const end = line.indexOf(quote, 1);
-    return end === -1 ? undefined : line.slice(1, end);
-  }
-  return line.replace(/\s+#.*$/, "");
-}
 
 function sourceEntries(): Entry[] {
   const layouts = [
@@ -197,40 +174,40 @@ function sourceEntries(): Entry[] {
       const parts = relative(base, file).split(sep);
       if (parts.some(part => part.startsWith("_"))) continue;
       if (!/\.mdx?$/.test(file)) continue;
-      const fm = frontmatter(file);
+      const source = read(file);
+      const fm = frontmatterOf(source);
       const id = parts.join("/").replace(/\.mdx?$/, "");
-      const published = /^pubDatetime:\s*["']?([^"'\r\n]+)/m
-        .exec(fm)?.[1]
-        ?.trim();
-      const override = frontmatterValue(fm, "canonicalUrl");
+      const published = fm.pubDatetime;
+      const override = stringField(fm, "canonicalUrl");
       if (override) CANONICAL_OVERRIDES.set(route(id), override);
-      const ogOverride = frontmatterValue(fm, "ogImage");
+      const ogOverride = stringField(fm, "ogImage");
       if (ogOverride) OG_OVERRIDES.set(route(id), ogOverride);
       entries.push({
         route: route(id),
-        draft: /^draft:\s*true\s*$/m.test(fm),
+        draft: isDraft(source),
         // A post dated within a day of now may or may not be built yet.
         future:
-          posts && published
+          posts && (published instanceof Date || typeof published === "string")
             ? new Date(published).getTime() > now - ONE_DAY_MS
             : false,
-        customOg: posts && /^ogImage:/m.test(fm),
+        customOg: posts && fm.ogImage !== undefined && fm.ogImage !== null,
       });
     }
   }
   for (const file of walk("src/content/pages")) {
     if (!/\.mdx?$/.test(file)) continue;
     if (relative("src/content/pages", file).startsWith("_")) continue;
-    const fm = frontmatter(file);
+    const source = read(file);
+    const fm = frontmatterOf(source);
     const id = relative("src/content/pages", file)
       .split(sep)
       .join("/")
       .replace(/\.mdx?$/, "");
     const route = id === "home" ? "/" : `/${id}/`;
     PAGE_ROUTES.push(route);
-    const override = frontmatterValue(fm, "canonicalUrl");
+    const override = stringField(fm, "canonicalUrl");
     if (override) CANONICAL_OVERRIDES.set(route, override);
-    const ogOverride = frontmatterValue(fm, "ogImage");
+    const ogOverride = stringField(fm, "ogImage");
     if (ogOverride) OG_OVERRIDES.set(route, ogOverride);
   }
   return entries;
@@ -826,12 +803,10 @@ function checkPageHead(
     "og:type",
     "og:url",
     "og:title",
-    "og:description",
     "og:image",
     "og:image:alt",
     "twitter:card",
     "twitter:title",
-    "twitter:description",
     "twitter:image",
     "twitter:image:alt",
   ];
@@ -858,8 +833,24 @@ function checkPageHead(
 
   const titles = (head.match(/<title[\s>]/gi) ?? []).length;
   if (titles !== 1) fail(name, `${titles} <title> tags`);
-  if (count("description").length !== 1)
-    fail(name, `${count("description").length} meta description tags`);
+  // A page without a description of its own has none, never the site's.
+  const descriptions = count("description");
+  if (descriptions.length > 1)
+    fail(name, `${descriptions.length} meta description tags`);
+  const description = descriptions[0]?.content;
+  for (const key of ["og:description", "twitter:description"]) {
+    const values = count(key).map(meta => meta.content);
+    if (values.length !== (description === undefined ? 0 : 1))
+      fail(name, `${values.length} ${key} tags`);
+    else if (description !== undefined && values[0] !== description)
+      fail(name, `${key} != meta description`);
+  }
+  if (
+    route !== "/" &&
+    description !== undefined &&
+    description === HOME_DESCRIPTION
+  )
+    fail(name, "meta description is the site description");
 
   const ogUrl = count("og:url")[0]?.content;
   if (ogUrl !== undefined && canonical !== undefined && ogUrl !== canonical) {
@@ -1107,6 +1098,32 @@ function checkSearchPage(indexed: number): void {
       "",
       `pagefind: /search/ shows ${empty ? "empty" : "search"} but ${indexed} page(s) are indexed`
     );
+  }
+}
+
+/**
+ * Each URL appears once in the footer: credit, badges, text links, contact,
+ * source. Only the <footer> counts: /contact/ lists the profiles again.
+ */
+function checkFooterLinks(name: string, html: string, origin: string): void {
+  const footer = /<footer\b[\s\S]*?<\/footer>/i.exec(html)?.[0];
+  if (!footer) return;
+  const seen = new Set<string>();
+  for (const [tag] of footer.matchAll(/<a\b[^>]*>/gi)) {
+    const href = attr(tag, "href");
+    if (href === undefined) continue;
+    let key = href;
+    try {
+      const url = new URL(href, `${origin}/`);
+      key =
+        url.protocol === "mailto:"
+          ? url.href.toLowerCase()
+          : `${url.host.toLowerCase().replace(/^www\./, "")}${url.pathname.replace(/\/index\.html?$/, "/").replace(/\/+$/, "")}${url.search}`;
+    } catch {
+      // compared as written
+    }
+    if (seen.has(key)) fail(name, `footer links ${href} twice`);
+    seen.add(key);
   }
 }
 
@@ -1443,6 +1460,9 @@ const BASE = (
 ).replace(/\/+$/, "");
 const origin = new URL(configured).origin + BASE;
 
+const HOME_DESCRIPTION = metaTags(headOf(read(join(DIST, "index.html")))).find(
+  meta => meta.key === "description"
+)?.content;
 const entries = sourceEntries();
 let indexed = 0;
 run("source-entries", () => checkSourceEntriesBuilt(entries));
@@ -1478,6 +1498,7 @@ for (const file of htmlFiles) {
   run("third-parties", () => checkThirdParties(file, html, origin));
   run("asset-urls", () => checkAssetUrls(name, pageAssetUrls(html, origin)));
   run("connectors", () => checkConnectorMarkers(file, html));
+  run("footer-links", () => checkFooterLinks(name, html, origin));
 }
 for (const file of files.filter(name => name.endsWith(".css")))
   run("asset-urls", () =>

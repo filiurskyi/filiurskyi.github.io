@@ -4,7 +4,6 @@ export interface UIStrings {
     blog: string;
     notes: string;
     projects: string;
-    lab: string;
     about: string;
     tags: string;
     search: string;
@@ -24,7 +23,6 @@ export interface UIStrings {
     status: {
       active: string;
       maintained: string;
-      experiment: string;
       archived: string;
     };
     stack: string;
@@ -47,6 +45,7 @@ export interface UIStrings {
     tagLabel: string;
     backToTop: string;
     tableOfContents: string;
+    /** Back link label once a previous page is known; "Home" (nav.home) before. */
     goBack: string;
     editPage: string;
     previousPost: string;
@@ -70,7 +69,10 @@ export interface UIStrings {
   };
   home: {
     writing: string;
-    archive: string;
+    /** Link from the home writing list to /blog/, shown when it lists posts. */
+    allPosts: string;
+    /** Link from the home writing list to /notes/, shown when it lists notes. */
+    allNotes: string;
     projects: string;
     allProjects: string;
     specialties: string;
@@ -79,12 +81,13 @@ export interface UIStrings {
     contactCta: string;
   };
   contact: {
+    /** Title of /contact/ when there is no contact.md. */
+    title: string;
+    /** Heading of the profile list. */
     methods: string;
-    noMethods: string;
   };
   footer: {
     contact: string;
-    rss: string;
     source: string;
     /** Text before the linked theme name, e.g. "powered by". */
     poweredBy: string;
@@ -93,65 +96,35 @@ export interface UIStrings {
   };
   pages: {
     tagTitle: string;
-    tagDesc: string;
 
     tagsTitle: string;
-    tagsDesc: string;
     /** Accessible name of a tag's entry count; `{{count}}` is the number. */
     tagCount: string;
 
     postsTitle: string;
-    postsDesc: string;
-
     notesTitle: string;
-    notesDesc: string;
-
     projectsTitle: string;
-    projectsDesc: string;
-
-    labTitle: string;
-    labDesc: string;
-
     searchTitle: string;
-    searchDesc: string;
   };
   search: {
     /** Plain text: Pagefind renders its `error_search` translation as text. */
     errorLoad: string;
-    /** `{{blog}}`, `{{notes}}` and `{{projects}}` are replaced with links. */
+    /**
+     * `{{sections}}` becomes links to the blog, notes and projects, those
+     * with published content only, as an "and" list in the page locale.
+     */
     noscript: string;
     blog: string;
     notes: string;
     projects: string;
     /** Shown instead of the search input while nothing is published. */
     empty: string;
-    /** Follows `empty`; `{{blog}}`, `{{notes}}` and `{{projects}}` become links. */
-    emptyBrowse: string;
-    /** Under a search without results; `{{tags}}` and `{{blog}}` become links. */
+    /**
+     * Under a search without results. `{{sections}}` becomes links to the
+     * tags, blog, notes and projects that have content, as an "or" list.
+     */
     noResults: string;
     tags: string;
-  };
-  empty: {
-    postsHeading: string;
-    /** Ends without a period: the RSS link and the closing "." follow it. */
-    postsBody: string;
-    notesHeading: string;
-    /** Ends without a period: the RSS link and the closing "." follow it. */
-    notesBody: string;
-    rssLabel: string;
-    tagsHeading: string;
-    tagsBody: string;
-    goToBlog: string;
-    projectsHeading: string;
-    /** Ends without a period: the GitHub link and the closing "." follow it. */
-    projectsBody: string;
-    projectsGithub: string;
-    /** Ends without a period: the blog link and the closing "." follow it. */
-    projectsFallback: string;
-    readTheBlog: string;
-    labHeading: string;
-    /** Ends without a period: the blog link and the closing "." follow it. */
-    labBody: string;
   };
   a11y: {
     skipToContent: string;
@@ -167,6 +140,17 @@ export interface UIStrings {
     copyFailure: string;
     linkCopySuccess: string;
     linkCopyFailure: string;
+    /** Accessible name of a zoomable article image without alt text. */
+    zoomImage: string;
+    /** Same, for an image with alt text; `{{alt}}` is the alt text. */
+    zoomImageAlt: string;
+    /** Accessible name of the image lightbox without alt text. */
+    imagePreview: string;
+    /** Same, for an image with alt text; `{{alt}}` is the alt text. */
+    imagePreviewAlt: string;
+    closeImagePreview: string;
+    /** Accessible name of the preview panel form. */
+    themePreview: string;
   };
   notFound: {
     title: string;

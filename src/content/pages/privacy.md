@@ -3,7 +3,7 @@ title: Privacy
 description: "No cookies, no tracking."
 ---
 
-This is the starglow demo site.
+This is the starglow demo site. Noor Halvard is made up, and so is everything personal on it.
 
 - **No cookies**, no accounts, no comments, no ads, no analytics.
 - **Hosting:** GitHub Pages keeps server logs (IP address, page, time, browser) for security.

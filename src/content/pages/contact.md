@@ -1,10 +1,10 @@
 ---
 title: Contact
-description: How to reach Mira about a sketch, a project or a print.
+description: How to reach Noor about starglow, a post or a bug.
 ---
 
-The easiest way to reach me is email: `hello@example.com`. I read everything and answer most things within a week.
+Email is best: `hello@example.com`. I answer most mail within a week, slower in December.
 
-- Found a bug in one of my tools? Tell me which version and what you expected to happen.
-- Made something with one of my sketches? I would love to see it.
-- Want a plot or a print? Ask, but I only plot a few a month.
+For a bug in starglow, an issue on the repository is better than mail, because the next person with the same problem can find it. Tell me your browser and which palette you were using. Half of the visual bugs I get turn out to be one palette in one mode.
+
+If you've built a site with the theme, send me the link. I keep a list and I look at all of them.

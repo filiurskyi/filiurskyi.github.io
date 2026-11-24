@@ -1,0 +1,110 @@
+---
+title: What a theme demo should show
+description: My checklist for a theme demo, written as the post on this site that uses every block starglow can render, so it doubles as the test page.
+pubDatetime: 2026-11-10T20:30:00+01:00
+tags: [starglow, writing, static-sites]
+---
+
+import Badge88 from "@/components/Badge88.astro";
+
+export const palettes = { dark: 4, light: 5 };
+
+I look at a lot of theme demos before I pick one, and most of them show me a hero image and three paragraphs of lorem ipsum. Then I install the theme, write my first post with a table in it, and find out the table has no styles.
+
+So this is the post on the starglow demo that's meant to look slightly overloaded. Every block the theme can render is somewhere on this page. If something looks broken here, it's broken everywhere.
+
+## Real-looking content
+
+Lorem ipsum hides problems. Real sentences have long words, inline `code`, links to [other posts](../checking-contrast-for-nine-palettes/) and the occasional heading that runs over two lines on a phone. A demo should read like someone's actual site, even if that someone is made up.
+
+This site's owner is. I'm Noor, I don't exist, and I've still got opinions about table borders.
+
+## Callouts, all five
+
+starglow renders GitHub's alert syntax, so the same Markdown looks right on GitHub too. There are five types, and a demo that shows only `NOTE` is hiding four colours from you.
+
+> [!NOTE]
+> Notes are for things a reader should know even when skimming. They use the blue from the active palette.
+
+> [!TIP]
+> Press `j` and `k` to scroll this page. The statusline at the bottom shows where you are.
+
+> [!IMPORTANT]
+> Every palette is checked for WCAG AA contrast during the build. A palette under 4.5:1 for any text colour fails the deploy.
+
+> [!WARNING]
+> The preview panel is meant for demos. Turn `appearance.preview` off on your own site, or visitors will find a panel they didn't ask for.
+
+> [!CAUTION]
+> The content schemas are strict. A misspelled frontmatter key like `pubDateTime` fails `astro check`, which is annoying exactly once.
+
+A callout can take a custom title after the type:
+
+> [!TIP] Drafts
+> `draft: true` keeps a post out of production builds. The dev server still shows it, with a badge so you don't forget.
+
+## Tables
+
+A demo needs at least one table with alignment and one that's too wide for a phone. This one is both. On a narrow screen it scrolls sideways inside its box, and the page itself stays put.
+
+| Feature          | Where to see it  | Config key                      | Default | What to look for                                                         |
+| :--------------- | :--------------- | :------------------------------ | :-----: | :----------------------------------------------------------------------- |
+| Palettes         | Preview panel    | `appearance.palette`            | starglow | All {palettes.dark + palettes.light} palettes, text readable on every surface |
+| Statusline       | Any post or note | `appearance.statusline`         |   off   | The file path, the ruler, and `hjkl` working                             |
+| Header light     | Top of each page | `appearance.ambient`            |  none   | The band glow, and that it doesn't fight with the wordmark               |
+| Table of contents | Long posts      | `features.toc`                  |   on    | Headings from level two down, as links                        |
+| Search           | `/search/`       | `features.search`               |   on    | Results for words that only appear in notes                              |
+
+The table counts {palettes.dark + palettes.light} palettes with an MDX expression, so if I add a tenth I only change one number at the top of the file.
+
+## Code
+
+Short blocks are easy. The thing to test is a long line, which should scroll inside the block instead of making the whole page wider:
+
+```bash
+pnpm build && find dist -name 'index.html' -print0 | xargs -0 grep -L '<link rel="canonical"' | sed -e 's#^dist##' -e 's#index\.html$##' | sort | tee missing-canonical.txt | wc -l
+```
+
+And something with more than one colour in it, so every syntax hue in the palette gets used:
+
+```ts
+type Status = "active" | "maintained" | "archived";
+
+interface Project {
+  title: string;
+  status: Status;
+  featured?: boolean;
+  relatedPosts: string[];
+}
+
+// Featured projects first, archived ones at the end.
+export function order(projects: Project[]): Project[] {
+  const rank = (p: Project) => (p.status === "archived" ? 1 : 0);
+  return [...projects].sort(
+    (a, b) =>
+      rank(a) - rank(b) ||
+      Number(b.featured ?? false) - Number(a.featured ?? false),
+  );
+}
+```
+
+## Components
+
+This post is MDX, so it can use components. starglow doesn't ship a component library for posts, but nothing stops you importing one of the theme's own. Here are two of the footer badges, rendered inline:
+
+<div class="badges">
+  <Badge88 type="rss" href="/rss.xml" />
+  <Badge88 type="sparkle" href="https://astro.build" label="astro" title="Built with Astro" />
+</div>
+
+### When to stop at Markdown
+
+Most posts shouldn't be MDX. Plain Markdown diffs better, and it can't break because a component changed its props. I use MDX for pages like this one and nowhere else.
+
+#### A fourth-level heading
+
+It's here so the demo shows one. Every heading from level two down gets an anchor link when you hover it.
+
+## What I leave out
+
+A demo also shouldn't show things the theme doesn't do. starglow has no comments, no newsletter box, no cookie banner and no analytics by default, so this demo doesn't fake them. If you want comments, `src/custom/PostEnd.astro` renders under every post, and it's empty on purpose.

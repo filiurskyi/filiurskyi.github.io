@@ -12,7 +12,7 @@ fn main() {}
 ```
 ````
 
-A block without a language, or with `text`, gets the label `text`.
+A block without a language, or with `text`, gets the label `text`. Code blocks are left out of the search index, so search results quote your prose, not your code.
 
 ### Shell
 
@@ -162,7 +162,7 @@ A table wider than the text column scrolls sideways inside its box. The page its
 Put images next to the post, in a folder whose name starts with `_`, such as `_assets/`. Astro optimises them at build time, and the underscore keeps the folder out of the content loader.
 
 ```md
-![Three boxes joined by arrows, from left to right](./assets/three-boxes.svg)
+![Three boxes joined by arrows, from left to right](./_assets/three-boxes.svg)
 ```
 
 ### Figure
@@ -177,7 +177,7 @@ Every image needs alt text that describes what it shows. `pnpm verify` fails on 
 
 ### Social images
 
-A post's social preview image is generated from its title by default. To use your own, put an image next to the post and set `ogImage: ./assets/cover.png` in the frontmatter.
+A post's social preview image is generated from its title by default. To use your own, put an image next to the post and set `ogImage: ./_assets/cover.png` in the frontmatter.
 
 ## Writing in MDX
 
@@ -209,17 +209,17 @@ Set `features.obsidian: true` in `starglow.config.ts` to copy posts, notes and p
 - `![[Note]]` renders as a link, not as an embedded note.
 - `![[image.png|alt text]]` embeds an image from `_assets/` next to the file. Copy images there by hand from the vault. A size such as `|400` is ignored. The build fails when the alt text is missing or the file is not in `_assets/`, and on any embed other than an image or a note.
 - `%%comments%%` are removed. Code blocks and inline code are left as written.
-- The Obsidian-only properties `aliases`, `alias`, `cssclasses`, `cssclass`, `publish`, `permalink`, `created` and `modified` are accepted and dropped. Any other unknown property still fails the build. `tags: rust`, `#rust` and an empty `tags:` are accepted.
+- The Obsidian-only properties `aliases`, `alias`, `cssclasses`, `cssclass`, `publish`, `permalink`, `created` and `modified` are accepted and dropped. Any other unknown property still fails the build. `tags: rust`, `#rust` and an empty `tags:` are accepted; tags must still be lowercase.
 
 ### Templates in Obsidian
 
 The files in `templates/` explain every key in YAML comments. Obsidian's Properties editor removes YAML comments, so a template for the Templater plugin works better without them:
 
-- Write only the required keys and the ones you fill in: `title`, `description`, `pubDatetime` and `draft` for a post; `title` and `draft` for a note; `title`, `description`, `status` and `draft` for a project. A lab entry is a project with `status: experiment`.
+- Write only the required keys and the ones you fill in: `title`, `description`, `pubDatetime` and `draft` for a post; `title` and `draft` for a note; `title`, `description`, `status` and `draft` for a project.
 - Leave an optional key out rather than empty. An empty `description:` or `githubUrl:` is `null`, and the strict schema rejects it.
 - Write `pubDatetime` with an offset: `<% tp.date.now("YYYY-MM-DDTHH:mm:ssZ") %>`.
 - Keep `draft: true` in the template and switch it to `false` when the entry is ready.
-- A list of the remaining optional keys fits in a `%%comment%%` in the body of a post or note; the build removes it. A project or lab entry must have no body at all, not even a comment.
+- A list of the remaining optional keys fits in a `%%comment%%` in the body of a post or note; the build removes it. A project must have no body at all, not even a comment.
 
 A post template that asks for the title, description and tags:
 
@@ -241,6 +241,6 @@ draft: true
 %% optional keys: modDatetime, hideToc, hideEditPost, ogImage, timezone, canonicalUrl, syndication, author %%
 ```
 
-For a project, ask for the status with `tp.system.suggester(["active", "maintained", "archived", "experiment"], ["active", "maintained", "archived", "experiment"])`. Copy the finished file to the right folder in the repository: a post into `src/content/blog/<year>/`, where the year matches `pubDatetime`.
+For a project, ask for the status with `tp.system.suggester(["active", "maintained", "archived"], ["active", "maintained", "archived"])`. Copy the finished file to the right folder in the repository: a post into `src/content/blog/<year>/`, where the year matches `pubDatetime`.
 
 `./dev.sh ci` checks the formatting of `src/content/` with Prettier. If Obsidian's formatting gets in the way, add `/src/content/` to `.prettierignore`.

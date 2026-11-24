@@ -4,19 +4,25 @@ import { getCollection, render, type CollectionEntry } from "astro:content";
 import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Main from "@/components/Main.astro";
+import IndexRow from "@/components/IndexRow.astro";
 import Footer from "@/components/Footer.astro";
+import { badgeIcon } from "@/utils/badges";
+import { getContactPage } from "@/utils/content/sections";
+import { excerpt } from "@/utils/excerpt";
+import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
 
-// Every entry of src/content/pages/ but home, about and contact (which have
-// routes of their own) is a standalone page at /<id>/: privacy.md at /privacy/.
+// Every entry of src/content/pages/ but home and about (which have routes of
+// their own) is a standalone page at /<id>/: privacy.md at /privacy/.
+// /contact/ also lists the profile badges of `links`, and is built without
+// contact.md when there is at least one.
 // Astro hoists getStaticPaths, so its constants live inside it.
 export const getStaticPaths = (async () => {
-  const DEDICATED = new Set(["home", "about", "contact"]);
+  const DEDICATED = new Set(["home", "about"]);
   // First path segments the theme already uses.
   const RESERVED = new Set([
     "404",
     "blog",
-    "lab",
     "notes",
     "og.png",
     "pagefind",
@@ -28,8 +34,8 @@ export const getStaticPaths = (async () => {
   ]);
 
   const entries = await getCollection("pages");
-  return entries
-    .filter(entry => !DEDICATED.has(entry.id))
+  const paths = entries
+    .filter(entry => !DEDICATED.has(entry.id) && entry.id !== "contact")
     .map(entry => {
       const first = entry.id.split("/")[0] ?? "";
       if (RESERVED.has(first) || DEDICATED.has(first)) {
@@ -37,29 +43,62 @@ export const getStaticPaths = (async () => {
           `[pages] src/content/pages/${entry.id} would replace the theme's /${first}/ route; rename it`
         );
       }
-      return { params: { page: entry.id }, props: { entry } };
+      return { params: { page: entry.id }, props: { entry } as Props };
     });
+  const contact = await getContactPage();
+  if (contact) {
+    paths.push({ params: { page: "contact" }, props: contact as Props });
+  }
+  return paths;
 }) satisfies GetStaticPaths;
 
-type Props = { entry: CollectionEntry<"pages"> };
+type Props = {
+  entry?: CollectionEntry<"pages">;
+  /** Profile badges, listed on /contact/ only. */
+  profiles?: (typeof config.links)[number][];
+};
 
-const { entry } = Astro.props;
-const { data } = entry;
-const { Content } = await render(entry);
+const { entry, profiles = [] } = Astro.props;
+const t = useTranslations(useLocale(Astro));
+const data = entry?.data;
+const Content = entry?.body?.trim() ? (await render(entry)).Content : undefined;
+const title = data?.title ?? t.contact.title;
+
+const stripScheme = (url: string) =>
+  url.replace(/^https?:\/\//, "").replace(/\/+$/, "");
+const rows = profiles.map(link => ({
+  label: link.title ?? badgeIcon(link.type).title,
+  url: link.url,
+  display: stripScheme(link.url),
+}));
 ---
 
 <Layout
-  title={`${data.title} | ${config.site.title}`}
-  description={data.description}
-  ogImage={data.ogImage}
-  canonicalURL={data.canonicalUrl}
+  title={`${title} | ${config.site.title}`}
+  description={data?.description ?? excerpt(entry?.body)}
+  ogImage={data?.ogImage}
+  canonicalURL={data?.canonicalUrl}
 >
   <Header />
 
-  <Main pageTitle={data.title} pageDesc={data.description}>
-    <article class="app-prose">
-      <Content />
-    </article>
+  <Main pageTitle={title} pageDesc={data?.description}>
+    {Content && (
+      <article class="app-prose">
+        <Content />
+      </article>
+    )}
+    {rows.length > 0 && (
+      <section aria-labelledby="contact-methods">
+        <h2 id="contact-methods" class="section-title">
+          {t.contact.methods}
+        </h2>
+        <ul class="index">
+          {rows.map(({ label, url, display }) => (
+            <IndexRow href={url} title={label} end={display} rel="me" />
+          ))}
+        </ul>
+      </section>
+    )}
   </Main>
 
   <Footer />

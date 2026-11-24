@@ -4,33 +4,24 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Footer from "@/components/Footer.astro";
 import Main from "@/components/Main.astro";
-import IndexRow from "@/components/IndexRow.astro";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
 
-const locale = Astro.currentLocale ?? config.site.lang;
+const locale = useLocale(Astro);
 const t = useTranslations(locale);
 
-// A terminal that cannot find the page; <b> marks the accent parts.
-const MONITOR = [
-  ".-----------------------.",
-  "|  $ cd /requested/page |",
-  "|  <b>cd: no such file or</b>  |",
-  "|  <b>directory</b>            |",
-  "|  $ <b>_</b>                  |",
-  "'-----------------------'",
-  "     _|___________|_",
-  "    /_______________\\",
+// A big 404 over a shell that cannot find the page; <b> marks the accent.
+const ART = [
+  " _  _    ___   _  _",
+  "| || |  / _ \\ | || |",
+  "| || |_| | | || || |_",
+  "|__   _| |_| ||__   _|",
+  "   |_|  \\___/    |_|",
+  "",
+  "$ cd <span data-requested-path>/requested/page</span>",
+  "<b>cd: no such file or directory</b>",
+  "$ <b>_</b>",
 ].join("\n");
-
-const suggestions = [
-  { label: t.nav.home, href: getRelativeLocaleUrl(locale, "") },
-  { label: t.nav.blog, href: getRelativeLocaleUrl(locale, "blog") },
-  ...(config.features.search !== false
-    ? [{ label: t.nav.search, href: getRelativeLocaleUrl(locale, "search") }]
-    : []),
-];
 ---
 
 <!-- GitHub Pages serves this document at /404.html; /404/ does not exist. -->
@@ -41,15 +32,37 @@ const suggestions = [
 >
   <Header />
 
-  <Main pageTitle={t.notFound.message}>
-    <pre class="ascii" aria-hidden="true" set:html={MONITOR} />
+  <Main pageTitle={t.notFound.message} hideTitle>
+    <pre class="ascii" slot="head" aria-hidden="true" set:html={ART} />
     <p class="not-found-text">{t.notFound.body}</p>
-    <ul class="index">
-      {suggestions.map(({ label, href }) => (
-        <IndexRow href={href} title={label} end={href} />
-      ))}
-    </ul>
   </Main>
 
   <Footer />
 </Layout>
+
+<script>
+  import { stripBase } from "@/utils/withBase";
+
+  // "$ cd " plus the path stays within 37 columns, so it never wraps on a phone.
+  const MAX_PATH = 32;
+
+  function decode(path: string) {
+    try {
+      return decodeURIComponent(path);
+    } catch {
+      return path;
+    }
+  }
+
+  function showRequestedPath() {
+    const target = document.querySelector("[data-requested-path]");
+    if (!target) return;
+    const chars = [...decode(stripBase(location.pathname))];
+    target.textContent =
+      chars.length > MAX_PATH
+        ? `${chars.slice(0, MAX_PATH - 1).join("")}…`
+        : chars.join("");
+  }
+
+  document.addEventListener("astro:page-load", showRequestedPath);
+</script>

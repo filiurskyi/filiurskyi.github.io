@@ -20,6 +20,7 @@ import { parseFrontmatter } from "@astrojs/markdown-remark";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
+import { entryTimezone, withCalendarDays } from "./calendarDate";
 import { resolveTimezone } from "./resolveTimezone";
 
 dayjs.extend(utc);
@@ -148,15 +149,15 @@ function walk(dir: string, out: string[] = []): string[] {
 function isPublished(
   dir: string,
   data: Record<string, unknown>,
+  source: string,
   siteTimezone?: string
 ): boolean {
   if (!state.production) return true;
   if (data.draft === true) return false;
   if (dir !== "blog") return true;
-  const tz = resolveTimezone(
-    (typeof data.timezone === "string" && data.timezone) || siteTimezone
-  );
-  const published = dayjs(data.pubDatetime as string | Date);
+  const tz = resolveTimezone(entryTimezone(data, siteTimezone));
+  const raw = withCalendarDays(data, source, tz).pubDatetime as string | Date;
+  const published = dayjs(raw);
   return (
     !published.isValid() ||
     !published.tz(tz).startOf("day").isAfter(dayjs().tz(tz).startOf("day"))
@@ -181,13 +182,14 @@ function loadIndex(siteTimezone?: string): Index {
       .split(sep)
       .join("/");
     if (!source.entry.test(entry)) continue;
+    const text = readFileSync(path, "utf8");
     let data: Record<string, unknown>;
     try {
-      data = parseFrontmatter(readFileSync(path, "utf8")).frontmatter;
+      data = parseFrontmatter(text).frontmatter;
     } catch {
       continue;
     }
-    if (!isPublished(source.dir, data, siteTimezone)) continue;
+    if (!isPublished(source.dir, data, text, siteTimezone)) continue;
     const target = {
       url: state.base + entry.replace(source.entry, source.url),
     };

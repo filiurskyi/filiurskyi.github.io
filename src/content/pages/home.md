@@ -1,6 +1,6 @@
 ---
 title: Home
-specialties: ["Generative art", "GLSL", "Pixel art", "Plotters"]
+specialties: ["CSS", "Accessibility", "Typography", "Astro", "Static sites"]
 ---
 
-Hi, I am Mira. I make pictures with code: flow fields, dithered shaders, small pixel art games and drawings on a pen plotter. This is where I write down how they work, so I can find it again and so you can borrow it.
+Hi, I'm Noor. I build websites that are mostly HTML and CSS, and I maintain starglow, the Astro theme this site runs on. I write here about contrast ratios, fonts, small web tools and whatever broke in the build this week.

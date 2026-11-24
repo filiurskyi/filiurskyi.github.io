@@ -21,5 +21,7 @@ services:
       # empty value never shadows a `.env` entry.
       PUBLIC_GOOGLE_SITE_VERIFICATION:
       PUBLIC_CF_WEB_ANALYTICS_TOKEN:
+      # Key-only too: `MARKERS_STRICT=true ./dev.sh ci` makes the marker check strict.
+      MARKERS_STRICT:
     ports:
       - "4321:4321"

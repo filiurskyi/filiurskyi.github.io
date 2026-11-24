@@ -11,12 +11,13 @@ import { getAllItems } from "@/utils/content/items";
 import { getVisibleProjects, sortProjects } from "@/utils/content/projects";
 import { todoMarkerText } from "@/utils/rehypeTodoMarkers";
 import { homeGraph, requireSite, toJsonLd } from "@/utils/jsonLd";
-import { useTranslations } from "@/i18n";
+import { getFooterLinks } from "@/utils/footer";
+import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
 
 const { posts: postsConfig } = config;
 
-const locale = Astro.currentLocale ?? config.site.lang;
+const locale = useLocale(Astro);
 const t = useTranslations(locale);
 
 const intro = await getEntry("pages", "home");
@@ -31,24 +32,44 @@ const specialties = (intro.data.specialties ?? []).map(label => ({
 
 // Posts and notes in one list, newest first.
 const writing = (await getAllItems()).slice(0, postsConfig.perIndex * 2);
+const kinds = new Set(writing.map(item => item.type));
+const writingLinks = [
+  {
+    type: "post",
+    label: t.home.allPosts,
+    href: getRelativeLocaleUrl(locale, "blog"),
+  },
+  {
+    type: "note",
+    label: t.home.allNotes,
+    href: getRelativeLocaleUrl(locale, "notes"),
+  },
+].filter(link => kinds.has(link.type as "post" | "note"));
 const projects = sortProjects(
   (await getVisibleProjects()).filter(project => project.data.featured)
 ).slice(0, postsConfig.perIndex);
 
+// The same rel="me" profiles the footer shows.
+const { badges } = await getFooterLinks(locale, {
+  contact: t.footer.contact,
+  source: t.footer.source,
+});
 const homeJsonLd = toJsonLd(
   homeGraph(requireSite(Astro.site), {
     name: config.site.author,
     siteName: config.site.title,
     siteDescription: config.site.description,
     inLanguage: config.site.lang,
-    sameAs: config.socials.map(social => social.url),
+    sameAs: badges.filter(badge => badge.rel === "me").map(badge => badge.url),
     jobTitle: config.person.jobTitle,
-    description: config.person.description,
   })
 );
 ---
 
-<Layout canonicalURL={intro.data.canonicalUrl}>
+<Layout
+  description={config.site.description}
+  canonicalURL={intro.data.canonicalUrl}
+>
   <Fragment slot="head">
     <script type="application/ld+json" is:inline set:html={homeJsonLd} />
   </Fragment>
@@ -80,13 +101,17 @@ const homeJsonLd = toJsonLd(
       <section id="writing" aria-labelledby="writing-heading">
         <div class="section-head">
           <h2 id="writing-heading">{t.home.writing}</h2>
-          <a href={getRelativeLocaleUrl(locale, "blog")}>
-            {t.home.archive} <span aria-hidden="true">→</span>
-          </a>
+          <span class="section-links">
+            {writingLinks.map(link => (
+              <a href={link.href}>
+                {link.label} <span aria-hidden="true">→</span>
+              </a>
+            ))}
+          </span>
         </div>
         <ul class="index">
           {writing.map(item => (
-            <ItemRow item={item} showKind />
+            <ItemRow item={item} showKind={kinds.size > 1} />
           ))}
         </ul>
       </section>

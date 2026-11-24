@@ -5,18 +5,18 @@ Dark first, its own colour palettes, a little 2000s glow.
 
 <picture>
   <source media="(prefers-color-scheme: light)" srcset=".github/assets/home-light.png">
-  <img alt="Home page of the demo site in the dark starglow palette: a pixel wordmark under a softly glowing header band, a short intro, a list of posts and notes, and the preview tab in the bottom left corner" src=".github/assets/home-dark.png">
+  <img alt="Home page of the demo site in the dark starglow palette: a pink pixel wordmark under a softly glowing header band, a short intro, a row of specialties in monospace, a list of posts and notes with their dates, and the preview tab in the bottom left corner" src=".github/assets/home-dark.png">
 </picture>
 
 **[Live demo](https://glowing-space.github.io/starglow/)** · [Docs](docs/) · [Releases](https://github.com/glowing-space/starglow/releases)
 
 ## Features
 
-- Posts, short notes, projects and a lab of experiments, with tags and related content
+- Posts, short notes and projects, with tags and related content
 - Banded page header with an optional ambient glow and a pixel wordmark
 - Labelled code, table and callout blocks; GitHub alert callouts; MDX
 - Optional Obsidian-flavoured Markdown: wikilinks, image embeds, comments
-- Vim-style statusline on posts with hjkl keys, 88x31 footer badges and text links, a terminal 404 page
+- Vim-style statusline on posts and notes with h/j/k/l keys (off on touch screens and phones), 88x31 footer badges that list each link once, a terminal-style 404 page
 - Pagefind search, RSS, sitemap, generated Open Graph images, JSON-LD
 - 4 dark and 5 light palettes, chosen separately; your own in a few lines; WCAG AA checked at build
 - A live preview panel for demos: palette, ambient light, glow, statusline
@@ -26,15 +26,15 @@ Dark first, its own colour palettes, a little 2000s glow.
 
 ## Screenshots
 
-| Dark                                                                                                                                         | Light                                                                                 |
-| -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| ![A post in the dark starglow palette: a bash code block, an "important" callout and the vim-style statusline](.github/assets/post-dark.png) | ![The same part of the post in the light sand palette](.github/assets/post-light.png) |
+| Dark                                                                                                                                                                                                       | Light                                                                                 |
+| ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| ![A post in the dark starglow palette: the five callouts (note, tip, important, warning, caution), each with a tinted background and border, above the vim-style statusline](.github/assets/post-dark.png) | ![The same part of the post in the light sand palette](.github/assets/post-light.png) |
 
-![The same post section in all nine palettes, three by three: dark starglow, void, aurora and ember, then light starglow, paper, petal, frost and sand](.github/assets/palettes.png)
+![The same post section, with its five tinted callouts and the statusline, in all nine palettes, three by three: dark starglow, void, aurora and ember, then light starglow, paper, petal, frost and sand](.github/assets/palettes.png)
 
-![The bottom of the home page in the dark starglow palette: the projects list, then the footer with the copyright line, the "powered by starglow" credit, contact and rss links, four 88x31 badges (rss, github, astro, no cookies) and impressum and privacy links](.github/assets/footer.png)
+![The bottom of the home page in the dark starglow palette: the writing list, the Projects section with two projects and their status, then the footer with the copyright line, the "powered by starglow" credit, a contact link, three 88x31 badges (rss, astro, no cookies) and an impressum link](.github/assets/footer.png)
 
-![The preview panel open on the home page in the aurora palette, with selects for the dark and light palette and the ambient light, checkboxes for wordmark glow and statusline, and a reset button](.github/assets/preview-open.png)
+![The preview panel open on the home page in the dark aurora palette, with selects for the dark and light palette and the ambient light, checkboxes for wordmark glow and statusline, and a reset button](.github/assets/preview-open.png)
 
 ## Quick start
 
@@ -94,6 +94,7 @@ starglow never overwrites, listed in [UPGRADING.md](UPGRADING.md).
 | `pnpm build`   | `astro check`, build, search index, placeholder check |
 | `pnpm preview` | Serve the built `dist/`                               |
 | `pnpm verify`  | Assertions over `dist/`                               |
+| `pnpm test`    | Unit tests for the helpers and the config schema      |
 | `./dev.sh ci`  | Every CI check locally, in Docker                     |
 
 Guides live in [`docs/`](docs/): [getting started](docs/01-getting-started.md),
@@ -106,14 +107,15 @@ Guides live in [`docs/`](docs/): [getting started](docs/01-getting-started.md),
 
 | I want to change…              | Edit                                           |
 | ------------------------------ | ---------------------------------------------- |
-| Title, author, socials, badges | `starglow.config.ts`                           |
-| Header glow, statusline        | `appearance` in `starglow.config.ts`           |
-| Colours                        | `appearance.palette` / `appearance.palettes`   |
-| Fonts, spacing                 | `src/styles/site-theme.css`                    |
+| Title, author, profile badges  | `starglow.config.ts`                           |
+| Colours, header glow           | `appearance` in `starglow.config.ts`           |
+| Fonts                          | `fonts` in `astro.config.ts`                   |
+| Type scale, spacing            | `src/styles/site-theme.css`                    |
 | Extra `<head>` tags, analytics | `src/custom/Head.astro`                        |
 | Comments or a bio under posts  | `src/custom/PostEnd.astro`                     |
 | The footer credit              | `footer.credit: false` in `starglow.config.ts` |
-| Footer links (Impressum, …)    | `footer.links` in `starglow.config.ts`         |
+
+The full table is in [Customising](docs/05-customising.md#where-to-change-what).
 
 Files in `src/custom/` are yours: upgrades never change them. See
 [UPGRADING.md](UPGRADING.md).

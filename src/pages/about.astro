@@ -5,10 +5,12 @@ import Layout from "@/layouts/Layout.astro";
 import Header from "@/components/Header.astro";
 import Main from "@/components/Main.astro";
 import Footer from "@/components/Footer.astro";
-import { useTranslations } from "@/i18n";
+import { getContactPage } from "@/utils/content/sections";
+import { excerpt } from "@/utils/excerpt";
+import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
 
-const locale = Astro.currentLocale ?? config.site.lang;
+const locale = useLocale(Astro);
 const t = useTranslations(locale);
 
 const entry = await getEntry("pages", "about");
@@ -17,11 +19,12 @@ if (!entry) {
 }
 const { data } = entry;
 const { Content } = await render(entry);
+const hasContact = Boolean(await getContactPage());
 ---
 
 <Layout
   title={`${data.title} | ${config.site.title}`}
-  description={data.description}
+  description={data.description ?? excerpt(entry.body)}
   ogImage={data.ogImage}
   canonicalURL={data.canonicalUrl}
 >
@@ -31,12 +34,14 @@ const { Content } = await render(entry);
     <article class="app-prose">
       <Content />
     </article>
-    <p class="about-cta">
-      <a href={getRelativeLocaleUrl(locale, "contact")} class="text-link">
-        {t.about.contactCta}
-      </a>
-      <span aria-hidden="true"> →</span>
-    </p>
+    {hasContact && (
+      <p class="about-cta">
+        <a href={getRelativeLocaleUrl(locale, "contact")} class="text-link">
+          {t.about.contactCta}
+        </a>
+        <span aria-hidden="true"> →</span>
+      </p>
+    )}
   </Main>
 
   <Footer />

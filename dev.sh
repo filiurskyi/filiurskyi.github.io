@@ -46,10 +46,10 @@ workflows() {
 # year and post date come from one clock read in the site timezone, so they
 # always agree with the check in src/utils/postEntryId.ts.
 new_content() {
-  local usage='Usage: ./dev.sh new <post|note|project|lab> <slug>'
+  local usage='Usage: ./dev.sh new <post|note|project> <slug>'
   local type="${1:-}" slug="${2:-}"
   case "$type" in
-    post | note | project | lab) ;;
+    post | note | project) ;;
     *)
       echo "$usage" >&2
       exit 2
@@ -97,7 +97,7 @@ new_content() {
   case "$type" in
     post) dir="src/content/blog/$year" ;;
     note) dir="src/content/notes/$year" ;;
-    project | lab) dir="src/content/projects" ;;
+    project) dir="src/content/projects" ;;
   esac
 
   local ext
@@ -124,11 +124,12 @@ case "${1:-dev}" in
   dev) serve sh -c "$install && pnpm exec astro dev --host 0.0.0.0 --port 4321" ;;
   build) run sh -c "$install && pnpm build" ;;
   check) run sh -c "$install && pnpm exec astro check" ;;
+  test) run sh -c "$install && pnpm run test" ;;
   preview) serve sh -c "pnpm exec astro preview --host 0.0.0.0 --port 4321" ;;
   shell) serve bash ;;
   ci)
     # The pull-request check set in the same order as .github/actions/site-checks.
-    run sh -c "$install && pnpm run format:check && pnpm run lint && pnpm exec astro check && pnpm run build:site"
+    run sh -c "$install && pnpm run format:check && pnpm run lint && pnpm run test && pnpm exec astro check && pnpm run build:site"
     links
     run sh -c "pnpm run verify && pnpm run markers"
     ;;
@@ -143,7 +144,7 @@ case "${1:-dev}" in
     run pnpm "$@"
     ;;
   *)
-    echo "usage: ./dev.sh [dev|build|check|preview|shell|ci|links|workflows|new <post|note|project|lab> <slug>|pnpm <args>]" >&2
+    echo "usage: ./dev.sh [dev|build|check|test|preview|shell|ci|links|workflows|new <post|note|project> <slug>|pnpm <args>]" >&2
     exit 2
     ;;
 esac

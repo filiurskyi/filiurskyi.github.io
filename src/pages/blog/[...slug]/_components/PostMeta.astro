@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import config from "@/config";
-import { useTranslations, tplStr } from "@/i18n";
+import { useTranslations, tplStr, useLocale } from "@/i18n";
 import { resolveTimezone } from "@/utils/resolveTimezone";
 
 dayjs.extend(utc);
@@ -33,7 +33,7 @@ const {
   minutes,
 } = Astro.props;
 
-const t = useTranslations(Astro.currentLocale);
+const t = useTranslations(useLocale(Astro));
 const zone = resolveTimezone(postTimezone ?? config.site.timezone);
 
 const main = date ? dayjs(date).tz(zone) : null;

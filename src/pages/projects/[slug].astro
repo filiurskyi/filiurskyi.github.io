@@ -12,7 +12,7 @@ import { postFilter } from "@/utils/postFilter";
 import { requireSite, softwareSourceCode, toJsonLd } from "@/utils/jsonLd";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import config from "@/config";
-import { tplStr, useTranslations } from "@/i18n";
+import { tplStr, useTranslations, useLocale } from "@/i18n";
 
 export async function getStaticPaths() {
   const projects = await getVisibleProjects();
@@ -46,7 +46,7 @@ type Props = {
 const { project, related } = Astro.props;
 const { title, description, stack, status, githubUrl, docsUrl, websiteUrl } =
   project.data;
-const t = useTranslations(Astro.currentLocale ?? config.site.lang);
+const t = useTranslations(useLocale(Astro));
 
 const links = [
   { label: t.project.source, href: githubUrl },

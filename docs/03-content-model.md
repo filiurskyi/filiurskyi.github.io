@@ -14,18 +14,18 @@ The filename must be lowercase kebab-case, and the folder year must match the ye
 
 ### Required post fields
 
-| Field         | Type   | Notes                                                    |
-| :------------ | :----- | :------------------------------------------------------- |
-| `title`       | string | Page heading, list title and browser tab.                |
-| `description` | string | One sentence. List summary and meta description.         |
-| `pubDatetime` | date   | With an offset, for example `2026-11-09T10:00:00+01:00`. |
+| Field         | Type   | Notes                                                             |
+| :------------ | :----- | :---------------------------------------------------------------- |
+| `title`       | string | Page heading, list title and browser tab. At most 100 characters. |
+| `description` | string | One sentence. List summary and meta description.                  |
+| `pubDatetime` | date   | With an offset, for example `2026-11-09T10:00:00+01:00`.          |
 
 ### Optional post fields
 
 | Field          | Notes                                                             |
 | :------------- | :---------------------------------------------------------------- |
 | `modDatetime`  | Shown as "Updated" when later than `pubDatetime`.                 |
-| `tags`         | Free labels. Each tag gets a page under `/tags/`.                 |
+| `tags`         | Lowercase labels, each once; each gets a page under `/tags/`.     |
 | `draft`        | `true` keeps the post out of production builds.                   |
 | `hideToc`      | Hides the table of contents on the post.                          |
 | `hideEditPost` | Hides the edit link when `features.editPost` is enabled.          |
@@ -37,58 +37,61 @@ The filename must be lowercase kebab-case, and the folder year must match the ye
 
 A post with a `pubDatetime` in the future is built only from that day on.
 
+Each tag gets a page at `/tags/<slug>/`. Tags must be lowercase, listed once per entry and contain at least one letter or digit, in any script (`привіт` and `日本語` are fine): `CSS`, a repeated tag or a tag made only of symbols, such as `!!!`, fails the build with a message that names the tag and the file; it is not rewritten. Two spellings that share a slug, such as `static sites` and `static-sites`, fail the build with the files that use them, so spell each tag one way everywhere.
+
+A `title` in any collection may have at most 100 characters; longer ones are cut off in search results and link previews.
+
+A date without a time, such as `pubDatetime: 2026-01-01`, means midnight of that day in the post's timezone (its `timezone`, else the site timezone), not midnight UTC. The same goes for `modDatetime` and a note's `updated`. Only a bare `YYYY-MM-DD` counts: a value with a time, such as `2026-01-01T00:00:00Z`, is that exact instant, midnight UTC included.
+
 ## Notes
 
 Notes are short, self-contained pieces: a command, a fix, a finding. They also live in year folders and are served at `/notes/<year>/<slug>/`.
 
-Notes have no date field. Their dates come from the file's git history, so a note shows when it was first committed and last changed. An optional `updated` date overrides the git date. Other fields: `description`, `tags`, `canonicalUrl`, `syndication` and `draft`. Only `title` is required.
+Notes have no date field. Their dates come from the file's git history, so a note shows when it was first committed and last changed. An optional `updated` date overrides the git date. Other fields: `description` (without it, the meta description is the note's opening words), `tags`, `canonicalUrl`, `syndication` and `draft`. Only `title` is required.
 
 ## Projects
 
 Projects are one Markdown file each, directly in `src/content/projects/`, and they are served at `/projects/<slug>/`. A project page is built from frontmatter only, so the file has no body. A body fails the build.
 
-| Field                                | Notes                                                         |
-| :----------------------------------- | :------------------------------------------------------------ |
-| `title`, `description`               | Required.                                                     |
-| `status`                             | Required: `active`, `maintained`, `archived` or `experiment`. |
-| `stack`                              | Technologies shown as chips.                                  |
-| `githubUrl`, `docsUrl`, `websiteUrl` | Optional links.                                               |
-| `featured`                           | Lists the project on the homepage and sorts it first.         |
-| `relatedPosts`                       | Post ids as `YYYY/slug`, linked from the project page.        |
+| Field                                | Notes                                                  |
+| :----------------------------------- | :----------------------------------------------------- |
+| `title`, `description`               | Required.                                              |
+| `status`                             | Required: `active`, `maintained` or `archived`.        |
+| `stack`                              | Technologies shown as chips.                           |
+| `githubUrl`, `docsUrl`, `websiteUrl` | Optional links.                                        |
+| `featured`                           | Lists the project on the homepage and sorts it first.  |
+| `relatedPosts`                       | Post ids as `YYYY/slug`, linked from the project page. |
 
-Projects with `status: experiment` are listed on `/lab/` instead of `/projects/`.
-
-### Lab entries
-
-A lab entry is a project with `status: experiment`: same folder, same fields, same URL under `/projects/<slug>/`, but listed on `/lab/` instead of `/projects/`. Changing the status later moves the entry between the two lists without changing its URL. Like a project, a lab entry has no body; write about the experiment in a post and link it with `relatedPosts`.
+All projects are listed on `/projects/`: featured first, then by status (active, maintained, archived) and title.
 
 ## Pages
 
-`src/content/pages/` holds the text of three pages: `home.md` (the homepage intro and an optional `specialties` list), `about.md` and `contact.md`. Edit them in place.
+`src/content/pages/` holds the text of the homepage intro, `home.md` (with an optional `specialties` list), and of `about.md`. Edit them in place.
 
-Any other file there becomes a standalone page at `/<name>/`, laid out like the about page: `privacy.md` is published at `/privacy/` and `impressum.md` at `/impressum/`. A file in a folder keeps the folder in its URL, and a name starting with `_` is skipped. Standalone pages are listed in the sitemap but not in search. Names the theme already uses (`blog`, `notes`, `projects`, `lab`, `tags`, `search`) stop the build. Link the pages from the footer with [`footer.links`](./02-configuration.md#footer).
+`/contact/` lists your [profile badges](./02-configuration.md#links) with their URLs, under the text of the optional `contact.md`. The page exists, and is linked from the footer and the about page, when `contact.md` exists or `links` has a profile badge; without either there is no contact page and no link. Without `contact.md` it is titled "Contact" and shows only the list. Write in `contact.md` what the badges do not show, such as an email address or how you prefer to be reached.
 
-| Key            | What it does                                               |
-| :------------- | :--------------------------------------------------------- |
-| `title`        | Required. Page title and heading.                          |
-| `description`  | Meta description and the line under the heading.           |
-| `ogImage`      | Social preview image, instead of the site default.         |
-| `canonicalUrl` | Canonical URL, when the text is published elsewhere first. |
+Any other file there becomes a standalone page at `/<name>/`, laid out like the about page: `privacy.md` is published at `/privacy/` and `impressum.md` at `/impressum/`. A file in a folder keeps the folder in its URL, and a name starting with `_` is skipped. Standalone pages are listed in the sitemap but not in search. Names the theme already uses (`blog`, `notes`, `projects`, `tags`, `search`) stop the build. Link the pages from the footer with [`footer.links`](./02-configuration.md#footer).
+
+| Key            | What it does                                                                                                        |
+| :------------- | :------------------------------------------------------------------------------------------------------------------ |
+| `title`        | Required. Page title and heading.                                                                                   |
+| `description`  | Meta description and the line under the heading. Without it, the meta description is the opening words of the text. |
+| `ogImage`      | Social preview image, instead of the site default.                                                                  |
+| `canonicalUrl` | Canonical URL, when the text is published elsewhere first.                                                          |
 
 ## Creating content
 
-`templates/` holds a commented starting file for each type: `post.md`, `note.md`, `project.md` and `lab.md`. Every optional key is listed there with its default and an explanation, so you can uncomment what you need. With Docker set up, one command copies a template:
+`templates/` holds a commented starting file for each type: `post.md`, `note.md` and `project.md`. Every optional key is listed there with its default and an explanation, so you can uncomment what you need. With Docker set up, one command copies a template:
 
 ```bash
 ./dev.sh new post my-first-post    # src/content/blog/<year>/my-first-post.md
 ./dev.sh new note a-handy-command  # src/content/notes/<year>/a-handy-command.md
 ./dev.sh new project my-tool       # src/content/projects/my-tool.md
-./dev.sh new lab a-quick-test      # src/content/projects/a-quick-test.md, status: experiment
 ```
 
-It sets the date to now in the site timezone and marks the entry as a draft. It needs GNU `date`. A project and a lab entry share `src/content/projects/`, so their slugs must differ.
+It sets the date to now in the site timezone and marks the entry as a draft. It needs GNU `date`.
 
-In VS Code, `.vscode/starglow.code-snippets` adds the snippets `frontmatter` (post), `note-frontmatter`, `project-frontmatter` and `lab-frontmatter`. For templates in Obsidian, see [Writing in Obsidian](./04-writing.md#writing-in-obsidian).
+In VS Code, `.vscode/starglow.code-snippets` adds the snippets `frontmatter` (post), `note-frontmatter` and `project-frontmatter`. For templates in Obsidian, see [Writing in Obsidian](./04-writing.md#writing-in-obsidian).
 
 ### Drafts
 

@@ -1,5 +1,5 @@
 name: Site checks
-description: Install, format check, lint, astro check, build, link check, dist assertions, placeholder marker check
+description: Install, format check, lint, unit tests, astro check, build, link check, dist assertions, placeholder marker check
 inputs:
   strict-markers:
     description: Fail when [[TODO markers remain ("true" for deploy)
@@ -24,6 +24,9 @@ runs:
     - name: Lint
       shell: bash
       run: pnpm run lint
+    - name: Unit tests
+      shell: bash
+      run: pnpm run test
     - name: Astro check
       shell: bash
       run: pnpm exec astro check

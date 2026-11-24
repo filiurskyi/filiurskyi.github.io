@@ -1,22 +1,21 @@
 ---
 title: About
-description: Who Mira Solvik is and what this site is for.
+description: Who Noor Halvard is, and why this site exists.
 ---
 
-I am Mira Solvik, a creative coder. I write small programs whose output is a picture, a sound or a short game. I am not a real person: this site is the demo of the starglow theme, and everything on it is written to show what a personal site built with the theme can look like.
+First, the honest part: Noor Halvard isn't a real person. This site is the demo of starglow, an Astro theme by glowing.space originally based on [AstroPaper](https://github.com/satnaing/astro-paper) by Sat Naing, and Noor is the made-up owner who gives it something to say. The posts are written as Noor, but the facts about starglow in them are checked against the theme's code. Noor's opinions and late nights are invented.
 
-## What I work on
+So, in character.
 
-- Generative art in JavaScript and Canvas, mostly flow fields and grids.
-- Fragment shaders in GLSL, with a soft spot for dithering and small palettes.
-- Pixel art, usually for game jams.
-- Pen plotter drawings, which turn generative SVGs into ink on paper.
-- A little Rust compiled to WebAssembly, when a sketch gets too slow.
+I'm a frontend developer. I spent about ten years at agencies, the last three on a design system that everybody used and complained about. These days I mostly build static sites and the small tools around them.
 
-## How this site works
+## What I care about
 
-Posts are longer write-ups with code. Notes are short findings, often one command or one setting. Projects lists the tools I maintain, and the lab holds experiments that may never be finished.
+- CSS that still makes sense to me six months later.
+- Text people can read, with real contrast and fonts served from the same host as the page.
+- Keyboards. If a thing can't be used without a mouse, it isn't finished.
+- Builds that fail loudly when something is wrong, instead of me finding out from a visitor.
 
-## Credits
+## How this site is organised
 
-This site uses starglow, a minimal Astro theme by glowing.space, originally based on [AstroPaper](https://github.com/satnaing/astro-paper) by Sat Naing.
+Posts are the long write-ups. Notes are short, usually one fix or one property I keep forgetting. Projects lists the tools I look after, from the theme itself down to a bookmarklet.

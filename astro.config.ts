@@ -18,15 +18,37 @@ import {
   obsidianIntegration,
   remarkObsidian,
 } from "./src/utils/remarkObsidian";
-import en from "./src/i18n/lang/en";
+import {
+  contentCacheKey,
+  contentCacheKeyPlugin,
+} from "./src/utils/contentCacheKey";
 import { tplStr } from "./src/i18n/format";
+import type { UIStrings } from "./src/i18n/types";
 import { existsSync } from "node:fs";
-import config from "./starglow.config";
+import { fileURLToPath } from "node:url";
+import userConfig from "./starglow.config";
+import { parseStarglowConfig } from "./src/types/config";
 
 // Single source of the site origin. Override per build with SITE_URL (shell or
 // .env); the default is the starglow demo origin; set your own.
 if (existsSync(".env")) process.loadEnvFile(".env");
-const OBSIDIAN = config.features?.obsidian ?? false;
+// Fails here, before anything else runs, on an unknown key or a wrong value.
+const config = parseStarglowConfig(userConfig);
+const OBSIDIAN = config.features.obsidian;
+
+// The site locale. Astro's i18n, <html lang> and the build-time UI strings
+// (heading-link and table labels) all follow `site.lang`, so it needs a
+// matching strings file in src/i18n/lang/.
+const LANG = config.site.lang;
+const LANG_FILE = new URL(`./src/i18n/lang/${LANG}.ts`, import.meta.url);
+if (!existsSync(LANG_FILE)) {
+  throw new Error(
+    `site.lang is "${LANG}", but src/i18n/lang/${LANG}.ts does not exist. Copy src/i18n/lang/en.ts to it and translate the strings, or set site.lang to an existing locale.`
+  );
+}
+const strings: UIStrings = (
+  (await import(/* @vite-ignore */ LANG_FILE.href)) as { default: UIStrings }
+).default;
 const SITE_URL = process.env.SITE_URL || "https://starglow.glowing.space";
 
 const siteUrl = (() => {
@@ -76,8 +98,8 @@ export default defineConfig({
     sitemap(),
   ],
   i18n: {
-    locales: ["en"],
-    defaultLocale: "en",
+    locales: [LANG],
+    defaultLocale: LANG,
     routing: {
       prefixDefaultLocale: false,
     },
@@ -100,7 +122,7 @@ export default defineConfig({
             properties: (node: HastNode) => ({
               className: ["heading-link"],
               dataPagefindIgnore: true,
-              ariaLabel: tplStr(en.a11y.headingLink, {
+              ariaLabel: tplStr(strings.a11y.headingLink, {
                 heading: hastText(node),
               }),
             }),
@@ -115,7 +137,14 @@ export default defineConfig({
         [rehypeCallouts, { theme: "github" }],
         rehypeBlockLabels,
         rehypeTodoMarkers,
-        [rehypeTableWrapper, { label: en.a11y.scrollableTable }],
+        [rehypeTableWrapper, { label: strings.a11y.scrollableTable }],
+        // No-op: its key clears Astro's content cache when theme code changes.
+        [
+          contentCacheKeyPlugin,
+          {
+            key: contentCacheKey(fileURLToPath(new URL(".", import.meta.url))),
+          },
+        ],
       ],
     }),
     shikiConfig: {

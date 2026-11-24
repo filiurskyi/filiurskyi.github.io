@@ -6,13 +6,16 @@ import { defineStarglowConfig } from "./src/types/config";
 export default defineStarglowConfig({
   site: {
     // Header, <title> and feeds. Used by: Layout, Header, rss.xml, OG images.
-    title: "mirasol",
+    title: "halvard",
+    // The home page meta description, the RSS feed and the WebSite data.
     description:
-      "Mira Solvik makes pictures with code: generative art, shaders, pixel art and pen plots.",
+      "Noor Halvard writes about CSS, accessibility, typography and the starglow theme.",
     // Default post author and the footer copyright name.
-    author: "Mira Solvik",
-    // Source repository of your site, linked from the footer. Empty = no link.
-    sourceUrl: "",
+    author: "Noor Halvard",
+    // Source repository of your site: the footer "source" link and the base
+    // of features.editPost. The footer leaves the link out when another
+    // footer link has the same URL, as the credit does here. Empty = neither.
+    sourceUrl: "https://github.com/glowing-space/starglow",
     lang: "en",
     // IANA timezone for post dates. ./dev.sh reads this line too.
     timezone: "UTC",
@@ -20,10 +23,8 @@ export default defineStarglowConfig({
     // Search Console verification value. Empty = PUBLIC_GOOGLE_SITE_VERIFICATION
     // from the environment, or no meta tag.
     googleVerification: "",
-    // Fediverse handle as @user@instance. Empty = no fediverse:creator meta.
-    fediverseCreator: "",
     // Header wordmark in the pixel face. Defaults to title.
-    wordmark: "mirasol",
+    wordmark: "halvard",
     // Printed as an HTML comment at the top of every page, for people who
     // read the source. Text only; it must not contain two hyphens in a row.
     // Remove the whole key for no comment.
@@ -43,9 +44,7 @@ export default defineStarglowConfig({
   },
   // Optional homepage Person structured data. Empty fields are left out.
   person: {
-    jobTitle: "Creative coder",
-    description:
-      "A fictional creative coder who writes about generative art, GLSL shaders, pixel art and pen plotters.",
+    jobTitle: "Frontend developer",
   },
   posts: {
     perPage: 10,
@@ -55,10 +54,8 @@ export default defineStarglowConfig({
     lightAndDarkMode: true,
     dynamicOgImage: true,
     showBackButton: true,
-    editPost: {
-      enabled: true,
-      url: "https://github.com/glowing-space/starglow/edit/main/",
-    },
+    // "Edit page" on posts: site.sourceUrl + path ("edit/main/" by default).
+    editPost: { enabled: true },
     search: "pagefind",
     toc: true,
     // Obsidian wikilinks, image embeds, comments and properties in .md files.
@@ -80,7 +77,11 @@ export default defineStarglowConfig({
     // off on your own site.
     preview: true,
   },
-  // 88x31 footer badges. Configured socials below get one automatically.
+  // 88x31 footer badges. Profile types (github, mastodon, linkedin, ...) are
+  // also your rel="me" links, listed on /contact/, and the homepage sameAs; a
+  // mastodon URL like https://host/@you sets the fediverse:creator meta. The
+  // rss badge shows once a post or note is published. A URL the footer
+  // already has (the credit, an earlier badge) is left out of the footer.
   links: [
     { type: "rss", url: "/rss.xml" },
     { type: "github", url: "https://github.com/glowing-space/starglow" },
@@ -92,27 +93,12 @@ export default defineStarglowConfig({
     },
     { type: "link", url: "/privacy/", label: "no cookies", title: "Privacy" },
   ],
-  // Fill a url to show that profile in the footer badges, on /contact/ and in
-  // the homepage structured data. Empty urls render nowhere.
-  socials: [
-    { name: "github", label: "GitHub", url: "" },
-    { name: "linkedin", label: "LinkedIn", url: "" },
-    { name: "mastodon", label: "Mastodon", url: "" },
-    { name: "bluesky", label: "Bluesky", url: "" },
-    { name: "lemmy", label: "Lemmy", url: "" },
-    { name: "x", label: "X", url: "" },
-    { name: "reddit", label: "Reddit", url: "" },
-    { name: "devto", label: "DEV.to", url: "" },
-    { name: "medium", label: "Medium", url: "" },
-  ],
   footer: {
     // "powered by starglow" in the footer. Keeping it is appreciated.
     credit: true,
     // Text links on the badge row, e.g. pages from src/content/pages/.
-    links: [
-      { label: "impressum", href: "/impressum/" },
-      { label: "privacy", href: "/privacy/" },
-    ],
+    // The privacy page is linked by the "no cookies" badge above.
+    links: [{ label: "impressum", href: "/impressum/" }],
   },
   // Cloudflare Web Analytics (cookieless). Unset = no script. The token may
   // also come from PUBLIC_CF_WEB_ANALYTICS_TOKEN in the environment.

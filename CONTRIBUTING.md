@@ -28,10 +28,10 @@ Or, with only Docker on the host, `./dev.sh`. See
 Run the same checks as CI:
 
 ```sh
-./dev.sh ci       # format, lint, astro check, build, links, dist assertions
+./dev.sh ci       # format, lint, unit tests, astro check, build, links, dist assertions
 ```
 
-Natively: `pnpm format:check && pnpm lint && pnpm build && pnpm verify`.
+Natively: `pnpm format:check && pnpm lint && pnpm test && pnpm build && pnpm verify`.
 
 Release notes are generated on GitHub from pull request labels, so label
 user-visible changes `enhancement`, `bug` or `documentation`. If a change

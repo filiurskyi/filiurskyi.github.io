@@ -1,9 +1,9 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
 
-const locale = Astro.currentLocale ?? config.site.lang;
+const locale = useLocale(Astro);
 const t = useTranslations(locale);
 ---
 
@@ -12,13 +12,15 @@ const t = useTranslations(locale);
     id="back-button"
     href={getRelativeLocaleUrl(locale, "")}
     class="back-link"
+    data-back-label={t.post.goBack}
     data-pagefind-ignore
   >
-    <span aria-hidden="true">←</span> {t.post.goBack}
+    <span aria-hidden="true">←</span> <span>{t.nav.home}</span>
   </a>
 )}
 
 <script>
+  // Without a page of this site to return to, the link stays "Home".
   function updateGoBackUrl() {
     const backButton: HTMLAnchorElement | null =
       document.querySelector("#back-button");
@@ -27,6 +29,8 @@ const t = useTranslations(locale);
 
     if (backUrl && backButton) {
       backButton.href = backUrl;
+      const label = backButton.lastElementChild;
+      if (label) label.textContent = backButton.dataset.backLabel ?? "";
     }
   }
 

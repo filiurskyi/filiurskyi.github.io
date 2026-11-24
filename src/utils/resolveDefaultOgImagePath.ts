@@ -12,23 +12,13 @@ function existsInPublic(filename: string): boolean {
 
 /**
  * Default OG image path: `public/{site.ogImage}` when present, else the
- * generated `/og.png` (which requires `dynamicOgImage`). `site.ogImage` must be
- * a single filename, to rule out path traversal.
+ * generated `/og.png` (which requires `dynamicOgImage`). The config schema
+ * allows only a single filename, to rule out path traversal.
  */
 export function resolveDefaultOgImagePath(
   config: ResolvedStarglowConfig
 ): string {
   const filename = config.site.ogImage;
-  if (
-    filename.includes("..") ||
-    filename.includes("/") ||
-    filename.includes("\\")
-  ) {
-    throw new Error(
-      `site.ogImage must be a single filename in public/ (e.g. "default-og.jpg"), got "${filename}"`
-    );
-  }
-
   if (config.features.dynamicOgImage) {
     return existsInPublic(filename)
       ? getAssetPath(filename)

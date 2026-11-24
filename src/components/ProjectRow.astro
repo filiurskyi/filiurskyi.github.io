@@ -2,7 +2,7 @@
 import type { CollectionEntry } from "astro:content";
 import { getProjectUrl } from "@/utils/content/projects";
 import IndexRow from "./IndexRow.astro";
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 
 type Props = {
   project: CollectionEntry<"projects">;
@@ -12,7 +12,7 @@ type Props = {
 
 const { project, withDescription = false } = Astro.props;
 const { title, description, status, draft } = project.data;
-const t = useTranslations(Astro.currentLocale);
+const t = useTranslations(useLocale(Astro));
 ---
 
 <IndexRow

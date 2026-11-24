@@ -1,4 +1,5 @@
 ---
+import { useLocale } from "@/i18n";
 import type { HTMLAttributes } from "astro/types";
 import { getRelativeLocaleUrl } from "astro:i18n";
 import config from "@/config";
@@ -6,7 +7,7 @@ import config from "@/config";
 type Props = {
   pageTitle: string;
   pageDesc?: string;
-  /** The h1 stays in the outline but is not shown (the home page). */
+  /** The h1 stays in the outline but is not shown (home and 404). */
   hideTitle?: boolean;
   /** Inline style of the h1, e.g. a view-transition name. */
   titleStyle?: Record<string, string>;
@@ -24,7 +25,7 @@ const {
   ...attrs
 } = Astro.props;
 
-const locale = Astro.currentLocale ?? config.site.lang;
+const locale = useLocale(Astro);
 const backUrl = config.features.showBackButton
   ? Astro.url.pathname
   : getRelativeLocaleUrl(locale, "");
@@ -32,7 +33,7 @@ const hasMeta = Astro.slots.has("meta");
 ---
 
 <main
-  data-backUrl={trackBack ? backUrl : undefined}
+  data-back-url={trackBack ? backUrl : undefined}
   {...attrs}
   id="main-content"
   class:list={["site-main", className]}
@@ -64,7 +65,7 @@ const hasMeta = Astro.slots.has("meta");
   document.addEventListener("astro:page-load", () => {
     const mainContent: HTMLElement | null =
       document.querySelector("#main-content");
-    const backUrl = mainContent?.dataset?.backurl;
+    const backUrl = mainContent?.dataset?.backUrl;
     if (backUrl) {
       sessionStorage.setItem("backUrl", backUrl);
     }

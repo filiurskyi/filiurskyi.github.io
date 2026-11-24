@@ -1,7 +1,9 @@
+import { readFileSync } from "node:fs";
 import { defineCollection, reference } from "astro:content";
 import { z } from "astro/zod";
-import { glob } from "astro/loaders";
+import { glob, type Loader } from "astro/loaders";
 import config from "@/config";
+import { entryTimezone, withCalendarDays } from "@/utils/calendarDate";
 import { postEntryId } from "@/utils/postEntryId";
 import {
   NOTE_PATH,
@@ -9,6 +11,7 @@ import {
   noteEntryId,
   projectEntryId,
 } from "@/utils/content/entryIds";
+import { tagList, title } from "@/utils/content/fields";
 
 export const BLOG_PATH = "src/content/blog";
 
@@ -52,23 +55,52 @@ const normaliseTags = (value: unknown): unknown => {
 };
 const tags = () =>
   (config.features.obsidian
-    ? z.preprocess(normaliseTags, z.array(z.string()))
-    : z.array(z.string())
+    ? z.preprocess(normaliseTags, tagList())
+    : tagList()
   ).default([]);
 
+// A date written without a time (`2026-01-01`) is a calendar day in the
+// entry's timezone. Only the file text tells it apart from midnight UTC, so
+// the loader passes such values on already moved into that zone.
+const calendarDays = (loader: Loader): Loader => ({
+  ...loader,
+  load: context =>
+    loader.load({
+      ...context,
+      parseData: props =>
+        context.parseData({
+          ...props,
+          data: props.filePath
+            ? withCalendarDays(
+                props.data,
+                readFileSync(props.filePath, "utf8"),
+                entryTimezone(props.data, config.site.timezone)
+              )
+            : props.data,
+        }),
+    }),
+});
+
 const posts = defineCollection({
-  loader: glob({
-    pattern: "**/[^_]*.{md,mdx}",
-    base: `./${BLOG_PATH}`,
-    generateId: ({ entry, data }) =>
-      postEntryId(entry, data, config.site.timezone),
-  }),
+  loader: calendarDays(
+    glob({
+      pattern: "**/[^_]*.{md,mdx}",
+      base: `./${BLOG_PATH}`,
+      generateId: ({ entry, base, data }) =>
+        postEntryId(
+          entry,
+          data,
+          config.site.timezone,
+          readFileSync(new URL(entry, base), "utf8")
+        ),
+    })
+  ),
   schema: ({ image }) =>
     frontmatter({
       author: z.string().default(config.site.author),
       pubDatetime: z.date(),
       modDatetime: z.date().optional().nullable(),
-      title: z.string(),
+      title: title(),
       draft: z.boolean().optional(),
       tags: tags(),
       ogImage: image().or(z.string()).optional(),
@@ -86,13 +118,15 @@ const posts = defineCollection({
 });
 
 const notes = defineCollection({
-  loader: glob({
-    pattern: "**/[^_]*.{md,mdx}",
-    base: `./${NOTE_PATH}`,
-    generateId: ({ entry }) => noteEntryId(entry),
-  }),
+  loader: calendarDays(
+    glob({
+      pattern: "**/[^_]*.{md,mdx}",
+      base: `./${NOTE_PATH}`,
+      generateId: ({ entry }) => noteEntryId(entry),
+    })
+  ),
   schema: frontmatter({
-    title: z.string(),
+    title: title(),
     description: z.string().optional(),
     tags: tags(),
     updated: z.date().optional(),
@@ -109,10 +143,10 @@ const projects = defineCollection({
     generateId: ({ entry }) => projectEntryId(entry),
   }),
   schema: frontmatter({
-    title: z.string(),
+    title: title(),
     description: z.string(),
     stack: z.array(z.string()).default([]),
-    status: z.enum(["active", "maintained", "archived", "experiment"]),
+    status: z.enum(["active", "maintained", "archived"]),
     githubUrl: z.httpUrl().optional(),
     docsUrl: z.httpUrl().optional(),
     websiteUrl: z.httpUrl().optional(),
@@ -125,7 +159,7 @@ const projects = defineCollection({
 const pages = defineCollection({
   loader: glob({ pattern: "**/[^_]*.{md,mdx}", base: "./src/content/pages" }),
   schema: z.strictObject({
-    title: z.string(),
+    title: title(),
     description: z.string().optional(),
     ogImage: z.string().optional(),
     canonicalUrl: z.httpUrl().optional(),

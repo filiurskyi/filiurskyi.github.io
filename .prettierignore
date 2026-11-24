@@ -11,6 +11,8 @@
 !package.json
 !.prettierrc
 !eslint.config.js
+!vitest.config.ts
+!/tests
 !README.md
 !/docs
 !.vscode

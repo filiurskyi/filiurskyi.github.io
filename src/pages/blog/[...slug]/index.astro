@@ -25,7 +25,7 @@ import CopyLink from "@/components/CopyLink.astro";
 import Syndication from "@/components/Syndication.astro";
 import PostEnd from "@/custom/PostEnd.astro";
 import config from "@/config";
-import { tplStr, useTranslations } from "@/i18n";
+import { tplStr, useTranslations, useLocale } from "@/i18n";
 
 export async function getStaticPaths() {
   const posts = await getCollection("posts");
@@ -70,7 +70,7 @@ type Props = {
 };
 
 const { post, prevPost, nextPost } = Astro.props;
-const locale = Astro.currentLocale ?? config.site.lang;
+const locale = useLocale(Astro);
 const t = useTranslations(locale);
 
 const {

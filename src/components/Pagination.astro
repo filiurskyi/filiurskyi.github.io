@@ -1,6 +1,6 @@
 ---
 import type { Page } from "astro";
-import { tplStr, useTranslations } from "@/i18n";
+import { tplStr, useTranslations, useLocale } from "@/i18n";
 
 type Props = {
   page: Page<unknown>;
@@ -8,7 +8,7 @@ type Props = {
 
 const { page } = Astro.props;
 
-const t = useTranslations(Astro.currentLocale);
+const t = useTranslations(useLocale(Astro));
 const status = tplStr(t.pagination.status, {
   current: String(page.currentPage),
   last: String(page.lastPage),

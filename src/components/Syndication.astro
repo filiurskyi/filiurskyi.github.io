@@ -1,6 +1,5 @@
 ---
-import config from "@/config";
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 
 type Props = {
   /** Validated http(s) URLs from the `syndication` frontmatter, in order. */
@@ -8,7 +7,7 @@ type Props = {
 };
 
 const { urls } = Astro.props;
-const t = useTranslations(Astro.currentLocale ?? config.site.lang);
+const t = useTranslations(useLocale(Astro));
 
 const KNOWN_HOSTS: Record<string, string> = {
   "dev.to": "DEV.to",

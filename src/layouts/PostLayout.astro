@@ -15,7 +15,7 @@ type Props = Omit<LayoutProps, "ogType"> & {
 const { site } = config;
 
 const { headline, pubDatetime, modDatetime, ...layoutProps } = Astro.props;
-const { description = site.description } = layoutProps;
+const { description } = layoutProps;
 
 // Computed once and passed to Layout too, so the JSON-LD, canonical and
 // og:image can never disagree.

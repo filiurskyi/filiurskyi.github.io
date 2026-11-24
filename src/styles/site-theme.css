@@ -14,7 +14,7 @@
 /*
  * Type scale. Two weights (400, 600). Every font size in the site is one of:
  * 10 (88x31 badge text, fixed by the badge size), 12 (block labels, keys,
- * statusline), 13 (meta), 14 (code), 15 (nav, tables), 16 (body,
+ * statusline), 13 (meta), 14 (code), 15 (nav, tables, footer credit), 17 (body,
  * h3), 18 (home lead), 20 (h2), 24 (wordmark), 28 (title under 640px) and
  * 32 (title). The Tailwind size utilities below map onto it; verify-dist's
  * type-scale check rejects any other size or weight, in utilities and in CSS.
@@ -24,8 +24,8 @@
   --text-xs--line-height: 1.25rem;
   --text-sm: 0.875rem;
   --text-sm--line-height: 1.375rem;
-  --text-base: 1rem;
-  --text-base--line-height: 1.625rem;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.75rem;
   --text-lg: 1.125rem;
   --text-lg--line-height: 1.875rem;
   --text-xl: 1.25rem;
@@ -51,7 +51,6 @@
 :root {
   --status-active: var(--green);
   --status-maintained: var(--blue);
-  --status-experiment: var(--purple);
   --status-archived: var(--muted-foreground);
 }
 
@@ -67,7 +66,7 @@
 [data-theme="dark"] {
   --band: var(--mantle);
   --code-bg: var(--crust);
-  --glow-c: color-mix(in srgb, var(--glow) 12%, transparent);
+  --glow-c: color-mix(in srgb, var(--glow) 18%, transparent);
 }
 
 /* Band glow tint per ambient mode (see appearance.ambient) */
@@ -133,14 +132,16 @@
   --statusline-h: 26px;
 
   --t-badge: 400 10px/1 var(--font-wordmark);
+  --t-credit: 400 15px/1 var(--font-wordmark);
   --t-label: 400 12px/18px var(--font-mono);
   --t-status: 400 12px/26px var(--font-mono);
   --t-meta: 400 13px/20px var(--font-mono);
   --t-code: 400 14px/22px var(--font-mono);
   --t-ui: 400 15px/24px var(--font-app);
-  --t-body: 400 16px/26px var(--font-app);
+  --t-action: 400 14px/20px var(--font-app);
+  --t-body: 400 17px/28px var(--font-app);
   --t-lead: 400 18px/30px var(--font-app);
-  --t-h3: 600 16px/26px var(--font-app);
+  --t-h3: 600 17px/28px var(--font-app);
   --t-h2: 600 20px/28px var(--font-app);
   --t-wordmark: 400 24px/32px var(--font-wordmark);
   --t-title: 600 32px/38px var(--font-app);
@@ -164,9 +165,6 @@ html {
 
 body {
   font: var(--t-body);
-  font-feature-settings:
-    "cv11" 1,
-    "ss01" 1;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -215,6 +213,11 @@ kbd {
   font: var(--t-meta);
   font-variant-numeric: tabular-nums;
   color: var(--muted-foreground);
+}
+
+/* A meta line breaks between its items, never inside a date */
+p.meta > :is(span, time):not([aria-hidden="true"]) {
+  white-space: nowrap;
 }
 
 time {
@@ -389,6 +392,28 @@ body {
   );
 }
 
+/*
+ * Light mode: the faint glow on a light band shows 8-bit banding rings.
+ * A fixed grain, only where the glow is, dithers them away. Dark mode has
+ * enough steps and stays smooth.
+ */
+:root {
+  --band-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='128' height='128'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.2' numOctaves='1' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='128' height='128' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+[data-theme="light"] .band-light::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--band-grain);
+  opacity: 0.035;
+  mask-image: radial-gradient(
+    ellipse 60% 150% at 50% 38%,
+    #000 30%,
+    transparent 80%
+  );
+}
+
 [data-ambient="breathe"] .band-light::before {
   animation: breathe 10s ease-in-out infinite;
 }
@@ -396,7 +421,7 @@ body {
 @keyframes breathe {
   0%,
   100% {
-    opacity: 0.45;
+    opacity: 0.35;
     transform: scale(0.96);
   }
   50% {
@@ -511,7 +536,7 @@ body {
 
 .back-link {
   flex: none;
-  font: var(--t-meta);
+  font: var(--t-action);
   color: var(--muted-foreground);
 }
 
@@ -603,13 +628,18 @@ body {
 }
 
 .section-head a {
-  font: var(--t-meta);
+  font: var(--t-action);
   color: var(--muted-foreground);
   white-space: nowrap;
 }
 
 .section-head a:hover {
   color: var(--accent);
+}
+
+.section-links {
+  display: flex;
+  gap: var(--s4);
 }
 
 /* ===== Index: leader lists ===== */
@@ -706,10 +736,6 @@ body {
 
 .status[data-status="maintained"] {
   --status-color: var(--status-maintained);
-}
-
-.status[data-status="experiment"] {
-  --status-color: var(--status-experiment);
 }
 
 .status[data-status="archived"] {
@@ -862,7 +888,10 @@ body {
   color: var(--foreground);
   font: var(--t-code);
   line-height: 1;
-  white-space: nowrap;
+  /* Long identifiers and paths wrap instead of widening a phone screen. */
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 .app-prose :not(pre) > code::before,
@@ -919,7 +948,11 @@ body {
   }
 }
 
-/* ===== Labelled blocks: code, tables and callouts share one form ===== */
+/*
+ * ===== Labelled blocks: code, tables and callouts share one form =====
+ * A 1px frame with the label in a notch of its top edge. Callouts add a tint
+ * of their type colour; the table of contents keeps only the top edge.
+ */
 
 .code-block,
 .table-block,
@@ -1096,26 +1129,27 @@ body {
   white-space: nowrap;
 }
 
-/* Callouts: the type is the block label, coloured by type */
+/* Callouts: the type is the block label, coloured by type, on a tint of it */
 .app-prose .callout {
+  --callout-hue: var(--rc-color-light, var(--muted-foreground));
   padding: var(--s4) var(--s4) var(--s3);
   border-inline-start-width: 1px;
-  border-color: var(--border);
-  background: transparent;
+  border-color: color-mix(in srgb, var(--callout-hue) 45%, var(--border));
+  background: color-mix(in srgb, var(--callout-hue) 7%, var(--background));
   color: var(--foreground);
   font-style: normal;
   opacity: 1;
   quotes: none;
 }
 
+.dark .app-prose .callout {
+  --callout-hue: var(--rc-color-dark, var(--muted-foreground));
+}
+
 .app-prose .callout::before {
   content: attr(data-callout);
   content: attr(data-callout) / "";
-  color: var(--rc-color-light, var(--muted-foreground));
-}
-
-.dark .app-prose .callout::before {
-  color: var(--rc-color-dark, var(--muted-foreground));
+  color: var(--callout-hue);
 }
 
 .app-prose .callout p::before,
@@ -1159,10 +1193,16 @@ body {
   margin-bottom: 0;
 }
 
-/* Inline table of contents */
+/* Inline table of contents: a top rule with the label, no frame */
 .post-toc {
   margin: 0 0 var(--s6);
-  padding: var(--s4) var(--s4) var(--s3);
+  padding: var(--s4) 0 0;
+  border-width: 1px 0 0;
+}
+
+.post-toc-label {
+  inset-inline-start: 0;
+  padding-inline-start: 0;
 }
 
 .post-toc ol {
@@ -1227,12 +1267,21 @@ body {
   border: 1px solid var(--muted-foreground);
   background: none;
   color: var(--foreground);
-  font: var(--t-meta);
+  font: var(--t-action);
   cursor: pointer;
 }
 
 .text-btn:hover {
   border-color: var(--accent);
+  color: var(--accent);
+}
+
+.edit-link {
+  font: var(--t-action);
+  color: var(--muted-foreground);
+}
+
+.edit-link:hover {
   color: var(--accent);
 }
 
@@ -1307,7 +1356,6 @@ body {
   color: var(--muted-foreground);
 }
 
-.empty-state p,
 .plain-text {
   margin: 0;
 }
@@ -1406,6 +1454,18 @@ body {
   list-style: none;
 }
 
+/* Too narrow for four in a row (423px): even rows, two by two for four */
+@media (max-width: 26.4375rem) {
+  .badges {
+    display: grid;
+    grid-template-columns: repeat(3, 88px);
+  }
+
+  .badges:has(> li:nth-child(4):last-child) {
+    grid-template-columns: repeat(2, 88px);
+  }
+}
+
 .b88 {
   display: block;
   width: 88px;
@@ -1442,8 +1502,7 @@ body {
 }
 
 .site-footer .credit {
-  font: var(--t-badge);
-  font-size: 15px;
+  font: var(--t-credit);
   color: inherit;
   text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 70%, transparent);
 }
@@ -1606,16 +1665,29 @@ html:not([data-statusline]) .statusline {
   display: none;
 }
 
+/* Room the statusline takes at the bottom of the viewport; 0 while hidden */
 html[data-statusline] body:has(.statusline) {
-  padding-bottom: var(--statusline-h);
+  --statusline-space: var(--statusline-h);
+  padding-bottom: var(--statusline-space);
 }
 
 html[data-statusline] body:has(.statusline) .post-fab {
-  inset-block-end: calc(2rem + var(--statusline-h));
+  inset-block-end: calc(2rem + var(--statusline-space));
 }
 
 html[data-statusline] body:has(.statusline) .toc-popover {
-  inset-block-end: calc(5.5rem + var(--statusline-h));
+  inset-block-end: calc(5.5rem + var(--statusline-space));
+}
+
+/* A keyboard bar: not on touch screens or phones (h j k l are off too) */
+@media (pointer: coarse), (max-width: 40rem) {
+  .statusline {
+    display: none;
+  }
+
+  html[data-statusline] body:has(.statusline) {
+    --statusline-space: 0px;
+  }
 }
 
 .statusline-mode {
@@ -1662,7 +1734,7 @@ html[data-statusline] body:has(.statusline) .toc-popover {
 /* ===== 404 ===== */
 
 .ascii {
-  margin: 0 0 var(--s5);
+  margin: 0;
   overflow-x: auto;
   color: var(--muted-foreground);
   font: var(--t-meta);
@@ -1676,7 +1748,7 @@ html[data-statusline] body:has(.statusline) .toc-popover {
 }
 
 .not-found-text {
-  margin: 0 0 var(--s3);
+  margin: 0;
 }
 
 [data-ambient="none"] .band-light {
@@ -1698,7 +1770,7 @@ html[data-statusline] body:has(.statusline) .toc-popover {
 }
 
 html[data-statusline] body:has(.statusline) .preview-panel {
-  inset-block-end: calc(var(--s4) + var(--statusline-h));
+  inset-block-end: calc(var(--s4) + var(--statusline-space));
 }
 
 /* Where the tab would sit over the footer, the page ends below it */
@@ -1725,9 +1797,27 @@ html[data-statusline] body:has(.statusline) .preview-panel {
   background: var(--accent);
 }
 
+/* Phones: the tab shrinks to its square, a 32px target in the corner */
 @media (max-width: 40rem) {
-  .preview-more {
-    display: none;
+  .preview-panel {
+    inset-inline-start: var(--s2);
+    inset-block-end: var(--s2);
+  }
+
+  .preview-panel summary {
+    justify-content: center;
+    min-width: 32px;
+    min-height: 32px;
+    padding: 0;
+  }
+
+  .preview-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 }
 

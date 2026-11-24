@@ -8,11 +8,10 @@ type Project = CollectionEntry<"projects">;
 export const STATUS_ORDER = {
   active: 0,
   maintained: 1,
-  experiment: 2,
-  archived: 3,
+  archived: 2,
 } as const;
 
-/** Featured first, then active → maintained → experiment → archived, then title. */
+/** Featured first, then active → maintained → archived, then title. */
 export function sortProjects<
   T extends {
     data: {
@@ -40,6 +39,3 @@ export function getProjectUrl(
 export async function getVisibleProjects(): Promise<Project[]> {
   return (await getCollection("projects")).filter(isVisible);
 }
-
-export const isLabProject = (project: Project): boolean =>
-  project.data.status === "experiment";
