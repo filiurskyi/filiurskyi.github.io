@@ -31,6 +31,13 @@ const type = file.endsWith(".mdx") ? "mdx" : "markdown";
 )}
 
 <script>
+  import {
+    isModalOpen,
+    isPlainKey,
+    isTyping,
+    statuslineActive,
+  } from "@/scripts/keys";
+
   // Vim's ruler: Top, NN%, Bot, or All when the page does not scroll.
   let pos: HTMLElement | null = null;
 
@@ -54,25 +61,9 @@ const type = file.endsWith(".mdx") ? "mdx" : "markdown";
 
   const STEP = 64;
 
-  function isTyping(target: EventTarget | null): boolean {
-    return (
-      target instanceof HTMLElement &&
-      (target.isContentEditable ||
-        ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
-    );
-  }
-
   function onKey(event: KeyboardEvent): void {
-    if (
-      event.defaultPrevented ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.altKey
-    )
-      return;
-    if (!document.querySelector(".statusline") || isTyping(event.target))
-      return;
-    if (document.querySelector("dialog[open]")) return;
+    if (!isPlainKey(event) || isTyping(event.target)) return;
+    if (!statuslineActive() || isModalOpen()) return;
     if (event.key === "j" || event.key === "k") {
       scrollBy({ top: event.key === "j" ? STEP : -STEP, behavior: "instant" });
       event.preventDefault();

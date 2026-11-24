@@ -1,5 +1,5 @@
 ---
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 
 /**
  * One row of a leader list: optional kind column, title, dev-only draft word,
@@ -40,7 +40,7 @@ const {
   desc,
   transitionName,
 } = Astro.props;
-const t = useTranslations(Astro.currentLocale);
+const t = useTranslations(useLocale(Astro));
 ---
 
 <li>

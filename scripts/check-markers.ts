@@ -2,8 +2,8 @@
 //
 // Run: ./dev.sh pnpm markers          (node scripts/check-markers.ts [--strict])
 //
-// Zero dependencies: `node:` builtins only and erasable TypeScript only, so
-// Node >= 22.18 strips the types natively.
+// `node:` builtins plus src/utils/contentFiles.ts (Astro's frontmatter
+// parser); erasable TypeScript only, so Node >= 22.18 strips the types natively.
 //
 // Warn mode (default) exits 0. Strict mode (`--strict` or MARKERS_STRICT=true)
 // exits 1 while any marker remains, so a deploy cannot publish one. No `.env`
@@ -13,8 +13,9 @@
 // show the syntax are not markers. src/utils/rehypeTodoMarkers.ts uses the same
 // marker shape. The built dist/**/*.html is scanned too, as a backstop; strict
 // mode also fails when dist/ is missing or has no HTML.
-import { existsSync, readFileSync, readdirSync } from "node:fs";
-import { join, sep } from "node:path";
+import { existsSync, readFileSync } from "node:fs";
+import { sep } from "node:path";
+import { isDraft, walk } from "../src/utils/contentFiles.ts";
 
 const SCANNED = /\.(md|mdx|ts|astro|json|ya?ml)$/;
 const MARKDOWN = /\.mdx?$/;
@@ -43,19 +44,6 @@ const strict =
   process.argv.includes("--strict") || process.env.MARKERS_STRICT === "true";
 const annotate = process.env.GITHUB_ACTIONS === "true";
 
-function walk(dir: string, out: string[] = []): string[] {
-  if (!existsSync(dir)) return out;
-  const entries = readdirSync(dir, { withFileTypes: true }).sort((a, b) =>
-    a.name < b.name ? -1 : a.name > b.name ? 1 : 0
-  );
-  for (const entry of entries) {
-    const path = join(dir, entry.name);
-    if (entry.isDirectory()) walk(path, out);
-    else out.push(path);
-  }
-  return out;
-}
-
 function posix(file: string): string {
   return file.split(sep).join("/");
 }
@@ -73,9 +61,7 @@ function isSkippedEntry(file: string, text: string): boolean {
   )
     return true;
   if (!MARKDOWN.test(path)) return false;
-  const frontmatter = /^---\r?\n([\s\S]*?)\r?\n---/.exec(text)?.[1] ?? "";
-  // YAML allows a trailing comment after the value.
-  return /^draft:\s*true\s*(?:#.*)?$/m.test(frontmatter);
+  return isDraft(text);
 }
 
 /** Blanks Markdown code spans (CommonMark rules) of one paragraph, keeping offsets and line breaks. */

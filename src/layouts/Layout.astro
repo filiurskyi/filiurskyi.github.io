@@ -1,8 +1,10 @@
 ---
+import { useLocale } from "@/i18n";
 import { Font } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import { getAssetPath } from "@/utils/withBase";
+import { getSections } from "@/utils/content/sections";
 import config from "@/config";
 import { paletteCss } from "@/palettes";
 import PreviewPanel from "@/components/PreviewPanel.astro";
@@ -12,6 +14,7 @@ import CustomBodyEnd from "@/custom/BodyEnd.astro";
 
 export type Props = {
   title?: string;
+  /** Meta description. Pages without one of their own get no meta. */
   description?: string;
   ogImage?: string;
   canonicalURL?: string;
@@ -29,7 +32,7 @@ const { cloudflareToken } = config.analytics;
 
 const {
   title = site.title,
-  description = site.description,
+  description,
   ogImage = resolveDefaultOgImagePath(config),
   canonicalURL = new URL(Astro.url.pathname, Astro.site).href,
   ogType = "website",
@@ -57,11 +60,13 @@ const paletteStyles = preview
     );
 const sourceBanner = site.sourceBanner ? `<!--\n${site.sourceBanner}\n-->` : "";
 const rssHref = getAssetPath("rss.xml");
+const sections = await getSections();
+const hasFeed = sections.posts || sections.notes;
 // A stored toggle choice, else appearance.defaultMode. theme.ts reads __theme.
 const THEME_BOOT = `(function () {
   var mode = ${JSON.stringify(defaultMode)};
   var theme = localStorage.getItem("theme");
-  if (!theme) {
+  if (theme !== "light" && theme !== "dark") {
     theme = mode === "system"
       ? matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
       : mode;
@@ -100,7 +105,7 @@ const PREVIEW_BOOT = `(function () {
   data-glow={wordmarkGlow ? "" : undefined}
   data-statusline={statusline ? "" : undefined}
   dir={site.dir ?? "ltr"}
-  lang={Astro.currentLocale ?? site.lang}
+  lang={useLocale(Astro)}
   class="overflow-y-scroll motion-safe:scroll-smooth"
 >
   <head>
@@ -121,14 +126,14 @@ const PREVIEW_BOOT = `(function () {
 
     <title>{title}</title>
     <meta name="title" content={title} />
-    <meta name="description" content={description} />
+    {description && <meta name="description" content={description} />}
     <meta name="author" content={site.author} />
     <link rel="sitemap" href={getAssetPath("sitemap-index.xml")} />
 
     <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={site.title} />
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    {description && <meta property="og:description" content={description} />}
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:image" content={socialImageURL} />
     {ogImageSize && (
@@ -142,16 +147,18 @@ const PREVIEW_BOOT = `(function () {
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:url" content={canonicalURL} />
     <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    {description && <meta name="twitter:description" content={description} />}
     <meta name="twitter:image" content={socialImageURL} />
     <meta name="twitter:image:alt" content={ogImageAlt} />
 
-    <link
-      rel="alternate"
-      type="application/rss+xml"
-      title={site.title}
-      href={new URL(rssHref, Astro.site)}
-    />
+    {hasFeed && (
+      <link
+        rel="alternate"
+        type="application/rss+xml"
+        title={site.title}
+        href={new URL(rssHref, Astro.site)}
+      />
+    )}
 
     <!-- Filled at runtime by theme.ts -->
     <meta name="theme-color" content="" />
@@ -168,7 +175,7 @@ const PREVIEW_BOOT = `(function () {
 
     <ClientRouter />
 
-    <CustomHead {title} {description} />
+    <CustomHead {title} description={description ?? ""} />
   </head>
   <body class="bg-background font-app text-foreground flex min-h-svh flex-col">
     <slot />

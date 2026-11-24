@@ -10,7 +10,7 @@ import Pagination from "@/components/Pagination.astro";
 import { getUniqueTags } from "@/utils/getUniqueTags";
 import { getAllItems } from "@/utils/content/items";
 import { slugifyAll } from "@/utils/slugify";
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
 
 export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
@@ -29,18 +29,16 @@ export async function getStaticPaths({ paginate }: GetStaticPathsOptions) {
 }
 
 const { page, tagName } = Astro.props;
+const mixed = new Set(page.data.map(item => item.type)).size > 1;
 
-const locale = Astro.currentLocale ?? config.site.lang;
+const locale = useLocale(Astro);
 const t = useTranslations(locale);
 ---
 
 <Layout title={`${t.pages.tagTitle}: ${tagName} | ${config.site.title}`}>
   <Header />
 
-  <Main
-    pageTitle={`${t.pages.tagTitle}: ${tagName}`}
-    pageDesc={`${t.pages.tagDesc} "${tagName}".`}
-  >
+  <Main pageTitle={`${t.pages.tagTitle}: ${tagName}`}>
     <Fragment slot="meta">
       <span></span>
       <a class="back-link" href={getRelativeLocaleUrl(locale, "tags")}>
@@ -50,7 +48,7 @@ const t = useTranslations(locale);
     </Fragment>
     <ul class="index">
       {page.data.map(item => (
-        <ItemRow item={item} showKind />
+        <ItemRow item={item} showKind={mixed} />
       ))}
     </ul>
     <Pagination {page} />

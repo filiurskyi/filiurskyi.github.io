@@ -49,7 +49,6 @@ type HomeGraphInput = {
   inLanguage: string;
   sameAs: string[];
   jobTitle?: string;
-  description?: string;
 };
 
 /** Homepage graph: the Person and the WebSite that Person publishes. */
@@ -65,7 +64,6 @@ export function homeGraph(site: URL, input: HomeGraphInput): JsonLdObject {
         url: root,
         sameAs: input.sameAs,
         jobTitle: input.jobTitle,
-        description: input.description,
       }),
       compact({
         "@type": "WebSite",

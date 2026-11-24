@@ -6,7 +6,7 @@ description: "[[TODO: one-sentence summary]]"
 # Required. Publication date with an offset. `./dev.sh new post <slug>` sets it to now in the site timezone.
 # The folder year under src/content/blog/ must equal this date's year in the site timezone (or in `timezone` below).
 pubDatetime: 2026-01-01T09:00:00+01:00
-# Free labels, lowercase and hyphenated by convention. Each one gets a page under /tags/. Default: none.
+# Lowercase labels, each once (uppercase or a repeat fails the build). Each one gets a page under /tags/. Default: none.
 tags: []
 # true keeps the post out of production builds (the dev server still shows it with a Draft badge).
 # Change it to false when the post is ready to publish.

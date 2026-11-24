@@ -1,6 +1,5 @@
 ---
-import config from "@/config";
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 
 type Props = {
   /** The page's one canonical URL, written at build time. */
@@ -8,7 +7,7 @@ type Props = {
 };
 
 const { url } = Astro.props;
-const t = useTranslations(Astro.currentLocale ?? config.site.lang);
+const t = useTranslations(useLocale(Astro));
 // A real link: without JavaScript, or without the clipboard API (plain-HTTP
 // LAN dev), it stays a "Permalink" link to the clean URL. The script below
 // turns it into a copy button only when the clipboard is available.

@@ -6,7 +6,6 @@ export default {
     blog: "Blog",
     notes: "Notes",
     projects: "Projects",
-    lab: "Lab",
     about: "About",
     tags: "Tags",
     search: "Search",
@@ -26,7 +25,6 @@ export default {
     status: {
       active: "Active",
       maintained: "Maintained",
-      experiment: "Experiment",
       archived: "Archived",
     },
     stack: "Stack",
@@ -66,7 +64,8 @@ export default {
   },
   home: {
     writing: "Writing",
-    archive: "archive",
+    allPosts: "all posts",
+    allNotes: "all notes",
     projects: "Projects",
     allProjects: "all",
     specialties: "Specialties",
@@ -75,74 +74,37 @@ export default {
     contactCta: "Get in touch",
   },
   contact: {
+    title: "Contact",
     methods: "Contact methods",
-    noMethods: "No contact methods are configured yet.",
   },
   footer: {
     contact: "contact",
-    rss: "rss",
     source: "source",
     poweredBy: "powered by",
     elsewhere: "Elsewhere",
   },
   pages: {
     tagTitle: "Tag",
-    tagDesc: "All posts and notes tagged",
 
     tagsTitle: "Tags",
-    tagsDesc: "All tags used in posts and notes.",
     tagCount: "{{count}} posts and notes",
 
     postsTitle: "Blog",
-    postsDesc: "All posts, newest first.",
-
     notesTitle: "Notes",
-    notesDesc: "Short notes, newest first.",
-
     projectsTitle: "Projects",
-    projectsDesc: "Active, maintained and archived projects.",
-
-    labTitle: "Lab",
-    labDesc: "Experiments and prototypes.",
-
     searchTitle: "Search",
-    searchDesc: "Search posts, notes and projects.",
   },
   search: {
     errorLoad:
       "Search couldn't load. Reload the page, or browse the blog, notes and projects.",
     noscript:
-      "Search needs JavaScript. You can browse the {{blog}}, {{notes}} and {{projects}} instead.",
+      "Search needs JavaScript. You can browse the {{sections}} instead.",
     blog: "blog",
     notes: "notes",
     projects: "projects",
     empty: "Nothing is published yet, so there is nothing to search.",
-    emptyBrowse:
-      "Once something is published, find it in the {{blog}}, {{notes}} or {{projects}}.",
-    noResults: "Try other words, or browse the {{tags}} or the {{blog}}.",
+    noResults: "Try other words, or browse the {{sections}}.",
     tags: "tags",
-  },
-  empty: {
-    postsHeading: "No posts yet",
-    postsBody:
-      "Published posts will appear here. Check back soon, or follow new posts via",
-    notesHeading: "No notes yet",
-    notesBody:
-      "Published notes will appear here. Check back soon, or follow new notes via",
-    rssLabel: "RSS",
-    tagsHeading: "No tags yet",
-    tagsBody: "Tags appear here once posts or notes are published.",
-    goToBlog: "Go to the blog",
-    projectsHeading: "No projects published yet",
-    projectsBody:
-      "Projects will appear here once they are published. In the meantime, see my code on",
-    projectsGithub: "GitHub",
-    projectsFallback:
-      "Projects will appear here once they are published. In the meantime,",
-    readTheBlog: "read the blog",
-    labHeading: "No experiments published yet",
-    labBody:
-      "Experiments and prototypes will appear here once they are published. In the meantime,",
   },
   a11y: {
     skipToContent: "Skip to content",
@@ -159,10 +121,16 @@ export default {
     linkCopySuccess: "Link copied to clipboard.",
     linkCopyFailure:
       "Copy failed. Use your browser's Copy link address option on this link.",
+    zoomImage: "Zoom image",
+    zoomImageAlt: "Zoom image: {{alt}}",
+    imagePreview: "Image preview",
+    imagePreviewAlt: "Image preview: {{alt}}",
+    closeImagePreview: "Close image preview",
+    themePreview: "Theme preview",
   },
   notFound: {
     title: "404 Not Found",
     message: "404: page not found",
-    body: "The link may be old, or the page moved. Try one of these instead:",
+    body: "The link may be old, or the page moved.",
   },
 } satisfies UIStrings;

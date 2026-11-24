@@ -55,4 +55,4 @@ The checks in `scripts/` have no dependencies beyond Node, so `pnpm verify` and 
 
 ### Example content
 
-Delete the example posts in `src/content/blog/`, the notes in `src/content/notes/` and the projects in `src/content/projects/`. Keep the three files in `src/content/pages/` and rewrite them.
+Delete the example posts in `src/content/blog/`, the notes in `src/content/notes/` and the projects in `src/content/projects/`. Keep `home.md` and `about.md` in `src/content/pages/` and rewrite them. Rewrite `contact.md`, or delete it: the contact page then lists only your profile badges, and without those there is none. `impressum.md` and `privacy.md` are optional standalone pages: rewrite them or delete them along with their `footer.links` entries.

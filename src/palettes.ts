@@ -267,8 +267,8 @@ function declarations(palette: Palette): string {
 
 /**
  * One rule per palette, keyed by the `data-dark` / `data-light` attribute on
- * <html> and the active `data-theme`. Only the configured palettes are
- * emitted, unless `all` is set (the live preview panel needs every one).
+ * <html> and the active `data-theme`, for every palette passed in. Layout
+ * passes only the configured two, or all of them for the preview panel.
  */
 export function paletteCss(
   dark: Record<string, Palette>,

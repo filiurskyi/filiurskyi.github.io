@@ -2,7 +2,8 @@
  * Rehype plugin for labelled blocks. Must run after Shiki and rehype-callouts.
  * Wraps each `pre.astro-code` in `div.code-block` with a language label, and
  * marks callouts with the default title (`data-default-title`) so CSS can
- * show the type as the label. Labels are kept out of the search index.
+ * show the type as the label. Labels and code are kept out of the search
+ * index, so search excerpts are prose.
  */
 
 type HastNode = {
@@ -49,7 +50,7 @@ const languageOf = (pre: HastNode): string => {
 const codeBlock = (pre: HastNode): HastNode => ({
   type: "element",
   tagName: "div",
-  properties: { className: ["code-block"] },
+  properties: { className: ["code-block"], dataPagefindIgnore: true },
   children: [
     {
       type: "element",
@@ -83,8 +84,10 @@ const walk = (node: HastNode): void => {
   node.children = node.children.map(child => {
     if (child.type !== "element") return child;
     const names = classes(child);
-    if (child.tagName === "pre" && names.includes("astro-code")) {
-      return codeBlock(child);
+    if (child.tagName === "pre") {
+      if (names.includes("astro-code")) return codeBlock(child);
+      child.properties = { ...child.properties, dataPagefindIgnore: true };
+      return child;
     }
     if (names.includes("callout")) markDefaultTitle(child);
     walk(child);

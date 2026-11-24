@@ -1,6 +1,6 @@
 ---
 import type { ContentItem } from "@/utils/content/items";
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 import ItemRow from "./ItemRow.astro";
 
 type Props = {
@@ -11,7 +11,8 @@ type Props = {
 
 const { items, title } = Astro.props;
 
-const t = useTranslations(Astro.currentLocale);
+const t = useTranslations(useLocale(Astro));
+const mixed = new Set(items.map(item => item.type)).size > 1;
 ---
 
 {items.length > 0 && (
@@ -21,7 +22,7 @@ const t = useTranslations(Astro.currentLocale);
     </h2>
     <ul class="index">
       {items.map(item => (
-        <ItemRow item={item} showKind />
+        <ItemRow item={item} showKind={mixed} />
       ))}
     </ul>
   </section>

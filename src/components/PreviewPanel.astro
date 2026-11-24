@@ -1,5 +1,6 @@
 ---
 import config from "@/config";
+import { useLocale, useTranslations } from "@/i18n";
 
 /**
  * Floating preview panel (appearance.preview): switch palette, ambient
@@ -27,17 +28,18 @@ const defaults = JSON.stringify({
   glow: wordmarkGlow,
   statusline,
 });
+const t = useTranslations(useLocale(Astro));
 const docsUrl =
   "https://github.com/glowing-space/starglow/blob/main/docs/02-configuration.md";
 ---
 
 <details class="preview-panel" data-defaults={defaults} data-pagefind-ignore>
   <summary>
-    <span>
+    <span class="preview-label">
       preview<span class="preview-more">: palette · effects</span>
     </span>
   </summary>
-  <form class="preview-body" aria-label="Theme preview">
+  <form class="preview-body" aria-label={t.a11y.themePreview}>
     <p class="preview-note">
       <a href={docsUrl}>starglow theme options</a> · this&nbsp;tab&nbsp;only
     </p>

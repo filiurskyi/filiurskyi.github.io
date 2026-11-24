@@ -20,8 +20,9 @@ import { slugifyStr } from "@/utils/slugify";
 import { toTransitionName } from "@/utils/toTransitionName";
 import { article, requireSite, toJsonLd } from "@/utils/jsonLd";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
+import { excerpt } from "@/utils/excerpt";
 import config from "@/config";
-import { tplStr, useTranslations } from "@/i18n";
+import { tplStr, useTranslations, useLocale } from "@/i18n";
 
 export async function getStaticPaths() {
   const notes = (await getCollection("notes")).filter(isVisible);
@@ -34,12 +35,13 @@ export async function getStaticPaths() {
 type Props = { note: CollectionEntry<"notes"> };
 
 const { note } = Astro.props;
-const t = useTranslations(Astro.currentLocale ?? config.site.lang);
+const t = useTranslations(useLocale(Astro));
 
 const { Content, headings } = await render(note);
 const { date, year } = getNoteDate(note);
 const formatted = date ? formatNoteDate(date) : undefined;
 const generatedOg = config.features.dynamicOgImage;
+const description = note.data.description ?? excerpt(note.body);
 
 // Computed once and passed to Layout too, so the JSON-LD, canonical and
 // og:image can never disagree.
@@ -56,7 +58,7 @@ const noteJsonLd = toJsonLd(
   article({
     site: requireSite(Astro.site),
     headline: note.data.title,
-    description: note.data.description,
+    description,
     url: canonical,
     image,
     dateModified: formatted?.iso,
@@ -68,7 +70,7 @@ const noteJsonLd = toJsonLd(
 
 <Layout
   title={`${note.data.title} | ${config.site.title}`}
-  description={note.data.description}
+  description={description}
   ogType="article"
   canonicalURL={canonical}
   ogImage={image}

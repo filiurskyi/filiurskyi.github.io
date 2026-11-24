@@ -8,11 +8,14 @@ export default defineStarglowConfig({
   site: {
     // Header, <title> and feeds. Used by: Layout, Header, rss.xml, OG images.
     title: "Andrii Filiurskyi",
+    // The home page meta description, the RSS feed and the WebSite data.
     description:
       "Engineering notes and projects on Embedded Linux, Yocto, Linux systems, Rust, Python and hardware.",
     // Default post author and the footer copyright name.
     author: "Andrii Filiurskyi",
-    // Source repository of your site, linked from the footer. Empty = no link.
+    // Source repository of your site: the footer "source" link and the base
+    // of features.editPost. The footer leaves the link out when another
+    // footer link has the same URL. Empty = neither.
     sourceUrl: "",
     lang: "en",
     // IANA timezone for post dates. ./dev.sh reads this line too.
@@ -21,8 +24,6 @@ export default defineStarglowConfig({
     // Search Console verification value. Empty = PUBLIC_GOOGLE_SITE_VERIFICATION
     // from the environment, or no meta tag.
     googleVerification: "BW8ORG-wacMtYvWuByNQoGA747CuLXKT-_s7C9VDBG4",
-    // Fediverse handle as @user@instance. Empty = no fediverse:creator meta.
-    fediverseCreator: "",
     // Header wordmark in the pixel face. Defaults to title.
     wordmark: "filiurskyi",
     // Printed as an HTML comment at the top of every page, for people who
@@ -43,7 +44,7 @@ export default defineStarglowConfig({
     },
   },
   // Optional homepage Person structured data. Empty fields are left out.
-  person: { jobTitle: "", description: "" },
+  person: { jobTitle: "" },
   posts: {
     perPage: 10,
     perIndex: 4,
@@ -52,6 +53,7 @@ export default defineStarglowConfig({
     lightAndDarkMode: true,
     dynamicOgImage: true,
     showBackButton: true,
+    // "Edit page" on posts: site.sourceUrl + path ("edit/main/" by default).
     editPost: { enabled: false },
     search: "pagefind",
     toc: true,
@@ -79,23 +81,14 @@ export default defineStarglowConfig({
     // off on your own site.
     preview: false,
   },
-  // 88x31 footer badges. Configured socials below get one automatically.
+  // 88x31 footer badges. Profile types (github, mastodon, linkedin, ...) are
+  // also your rel="me" links and the homepage sameAs; a mastodon URL like
+  // https://host/@you sets the fediverse:creator meta. The rss badge shows
+  // once a post or note is published. A URL the footer already has (the
+  // credit, an earlier badge) is left out.
   links: [
     { type: "rss", url: "/rss.xml" },
     { type: "github", url: "https://github.com/filiurskyi" },
-  ],
-  // Fill a url to show that profile in the footer badges, on /contact/ and in
-  // the homepage structured data. Empty urls render nowhere.
-  socials: [
-    { name: "github", label: "GitHub", url: "https://github.com/filiurskyi" },
-    { name: "linkedin", label: "LinkedIn", url: "" },
-    { name: "mastodon", label: "Mastodon", url: "" },
-    { name: "bluesky", label: "Bluesky", url: "" },
-    { name: "lemmy", label: "Lemmy", url: "" },
-    { name: "x", label: "X", url: "" },
-    { name: "reddit", label: "Reddit", url: "" },
-    { name: "devto", label: "DEV.to", url: "" },
-    { name: "medium", label: "Medium", url: "" },
   ],
   footer: {
     // "powered by starglow" in the footer. Keeping it is appreciated.

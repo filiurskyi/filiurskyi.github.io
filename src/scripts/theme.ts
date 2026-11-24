@@ -11,7 +11,7 @@ const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
 function getPreferredTheme(): string {
   const stored = localStorage.getItem(THEME_KEY);
-  if (stored) return stored;
+  if (stored === LIGHT || stored === DARK) return stored;
   if (defaultMode === "system") return systemDark.matches ? DARK : LIGHT;
   return defaultMode;
 }

@@ -1,13 +1,13 @@
 ---
 import type { MarkdownHeading } from "astro";
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 import { buildTocTree, hasToc } from "@/utils/buildTocTree";
 import TocList from "./TocList.astro";
 
 type Props = { headings: MarkdownHeading[] };
 
 const { headings } = Astro.props;
-const t = useTranslations(Astro.currentLocale);
+const t = useTranslations(useLocale(Astro));
 ---
 
 {hasToc(headings) && (

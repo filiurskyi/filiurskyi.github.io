@@ -275,6 +275,10 @@ export const PROFILE_BADGES = new Set([
   "medium",
 ]);
 
+/** The profile entries of `links`, in order. */
+export const profileLinks = <T extends { type: string }>(links: T[]): T[] =>
+  links.filter(link => PROFILE_BADGES.has(link.type));
+
 /** Horizontal runs of lit cells: [column, row, length]. */
 export function bitmapRuns(bitmap: string[]): [number, number, number][] {
   const runs: [number, number, number][] = [];

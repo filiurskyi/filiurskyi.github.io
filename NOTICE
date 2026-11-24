@@ -9,6 +9,7 @@ AstroPaper releases; fixes are picked up selectively.
 
 Bundled third-party assets keep their own licences:
 - Inter, JetBrains Mono, Pixelify Sans: SIL Open Font License 1.1
-  (src/assets/fonts/OFL-*.txt)
+  (src/assets/fonts/OFL-*.txt). The Inter files are a modified subset of
+  Inter 4.1: see docs/05-customising.md.
 - Tabler Icons: MIT (src/assets/icons/LICENSE-tabler-icons.txt)
 - Icon provenance: src/assets/icons/PROVENANCE.md

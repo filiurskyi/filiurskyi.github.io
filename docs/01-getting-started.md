@@ -53,8 +53,8 @@ You can also put `SITE_URL=https://example.com` in a local `.env` file. For the 
 
 ## Make it yours
 
-1. Edit `starglow.config.ts`: title, author, description, timezone, socials. See [Configuring starglow](./02-configuration.md).
-2. Replace the pages in `src/content/pages/` (home intro, about, contact).
+1. Edit `starglow.config.ts`: title, author, description, timezone, and your profiles as footer badges in `links`. See [Configuring starglow](./02-configuration.md).
+2. Replace the pages in `src/content/pages/` (home intro, about, and contact if you want text above the profiles on `/contact/`), and rewrite or delete the demo's `impressum.md` and `privacy.md` together with their `footer.links` entries.
 3. Delete the example posts, notes and projects, then add your own. See [The content model](./03-content-model.md).
 
 ## Build and deploy

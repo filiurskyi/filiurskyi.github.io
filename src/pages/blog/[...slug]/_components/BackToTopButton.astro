@@ -3,14 +3,14 @@ import type { MarkdownHeading } from "astro";
 import IconArrowNarrowUp from "@/assets/icons/IconArrowNarrowUp.svg";
 import IconListTree from "@/assets/icons/IconListTree.svg";
 import IconX from "@/assets/icons/IconX.svg";
-import { useTranslations } from "@/i18n";
+import { useTranslations, useLocale } from "@/i18n";
 import { buildTocTree, hasToc } from "@/utils/buildTocTree";
 import TocList from "./TocList.astro";
 
 type Props = { headings?: MarkdownHeading[] };
 
 const { headings = [] } = Astro.props;
-const t = useTranslations(Astro.currentLocale);
+const t = useTranslations(useLocale(Astro));
 const withToc = hasToc(headings);
 const items = withToc ? buildTocTree(headings) : [];
 ---
