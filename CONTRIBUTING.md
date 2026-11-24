@@ -41,8 +41,11 @@ breaks an existing site, label it `breaking` and add upgrade steps to
 ## Commit messages
 
 [Conventional Commits](https://www.conventionalcommits.org/):
-`feat(footer): …`, `fix(search): …`, `docs: …`. Keep the subject under 72
-characters and explain the why in the body.
+`feat(footer): …`, `fix(search): …`, `docs: …`. Header only: one line of at
+most 72 characters, no body and no trailers; put the why in the pull request.
+Run
+`git config core.hooksPath .githooks` once to have the format checked on
+every commit.
 
 ## Licence
 

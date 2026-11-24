@@ -22,6 +22,15 @@ starglow is an Astro 7 + Tailwind 4 static theme. Read this before changing it.
 - **Add a badge icon:** a bitmap in `src/utils/badges.ts` and a `--badge-<type>` colour token.
 - **Change the design:** keep the type scale (13/14/16/20/32), the 4px grid, 1px borders and zero radius; `verify-dist` checks the type scale.
 
+## Commits
+
+- Agents commit locally and never push. A human reviews every commit and pushes.
+- Header only: `type(scope): subject` on one line, no description body and no trailers. Types `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`; `!` after the type for breaking changes. Subject in the imperative, lowercase, no trailing full stop, at most 72 characters.
+- One logical change per commit; `./dev.sh ci` passes on every commit.
+- Write "starglow" lowercase, also in commit messages.
+- No personal content, secrets or generated files (`dist/`, `.astro/`).
+- Enable the checker once per clone: `git config core.hooksPath .githooks`.
+
 ## Rules
 
 - Minimal client JS; no framework islands.
