@@ -1,147 +1,54 @@
-# starglow
+# Andrii Filiurskyi — Engineering Hub
 
-A minimal, developer-flavoured Astro theme for blogs, notes and projects.
-Dark first, its own colour palettes, a little 2000s glow.
+Personal engineering site: a portfolio, a technical blog, short notes, a lab of experiments and open-source projects, on Embedded Linux, Yocto, Linux systems, Rust, Python and hardware. A static Astro build on the [starglow](https://github.com/glowing-space/starglow) theme; `dist/` is plain static files any host can serve.
 
-<picture>
-  <source media="(prefers-color-scheme: light)" srcset=".github/assets/home-light.png">
-  <img alt="Home page of the demo site in the dark starglow palette: a pixel wordmark under a softly glowing header band, a short intro, a list of posts and notes, and the preview tab in the bottom left corner" src=".github/assets/home-dark.png">
-</picture>
+## Quickstart
 
-**[Live demo](https://glowing-space.github.io/starglow/)** · [Docs](docs/) · [Releases](https://github.com/glowing-space/starglow/releases)
-
-## Features
-
-- Posts, short notes, projects and a lab of experiments, with tags and related content
-- Banded page header with an optional ambient glow and a pixel wordmark
-- Labelled code, table and callout blocks; GitHub alert callouts; MDX
-- Optional Obsidian-flavoured Markdown: wikilinks, image embeds, comments
-- Vim-style statusline on posts with hjkl keys, 88x31 footer badges and text links, a terminal 404 page
-- Pagefind search, RSS, sitemap, generated Open Graph images, JSON-LD
-- 4 dark and 5 light palettes, chosen separately; your own in a few lines; WCAG AA checked at build
-- A live preview panel for demos: palette, ambient light, glow, statusline
-- Almost no client JavaScript; plain static `dist/` for any host
-- One typed config file, `starglow.config.ts`
-- Build checks: every route, canonical URL, search index and link is asserted after each build
-
-## Screenshots
-
-| Dark                                                                                                                                         | Light                                                                                 |
-| -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
-| ![A post in the dark starglow palette: a bash code block, an "important" callout and the vim-style statusline](.github/assets/post-dark.png) | ![The same part of the post in the light sand palette](.github/assets/post-light.png) |
-
-![The same post section in all nine palettes, three by three: dark starglow, void, aurora and ember, then light starglow, paper, petal, frost and sand](.github/assets/palettes.png)
-
-![The bottom of the home page in the dark starglow palette: the projects list, then the footer with the copyright line, the "powered by starglow" credit, contact and rss links, four 88x31 badges (rss, github, astro, no cookies) and impressum and privacy links](.github/assets/footer.png)
-
-![The preview panel open on the home page in the aurora palette, with selects for the dark and light palette and the ambient light, checkboxes for wordmark glow and statusline, and a reset button](.github/assets/preview-open.png)
-
-## Quick start
-
-Clone starglow and keep it as a second remote, so theme updates stay one
-merge away:
+Docker with the Compose plugin is the only requirement on the host.
 
 ```sh
-git clone https://github.com/glowing-space/starglow.git my-site
-cd my-site
-git remote rename origin starglow
-pnpm install
-pnpm dev            # http://localhost:4321
+./dev.sh              # dev server at http://localhost:4321/, drafts visible
+./dev.sh new post <slug>
+./dev.sh build        # production build into dist/
+./dev.sh ci           # the same checks GitHub runs; run before pushing
 ```
 
-Prefer Docker? `./dev.sh` runs the same dev server with only Docker on the
-host.
+Commands, authoring rules and configuration are in the starglow docs, copied into [docs/](docs/): [development](docs/07-development.md), [content model](docs/03-content-model.md), [writing](docs/04-writing.md), [configuration](docs/02-configuration.md). Site settings live in `starglow.config.ts`; the glowing palette in `src/custom/palettes.ts`.
 
-Then:
+## Writing in Obsidian
 
-1. Set your details in [`starglow.config.ts`](starglow.config.ts).
-2. Replace the example posts, notes and projects in `src/content/` with your
-   own. `./dev.sh new post my-first-post` scaffolds one.
+`features.obsidian` is on: posts and notes can be copied from the vault unchanged (wikilinks, `![[image.png|alt]]` embeds, `%%comments%%`, Obsidian properties). See [docs/04-writing.md](docs/04-writing.md#writing-in-obsidian). Copy images by hand from the vault's `_storage/` into `_assets/` next to the post. `src/content/` is not format-checked.
 
-## Publish to `<username>.github.io`
+## Before the first push
 
-1. On GitHub, create an empty repository named `<username>.github.io`.
-2. Settings → Pages → Source: **GitHub Actions**.
-3. Settings → Secrets and variables → Actions → Variables: add `SITE_URL`
-   with `https://<username>.github.io`. Publishing from another repo name
-   instead, at `https://<username>.github.io/<repo>/`? Also add `BASE_PATH`
-   with `/<repo>`.
-4. Push:
+None of this is done by the repository. Do it by hand in the GitHub settings of `filiurskyi/filiurskyi.github.io`.
 
-   ```sh
-   git remote add origin https://github.com/<username>/<username>.github.io.git
-   git push -u origin main
-   ```
+- [ ] Settings → Pages → Build and deployment → Source: **GitHub Actions**, otherwise the deploy fails at its Pages configuration step.
+- [ ] Settings → Environments → `github-pages`: limit deployment branches to `main`.
+- [ ] Settings → Actions → General: workflow permissions "Read repository contents". Optionally require actions pinned to a full commit SHA: every action here already is.
+- [ ] Settings → Advanced Security: turn on Dependabot alerts and security updates (`.github/dependabot.yml` only configures version updates).
+- [ ] Optional: a ruleset on `main` that requires the status check `Format, lint, check, build, links, dist assertions` (`.github/workflows/checks.yml`).
+- [ ] After the first deploy, press Verify in Search Console (the verification value and the Cloudflare Web Analytics token are in `starglow.config.ts`).
 
-The included workflow builds, checks and deploys on every push to `main`.
-The full checklist is in [docs/08-deploying.md](docs/08-deploying.md).
+Publishing rules:
 
-## Update the theme
+- Pushing `main` deploys. Agents only commit locally; Andrii reviews and pushes.
+- A deploy fails while any `[[TODO: …]]` marker remains (`./dev.sh pnpm markers` lists them).
+- Never create a repository named after a top-level path of this site (it would be served under the same host): `404.html`, `_astro`, `about`, `blog`, `contact`, `favicon.svg`, `impressum`, `lab`, `notes`, `og.png`, `pagefind`, `privacy`, `projects`, `robots.txt`, `rss.xml`, `search`, `sitemap-0.xml`, `sitemap-index.xml`, `tags`. Regenerate the list with `ls dist` after `./dev.sh build`.
+
+Later: Giscus comments (needs GitHub Discussions and the Giscus app).
+
+## Theme updates
+
+The site is based on starglow through a git remote. To take theme updates:
 
 ```sh
 git fetch starglow
 git merge starglow/main
 ```
 
-Conflicts only come up in files you changed. Keep your changes in the files
-starglow never overwrites, listed in [UPGRADING.md](UPGRADING.md).
+Keep personal changes in `starglow.config.ts`, `src/custom/` and `src/content/`, so merges stay clean. Provenance of the theme and its AstroPaper origin is in [NOTICE](NOTICE).
 
-## Commands
+## License
 
-| Command        | What it does                                          |
-| -------------- | ----------------------------------------------------- |
-| `pnpm dev`     | Dev server with drafts visible                        |
-| `pnpm build`   | `astro check`, build, search index, placeholder check |
-| `pnpm preview` | Serve the built `dist/`                               |
-| `pnpm verify`  | Assertions over `dist/`                               |
-| `./dev.sh ci`  | Every CI check locally, in Docker                     |
-
-Guides live in [`docs/`](docs/): [getting started](docs/01-getting-started.md),
-[configuration](docs/02-configuration.md), [content model](docs/03-content-model.md),
-[writing](docs/04-writing.md), [customising](docs/05-customising.md),
-[removing features](docs/06-removing-features.md),
-[development and CI](docs/07-development.md), [deploying](docs/08-deploying.md).
-
-## Customise
-
-| I want to change…              | Edit                                           |
-| ------------------------------ | ---------------------------------------------- |
-| Title, author, socials, badges | `starglow.config.ts`                           |
-| Header glow, statusline        | `appearance` in `starglow.config.ts`           |
-| Colours                        | `appearance.palette` / `appearance.palettes`   |
-| Fonts, spacing                 | `src/styles/site-theme.css`                    |
-| Extra `<head>` tags, analytics | `src/custom/Head.astro`                        |
-| Comments or a bio under posts  | `src/custom/PostEnd.astro`                     |
-| The footer credit              | `footer.credit: false` in `starglow.config.ts` |
-| Footer links (Impressum, …)    | `footer.links` in `starglow.config.ts`         |
-
-Files in `src/custom/` are yours: upgrades never change them. See
-[UPGRADING.md](UPGRADING.md).
-
-## Deploy
-
-The build output is plain static files in `dist/`. The included workflow
-deploys to GitHub Pages; Cloudflare Pages, Netlify and others work with
-build command `pnpm build` and output directory `dist`. Set `SITE_URL` to
-your origin.
-
-## Contributing
-
-Issues and pull requests are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md)
-first; security issues go through [SECURITY.md](SECURITY.md).
-
-## Credits
-
-<img alt="glowing.space" src=".github/assets/glowing-space.png" width="228">
-
-Made by [Andrii Filiurskyi](https://github.com/filiurskyi), a
-[glowing.space](https://glowing.space) project.
-
-Originally based on [AstroPaper](https://github.com/satnaing/astro-paper) by
-Sat Naing. Fonts: Inter,
-JetBrains Mono and Pixelify Sans (SIL OFL). See [NOTICE](NOTICE).
-
-## Licence
-
-[MIT](LICENSE). Keeping the "powered by starglow" footer credit is
-appreciated, not required.
+Code is MIT-licensed (see [LICENSE](LICENSE)). Written content and its images (`src/content/`) are CC BY 4.0 (see [LICENSE-CONTENT.md](LICENSE-CONTENT.md)). The glowing colour palette and the glowing.space name and logos are all rights reserved.

@@ -1,4 +1,5 @@
 import { defineStarglowConfig } from "./src/types/config";
+import { glowingDark, glowingLight } from "./src/custom/palettes";
 
 // starglow theme configuration. Every key is documented in src/types/config.ts
 // (hover it in your editor) and in docs/02-configuration.md.
@@ -6,47 +7,43 @@ import { defineStarglowConfig } from "./src/types/config";
 export default defineStarglowConfig({
   site: {
     // Header, <title> and feeds. Used by: Layout, Header, rss.xml, OG images.
-    title: "mirasol",
+    title: "Andrii Filiurskyi",
     description:
-      "Mira Solvik makes pictures with code: generative art, shaders, pixel art and pen plots.",
+      "Engineering notes and projects on Embedded Linux, Yocto, Linux systems, Rust, Python and hardware.",
     // Default post author and the footer copyright name.
-    author: "Mira Solvik",
+    author: "Andrii Filiurskyi",
     // Source repository of your site, linked from the footer. Empty = no link.
     sourceUrl: "",
     lang: "en",
     // IANA timezone for post dates. ./dev.sh reads this line too.
-    timezone: "UTC",
+    timezone: "Europe/Berlin",
     dir: "ltr",
     // Search Console verification value. Empty = PUBLIC_GOOGLE_SITE_VERIFICATION
     // from the environment, or no meta tag.
-    googleVerification: "",
+    googleVerification: "BW8ORG-wacMtYvWuByNQoGA747CuLXKT-_s7C9VDBG4",
     // Fediverse handle as @user@instance. Empty = no fediverse:creator meta.
     fediverseCreator: "",
     // Header wordmark in the pixel face. Defaults to title.
-    wordmark: "mirasol",
+    wordmark: "filiurskyi",
     // Printed as an HTML comment at the top of every page, for people who
     // read the source. Text only; it must not contain two hyphens in a row.
     // Remove the whole key for no comment.
     sourceBanner: {
       art: String.raw`
-      _                        _
- ___ | |_   __ _  _ __   __ _ | |  ___  __      __
-/ __|| __| / _${"`"} || '__| / _${"`"} || | / _ \ \ \ /\ / /
-\__ \| |_ | (_| || |   | (_| || || (_) | \ V  V /
-|___/ \__| \__,_||_|    \__, ||_| \___/   \_/\_/
-                        |___/`,
+ __ _ _ _                 _          _
+ / _(_) (_)_   _ _ __ ___| | ___   _(_)
+| |_| | | | | | | '__/ __| |/ / | | | |
+|  _| | | | |_| | |  \__ \   <| |_| | |
+|_| |_|_|_|\__,_|_|  |___/_|\_\\__, |_|
+                               |___/`,
       message: [
         "hello, fellow source reader.",
-        "plain static HTML, a little CSS, almost no JS.",
+        "plain static HTML, a little CSS, almost no JS. source: github.com/filiurskyi",
       ].join("\n"),
     },
   },
   // Optional homepage Person structured data. Empty fields are left out.
-  person: {
-    jobTitle: "Creative coder",
-    description:
-      "A fictional creative coder who writes about generative art, GLSL shaders, pixel art and pen plotters.",
-  },
+  person: { jobTitle: "", description: "" },
   posts: {
     perPage: 10,
     perIndex: 4,
@@ -55,14 +52,11 @@ export default defineStarglowConfig({
     lightAndDarkMode: true,
     dynamicOgImage: true,
     showBackButton: true,
-    editPost: {
-      enabled: true,
-      url: "https://github.com/glowing-space/starglow/edit/main/",
-    },
+    editPost: { enabled: false },
     search: "pagefind",
     toc: true,
     // Obsidian wikilinks, image embeds, comments and properties in .md files.
-    obsidian: false,
+    obsidian: true,
   },
   appearance: {
     // First-visit mode until the visitor toggles: "dark" | "light" | "system".
@@ -75,27 +69,25 @@ export default defineStarglowConfig({
     // Colour palettes, chosen separately for dark and light mode. Built in:
     // dark starglow | void | aurora | ember; light starglow | paper | petal |
     // frost | sand. Add your own under `palettes` (see src/palettes.ts).
-    palette: { dark: "starglow", light: "starglow" },
+    // glowing: the glowing.space logo colours, defined in src/custom/palettes.ts.
+    palette: { dark: "glowing", light: "glowing" },
+    palettes: {
+      dark: { glowing: glowingDark },
+      light: { glowing: glowingLight },
+    },
     // Floating panel to try palettes and effects live. For demos; turn it
     // off on your own site.
-    preview: true,
+    preview: false,
   },
   // 88x31 footer badges. Configured socials below get one automatically.
   links: [
     { type: "rss", url: "/rss.xml" },
-    { type: "github", url: "https://github.com/glowing-space/starglow" },
-    {
-      type: "sparkle",
-      url: "https://astro.build",
-      label: "astro",
-      title: "Built with Astro",
-    },
-    { type: "link", url: "/privacy/", label: "no cookies", title: "Privacy" },
+    { type: "github", url: "https://github.com/filiurskyi" },
   ],
   // Fill a url to show that profile in the footer badges, on /contact/ and in
   // the homepage structured data. Empty urls render nowhere.
   socials: [
-    { name: "github", label: "GitHub", url: "" },
+    { name: "github", label: "GitHub", url: "https://github.com/filiurskyi" },
     { name: "linkedin", label: "LinkedIn", url: "" },
     { name: "mastodon", label: "Mastodon", url: "" },
     { name: "bluesky", label: "Bluesky", url: "" },
@@ -116,5 +108,5 @@ export default defineStarglowConfig({
   },
   // Cloudflare Web Analytics (cookieless). Unset = no script. The token may
   // also come from PUBLIC_CF_WEB_ANALYTICS_TOKEN in the environment.
-  // analytics: { cloudflareToken: "" },
+  analytics: { cloudflareToken: "a0c597e94640487e8ee34c05d15facf0" },
 });

@@ -1,8 +1,6 @@
 ---
 title: Impressum
-description: Who runs this site.
+description: This is a private, non-commercial website. It has no advertising, sells nothing and does not represent any employer.
 ---
 
-This is the starglow demo site; Mira Solvik is a fictional person.
-
-On your own site, put the details the law of your country asks for here: usually your name, a postal address and a way to contact you.
+Data protection: see the [privacy policy](/privacy/).

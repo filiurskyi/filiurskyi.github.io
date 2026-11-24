@@ -24,10 +24,10 @@ import { existsSync } from "node:fs";
 import config from "./starglow.config";
 
 // Single source of the site origin. Override per build with SITE_URL (shell or
-// .env); the default is the starglow demo origin; set your own.
+// .env); the default is this site's origin.
 if (existsSync(".env")) process.loadEnvFile(".env");
 const OBSIDIAN = config.features?.obsidian ?? false;
-const SITE_URL = process.env.SITE_URL || "https://starglow.glowing.space";
+const SITE_URL = process.env.SITE_URL || "https://filiurskyi.github.io";
 
 const siteUrl = (() => {
   try {

@@ -1,5 +1,7 @@
 # starglow: notes for AI coding agents
 
+This repository is personal site (https://filiurskyi.github.io), built on the starglow theme; there is no demo persona. Agents commit locally with header-only messages and never push: pushing `main` publishes, Andrii pushes. Never invent personal facts or content.
+
 starglow is an Astro 7 + Tailwind 4 static theme. Read this before changing it.
 
 ## Commands
@@ -11,14 +13,14 @@ starglow is an Astro 7 + Tailwind 4 static theme. Read this before changing it.
 
 - Config: `starglow.config.ts` (user), types and docs in `src/types/config.ts`, defaults resolved in `src/config.ts`.
 - Content: `src/content/{blog,notes,projects,pages}`; schemas in `src/content.config.ts` (strict).
-- Palettes: `src/palettes.ts` (the only place colours live). Theme styles: `src/styles/site-theme.css`; `theme.css` registers the Tailwind colour tokens, `typography.css` styles prose and `global.css` holds base rules. starglow does not track AstroPaper (see `NOTICE`), so edit them freely.
+- Palettes: built-in ones in `src/palettes.ts`, this site's `glowing` palette in `src/custom/palettes.ts`. Theme styles: `src/styles/site-theme.css`; `theme.css` registers the Tailwind colour tokens, `typography.css` styles prose and `global.css` holds base rules. starglow does not track AstroPaper (see `NOTICE`), so edit them freely.
 - User slots, never overwritten: `src/custom/*.astro`.
 - Build assertions: `scripts/verify-dist.ts`; placeholder check: `scripts/check-markers.ts`.
 
 ## Recipes
 
 - **Add a post:** `./dev.sh new post <slug>` → `src/content/blog/<year>/<slug>.md`; the folder year must match `pubDatetime`.
-- **Add a config option:** add it with JSDoc to `src/types/config.ts`, a default in `src/config.ts`, the key to `starglow.config.ts`, a row in `docs/02-configuration.md` and a `breaking`, `enhancement` or `bug` label on the pull request (release notes are generated from labels).
+- **Add a config option:** add it with JSDoc to `src/types/config.ts`, a default in `src/config.ts`, the key to `starglow.config.ts` and a row in `docs/02-configuration.md`.
 - **Add a badge icon:** a bitmap in `src/utils/badges.ts` and a `--badge-<type>` colour token.
 - **Change the design:** keep the type scale (13/14/16/20/32), the 4px grid, 1px borders and zero radius; `verify-dist` checks the type scale.
 
@@ -28,7 +30,7 @@ starglow is an Astro 7 + Tailwind 4 static theme. Read this before changing it.
 - Header only: `type(scope): subject` on one line, no description body and no trailers. Types `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`; `!` after the type for breaking changes. Subject in the imperative, lowercase, no trailing full stop, at most 72 characters.
 - One logical change per commit; `./dev.sh ci` passes on every commit.
 - Write "starglow" lowercase, also in commit messages.
-- No personal content, secrets or generated files (`dist/`, `.astro/`).
+- No secrets or generated files (`dist/`, `.astro/`). Personal content lives only in `starglow.config.ts`, `src/custom/` and `src/content/`.
 - Enable the checker once per clone: `git config core.hooksPath .githooks`.
 
 ## Rules

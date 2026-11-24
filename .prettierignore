@@ -17,3 +17,5 @@
 
 # Ignore MDX files
 *.mdx
+# Content is written in Obsidian; its formatting is not checked
+/src/content/

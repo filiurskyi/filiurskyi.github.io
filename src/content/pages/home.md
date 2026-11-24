@@ -1,6 +1,6 @@
 ---
 title: Home
-specialties: ["Generative art", "GLSL", "Pixel art", "Plotters"]
+specialties: ["coding", "embedded", "linux"]
 ---
 
-Hi, I am Mira. I make pictures with code: flow fields, dithered shaders, small pixel art games and drawings on a pen plotter. This is where I write down how they work, so I can find it again and so you can borrow it.
+Hi! This is my small blog. I started it after I felt a desperate need to structure my thoughts and knowledge in this brave new era. Warning: some things are very opinionated.

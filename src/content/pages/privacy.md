@@ -1,12 +1,9 @@
 ---
 title: Privacy
-description: "No cookies, no tracking."
+description: "No cookies, no tracking, just visit counts."
 ---
 
-This is the starglow demo site.
-
-- **No cookies**, no accounts, no comments, no ads, no analytics.
-- **Hosting:** GitHub Pages keeps server logs (IP address, page, time, browser) for security.
-- **Your browser** keeps your light/dark choice and, for the current tab, the preview panel settings, your last search and the back link. Nothing of it is sent anywhere.
-
-On your own site, describe what your setup actually does, for example if you turn on Cloudflare Web Analytics.
+- **No cookies**, no accounts, no comments, no ads.
+- **Hosting:** [GitHub Pages](https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement) keeps server logs (IP address, page, time, browser) for security.
+- **Visit counts:** [Cloudflare Web Analytics](https://www.cloudflare.com/privacypolicy/), cookieless. I only see totals; per Cloudflare, IP addresses are not stored.
+- **Your browser** keeps your light/dark choice, and for the current tab your last search and back link. Nothing of it is sent anywhere.
