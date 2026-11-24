@@ -211,4 +211,36 @@ Set `features.obsidian: true` in `starglow.config.ts` to copy posts, notes and p
 - `%%comments%%` are removed. Code blocks and inline code are left as written.
 - The Obsidian-only properties `aliases`, `alias`, `cssclasses`, `cssclass`, `publish`, `permalink`, `created` and `modified` are accepted and dropped. Any other unknown property still fails the build. `tags: rust`, `#rust` and an empty `tags:` are accepted.
 
+### Templates in Obsidian
+
+The files in `templates/` explain every key in YAML comments. Obsidian's Properties editor removes YAML comments, so a template for the Templater plugin works better without them:
+
+- Write only the required keys and the ones you fill in: `title`, `description`, `pubDatetime` and `draft` for a post; `title` and `draft` for a note; `title`, `description`, `status` and `draft` for a project. A lab entry is a project with `status: experiment`.
+- Leave an optional key out rather than empty. An empty `description:` or `githubUrl:` is `null`, and the strict schema rejects it.
+- Write `pubDatetime` with an offset: `<% tp.date.now("YYYY-MM-DDTHH:mm:ssZ") %>`.
+- Keep `draft: true` in the template and switch it to `false` when the entry is ready.
+- A list of the remaining optional keys fits in a `%%comment%%` in the body of a post or note; the build removes it. A project or lab entry must have no body at all, not even a comment.
+
+A post template that asks for the title, description and tags:
+
+```text
+<%*
+const ask = async q => ((await tp.system.prompt(q)) ?? "").trim();
+const title = (await ask("Title")) || tp.file.title;
+const description = await ask("Description");
+const tags = (await ask("Tags")).split(/[\s,]+/).filter(Boolean);
+-%>
+---
+title: <% JSON.stringify(title) %>
+description: <% JSON.stringify(description) %>
+pubDatetime: <% tp.date.now("YYYY-MM-DDTHH:mm:ssZ") %>
+tags: [<% tags.join(", ") %>]
+draft: true
+---
+
+%% optional keys: modDatetime, hideToc, hideEditPost, ogImage, timezone, canonicalUrl, syndication, author %%
+```
+
+For a project, ask for the status with `tp.system.suggester(["active", "maintained", "archived", "experiment"], ["active", "maintained", "archived", "experiment"])`. Copy the finished file to the right folder in the repository: a post into `src/content/blog/<year>/`, where the year matches `pubDatetime`.
+
 `./dev.sh ci` checks the formatting of `src/content/` with Prettier. If Obsidian's formatting gets in the way, add `/src/content/` to `.prettierignore`.

@@ -3,7 +3,9 @@
 title: "[[TODO: project name]]"
 # Required. One sentence: the summary on cards and the meta description.
 description: "[[TODO: one-sentence description of the project]]"
-# Required. One of: active, maintained, archived, experiment. Projects with status experiment are listed on /lab/.
+# Required. One of: active, maintained, archived, experiment.
+# Meanings: active is in development, maintained is done but still looked after, archived is no longer worked on.
+# experiment lists the project on /lab/ instead of /projects/ (`./dev.sh new lab <slug>` starts from templates/lab.md).
 status: active
 # true keeps the project out of production builds (the dev server still shows it with a Draft badge).
 # Change it to false when the project is ready to publish.

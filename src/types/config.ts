@@ -110,7 +110,8 @@ interface AppearanceConfig {
   wordmarkGlow?: boolean;
   /**
    * Vim-style status bar at the bottom of post and note pages: source path,
-   * file type and scroll position. Defaults to false.
+   * file type and scroll position; j/k scroll, h/l open the previous/next
+   * post. Defaults to false.
    */
   statusline?: boolean;
   /**

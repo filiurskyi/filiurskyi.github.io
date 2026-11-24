@@ -58,6 +58,10 @@ Projects are one Markdown file each, directly in `src/content/projects/`, and th
 
 Projects with `status: experiment` are listed on `/lab/` instead of `/projects/`.
 
+### Lab entries
+
+A lab entry is a project with `status: experiment`: same folder, same fields, same URL under `/projects/<slug>/`, but listed on `/lab/` instead of `/projects/`. Changing the status later moves the entry between the two lists without changing its URL. Like a project, a lab entry has no body; write about the experiment in a post and link it with `relatedPosts`.
+
 ## Pages
 
 `src/content/pages/` holds the text of three pages: `home.md` (the homepage intro and an optional `specialties` list), `about.md` and `contact.md`. Edit them in place.
@@ -73,15 +77,18 @@ Any other file there becomes a standalone page at `/<name>/`, laid out like the 
 
 ## Creating content
 
-`templates/` holds a commented starting file for each type. Every optional key is listed there with an explanation, so you can uncomment what you need. With Docker set up, one command copies a template:
+`templates/` holds a commented starting file for each type: `post.md`, `note.md`, `project.md` and `lab.md`. Every optional key is listed there with its default and an explanation, so you can uncomment what you need. With Docker set up, one command copies a template:
 
 ```bash
-./dev.sh new post my-first-post
-./dev.sh new note a-handy-command
-./dev.sh new project my-tool
+./dev.sh new post my-first-post    # src/content/blog/<year>/my-first-post.md
+./dev.sh new note a-handy-command  # src/content/notes/<year>/a-handy-command.md
+./dev.sh new project my-tool       # src/content/projects/my-tool.md
+./dev.sh new lab a-quick-test      # src/content/projects/a-quick-test.md, status: experiment
 ```
 
-It sets the date to now in the site timezone and marks the entry as a draft. It needs GNU `date`.
+It sets the date to now in the site timezone and marks the entry as a draft. It needs GNU `date`. A project and a lab entry share `src/content/projects/`, so their slugs must differ.
+
+In VS Code, `.vscode/starglow.code-snippets` adds the snippets `frontmatter` (post), `note-frontmatter`, `project-frontmatter` and `lab-frontmatter`. For templates in Obsidian, see [Writing in Obsidian](./04-writing.md#writing-in-obsidian).
 
 ### Drafts
 

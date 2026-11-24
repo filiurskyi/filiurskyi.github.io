@@ -84,6 +84,13 @@ export default defineStarglowConfig({
   links: [
     { type: "rss", url: "/rss.xml" },
     { type: "github", url: "https://github.com/glowing-space/starglow" },
+    {
+      type: "sparkle",
+      url: "https://astro.build",
+      label: "astro",
+      title: "Built with Astro",
+    },
+    { type: "link", url: "/privacy/", label: "no cookies", title: "Privacy" },
   ],
   // Fill a url to show that profile in the footer badges, on /contact/ and in
   // the homepage structured data. Empty urls render nowhere.
@@ -102,7 +109,10 @@ export default defineStarglowConfig({
     // "powered by starglow" in the footer. Keeping it is appreciated.
     credit: true,
     // Text links on the badge row, e.g. pages from src/content/pages/.
-    // links: [{ label: "impressum", href: "/impressum/" }],
+    links: [
+      { label: "impressum", href: "/impressum/" },
+      { label: "privacy", href: "/privacy/" },
+    ],
   },
   // Cloudflare Web Analytics (cookieless). Unset = no script. The token may
   // also come from PUBLIC_CF_WEB_ANALYTICS_TOKEN in the environment.

@@ -4,7 +4,8 @@ import config from "@/config";
 /**
  * Vim-style status bar for post and note pages: mode, the source file
  * relative to the content folder, file type and scroll position. Decorative
- * only (aria-hidden); rendered when `appearance.statusline` is on.
+ * only (aria-hidden); rendered when `appearance.statusline` is on. While it is
+ * shown, j/k scroll and h/l open the previous/next post.
  */
 type Props = {
   /** The entry's `filePath`, e.g. src/content/blog/2026/my-post.md */
@@ -51,6 +52,41 @@ const type = file.endsWith(".mdx") ? "mdx" : "markdown";
     update();
   }
 
+  const STEP = 64;
+
+  function isTyping(target: EventTarget | null): boolean {
+    return (
+      target instanceof HTMLElement &&
+      (target.isContentEditable ||
+        ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName))
+    );
+  }
+
+  function onKey(event: KeyboardEvent): void {
+    if (
+      event.defaultPrevented ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.altKey
+    )
+      return;
+    if (!document.querySelector(".statusline") || isTyping(event.target))
+      return;
+    if (document.querySelector("dialog[open]")) return;
+    if (event.key === "j" || event.key === "k") {
+      scrollBy({ top: event.key === "j" ? STEP : -STEP, behavior: "instant" });
+      event.preventDefault();
+    } else if (event.key === "h" || event.key === "l") {
+      const link = document.querySelector<HTMLAnchorElement>(
+        event.key === "h" ? ".adjacent a:not(.next)" : ".adjacent a.next"
+      );
+      if (!link || event.repeat) return;
+      event.preventDefault();
+      link.click();
+    }
+  }
+
+  document.addEventListener("keydown", onKey);
   addEventListener("scroll", update, { passive: true });
   addEventListener("resize", update, { passive: true });
   document.addEventListener("astro:page-load", init);

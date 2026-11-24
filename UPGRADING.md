@@ -45,6 +45,6 @@ skip below.
 
 ## Release notes with upgrade steps
 
-### Unreleased
+### v0.1.0
 
 First version, nothing to migrate.

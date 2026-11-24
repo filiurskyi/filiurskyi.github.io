@@ -46,10 +46,10 @@ workflows() {
 # year and post date come from one clock read in the site timezone, so they
 # always agree with the check in src/utils/postEntryId.ts.
 new_content() {
-  local usage='Usage: ./dev.sh new <post|note|project> <slug>'
+  local usage='Usage: ./dev.sh new <post|note|project|lab> <slug>'
   local type="${1:-}" slug="${2:-}"
   case "$type" in
-    post | note | project) ;;
+    post | note | project | lab) ;;
     *)
       echo "$usage" >&2
       exit 2
@@ -97,7 +97,7 @@ new_content() {
   case "$type" in
     post) dir="src/content/blog/$year" ;;
     note) dir="src/content/notes/$year" ;;
-    project) dir="src/content/projects" ;;
+    project | lab) dir="src/content/projects" ;;
   esac
 
   local ext
@@ -143,7 +143,7 @@ case "${1:-dev}" in
     run pnpm "$@"
     ;;
   *)
-    echo "usage: ./dev.sh [dev|build|check|preview|shell|ci|links|workflows|new <post|note|project> <slug>|pnpm <args>]" >&2
+    echo "usage: ./dev.sh [dev|build|check|preview|shell|ci|links|workflows|new <post|note|project|lab> <slug>|pnpm <args>]" >&2
     exit 2
     ;;
 esac
