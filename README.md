@@ -1,6 +1,6 @@
 # Andrii Filiurskyi — Engineering Hub
 
-Personal engineering site: a portfolio, a technical blog, short notes, a lab of experiments and open-source projects, on Embedded Linux, Yocto, Linux systems, Rust, Python and hardware. A static Astro build on the [starglow](https://github.com/glowing-space/starglow) theme; `dist/` is plain static files any host can serve.
+Personal engineering site: a portfolio, a technical blog, short notes and open-source projects, on Embedded Linux, Yocto, Linux systems, Rust, Python and hardware. A static Astro build on the [starglow](https://github.com/glowing-space/starglow) theme; `dist/` is plain static files any host can serve.
 
 ## Quickstart
 
@@ -34,7 +34,7 @@ Publishing rules:
 
 - Pushing `main` deploys. Agents only commit locally; Andrii reviews and pushes.
 - A deploy fails while any `[[TODO: …]]` marker remains (`./dev.sh pnpm markers` lists them).
-- Never create a repository named after a top-level path of this site (it would be served under the same host): `404.html`, `_astro`, `about`, `blog`, `contact`, `favicon.svg`, `impressum`, `lab`, `notes`, `og.png`, `pagefind`, `privacy`, `projects`, `robots.txt`, `rss.xml`, `search`, `sitemap-0.xml`, `sitemap-index.xml`, `tags`. Regenerate the list with `ls dist` after `./dev.sh build`.
+- Never create a repository named after a top-level path of this site (it would be served under the same host): `404.html`, `_astro`, `about`, `blog`, `contact`, `favicon.svg`, `impressum`, `notes`, `og.png`, `pagefind`, `privacy`, `projects`, `robots.txt`, `rss.xml`, `search`, `sitemap-0.xml`, `sitemap-index.xml`, `tags`. Regenerate the list with `ls dist` after `./dev.sh build`.
 
 Later: Giscus comments (needs GitHub Discussions and the Giscus app).
 

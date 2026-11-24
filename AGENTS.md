@@ -1,6 +1,6 @@
 # starglow: notes for AI coding agents
 
-This repository is personal site (https://filiurskyi.github.io), built on the starglow theme; there is no demo persona. Agents commit locally with header-only messages and never push: pushing `main` publishes, Andrii pushes. Never invent personal facts or content.
+This repository is a personal site (https://filiurskyi.github.io), built on the starglow theme; there is no demo persona. Agents commit locally with header-only messages and never push: pushing `main` publishes, Andrii pushes. Never invent personal facts or content.
 
 starglow is an Astro 7 + Tailwind 4 static theme. Read this before changing it.
 

@@ -39,7 +39,7 @@ export default defineStarglowConfig({
                                |___/`,
       message: [
         "hello, fellow source reader.",
-        "plain static HTML, a little CSS, almost no JS. source: github.com/filiurskyi",
+        "plain static HTML, a little CSS, almost no JS.",
       ].join("\n"),
     },
   },
