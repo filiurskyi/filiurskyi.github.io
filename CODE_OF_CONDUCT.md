@@ -8,5 +8,6 @@ no harassment of any kind. Maintainers may remove comments, issues or pull
 requests that break these rules and may block repeat offenders.
 
 Report a problem privately to the maintainer,
-[@filiurskyi](https://github.com/filiurskyi), through the contact details on
-that profile. Reports are handled confidentially.
+[@filiurskyi](https://github.com/filiurskyi), through the contact options on
+[filiurskyi.github.io](https://filiurskyi.github.io/). Reports are handled
+confidentially.

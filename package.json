@@ -3,6 +3,12 @@
   "type": "module",
   "version": "0.1.1",
   "private": true,
+  "description": "A minimal Astro theme for blogs, notes and projects",
+  "license": "MIT",
+  "author": "Andrii Filiurskyi (https://github.com/filiurskyi)",
+  "homepage": "https://glowing-space.github.io/starglow/",
+  "repository": "github:glowing-space/starglow",
+  "bugs": "https://github.com/glowing-space/starglow/issues",
   "engines": {
     "node": ">=22.23.4"
   },
