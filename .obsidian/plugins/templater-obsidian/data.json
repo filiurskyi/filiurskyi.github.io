@@ -1,0 +1,54 @@
+{
+  "data_version": 2,
+  "command_timeout": 5,
+  "templates_folder": "templates/obsidian",
+  "templates_pairs": [],
+  "trigger_on_file_creation_mode": "folder",
+  "only_trigger_for_matching_files": false,
+  "auto_jump_to_cursor": false,
+  "jump_to_cursor_after_file_name": false,
+  "shell_path": "",
+  "user_scripts_folder": "",
+  "folder_templates": [
+    {
+      "folder": "src/content/blog",
+      "template": "templates/obsidian/Blog Post.md"
+    },
+    {
+      "folder": "src/content/notes",
+      "template": "templates/obsidian/Blog Note.md"
+    },
+    {
+      "folder": "src/content/projects",
+      "template": "templates/obsidian/Blog Project.md"
+    }
+  ],
+  "file_templates": [],
+  "syntax_highlighting": true,
+  "syntax_highlighting_mobile": true,
+  "enabled_templates_hotkeys": [
+    {
+      "template": "templates/obsidian/Blog Post.md",
+      "insert_enabled": false,
+      "create_enabled": true
+    },
+    {
+      "template": "templates/obsidian/Blog Note.md",
+      "insert_enabled": false,
+      "create_enabled": true
+    },
+    {
+      "template": "templates/obsidian/Blog Project.md",
+      "insert_enabled": false,
+      "create_enabled": true
+    }
+  ],
+  "startup_templates": [],
+  "intellisense_render": "1",
+  "ignore_folders_on_creation": [],
+  "trigger_on_file_creation": true,
+  "enable_system_commands": false,
+  "enable_folder_templates": true,
+  "enable_file_templates": false,
+  "enable_ribbon_icon": true
+}

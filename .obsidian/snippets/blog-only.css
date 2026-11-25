@@ -1,0 +1,5 @@
+/* File explorer shows only the blog: src/content and templates/obsidian.
+   Turn off in Settings → Appearance → CSS snippets to see the whole repo. */
+.nav-files-container .tree-item:not(.mod-root):has(> .tree-item-self[data-path]:not([data-path="src"]):not([data-path="src/content"]):not([data-path^="src/content/"]):not([data-path="templates"]):not([data-path="templates/obsidian"]):not([data-path^="templates/obsidian/"])) {
+  display: none;
+}

@@ -1,0 +1,10 @@
+{
+  "accentColor": "#f78ed6",
+  "showViewHeader": true,
+  "cssTheme": "Minimal",
+  "showRibbon": true,
+  "enabledCssSnippets": [
+    "blog-only",
+    "glowing"
+  ]
+}

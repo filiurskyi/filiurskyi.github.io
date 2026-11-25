@@ -34,3 +34,10 @@ public/pagefind
 # docker compose
 compose.override.yaml
 .planning/
+
+# obsidian: commit settings, not window state, trash or third-party plugin and theme code
+.obsidian/workspace*.json
+.obsidian/plugins/*/*
+!.obsidian/plugins/*/data.json
+.obsidian/themes/
+.trash/

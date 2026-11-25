@@ -1,0 +1,24 @@
+{
+  "items": [
+    {
+      "type": "folder",
+      "path": "src/content/blog",
+      "title": "Posts"
+    },
+    {
+      "type": "folder",
+      "path": "src/content/notes",
+      "title": "Notes"
+    },
+    {
+      "type": "folder",
+      "path": "src/content/projects",
+      "title": "Projects"
+    },
+    {
+      "type": "folder",
+      "path": "src/content/pages",
+      "title": "Pages"
+    }
+  ]
+}

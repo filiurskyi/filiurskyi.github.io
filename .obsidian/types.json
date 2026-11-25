@@ -1,0 +1,17 @@
+{
+  "types": {
+    "tags": "tags",
+    "aliases": "aliases",
+    "cssclasses": "multitext",
+    "pubDatetime": "text",
+    "modDatetime": "text",
+    "updated": "date",
+    "draft": "checkbox",
+    "featured": "checkbox",
+    "hideToc": "checkbox",
+    "hideEditPost": "checkbox",
+    "stack": "multitext",
+    "syndication": "multitext",
+    "relatedPosts": "multitext"
+  }
+}

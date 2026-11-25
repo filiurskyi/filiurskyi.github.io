@@ -1,0 +1,76 @@
+/* glowing: the site's palette (src/custom/palettes.ts) on Minimal's grey
+   surfaces. Only text, accents and shapes change; backgrounds stay Minimal's. */
+
+body.theme-dark {
+  --accent-h: 319;
+  --accent-s: 87%;
+  --accent-l: 76%;
+  --g-accent: #f78ed6;
+  --g-purple: #c79be0;
+  --g-blue: #8fa2ff;
+  --g-cyan: #5fcde4;
+  --g-green: #15c2a5;
+  --g-yellow: #f3d88a;
+  --g-comment: #a49cbb;
+  --g-glow: #342a97;
+}
+
+body.theme-light {
+  --accent-h: 321;
+  --accent-s: 67%;
+  --accent-l: 41%;
+  --g-accent: #b0237f;
+  --g-purple: #76428a;
+  --g-blue: #342a97;
+  --g-cyan: #0e6b83;
+  --g-green: #0f6c6a;
+  --g-yellow: #7a5a00;
+  --g-comment: #605c84;
+  --g-glow: #fbe3f4;
+}
+
+body {
+  /* Headings: accent, then the palette's cool colours */
+  --h1-color: var(--g-accent);
+  --h2-color: var(--g-purple);
+  --h3-color: var(--g-blue);
+  --h4-color: var(--g-cyan);
+  --h5-color: var(--g-green);
+  --h6-color: var(--g-comment);
+  --inline-title-color: var(--g-accent);
+
+  --link-color: var(--g-accent);
+  --link-color-hover: var(--g-accent);
+  --link-external-color: var(--g-blue);
+  --link-external-color-hover: var(--g-blue);
+  --link-unresolved-color: var(--g-comment);
+  --tag-color: var(--g-purple);
+  --tag-color-hover: var(--g-purple);
+  --tag-background: transparent;
+  --tag-border-width: 1px;
+  --tag-border-color: var(--g-purple);
+  --code-normal: var(--g-green);
+  --text-highlight-bg: color-mix(in srgb, var(--g-yellow) 30%, transparent);
+  --blockquote-border-color: var(--g-accent);
+  --checkbox-color: var(--g-accent);
+  --metadata-label-text-color: var(--g-comment);
+
+  /* The site's shape rules: zero radius, 1px borders */
+  --radius-s: 0;
+  --radius-m: 0;
+  --radius-l: 0;
+  --radius-xl: 0;
+  --callout-radius: 0;
+  --code-radius: 0;
+  --tag-radius: 0;
+  --checkbox-radius: 0;
+  --button-radius: 0;
+  --input-radius: 0;
+  --modal-radius: 0;
+  --border-width: 1px;
+}
+
+/* The wordmark glow, on the note title */
+.inline-title {
+  text-shadow: 0 0 18px var(--g-glow);
+}
