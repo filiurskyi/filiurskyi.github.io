@@ -1,6 +1,6 @@
 # personal blog
 
-Personal engineering site: a portfolio, a technical blog, short notes and open-source projects, on Embedded Linux, Yocto, Linux systems, Rust, Python and hardware. A static Astro build on the [starglow](https://github.com/glowing-space/starglow) theme; `dist/` is plain static files any host can serve.
+Personal site: a portfolio, a technical blog, short notes and projects. A static Astro build on the [starglow](https://github.com/glowing-space/starglow) theme; `dist/` is plain static files anyone can reuse.
 
 ## Quickstart
 
