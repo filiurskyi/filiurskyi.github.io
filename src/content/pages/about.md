@@ -2,7 +2,7 @@
 title: About
 ---
 
-Hi! This is my small blog. I started it after I felt a desperate need to structure my thoughts and knowledge in this brave new era.
+Hi, I’m Andrii, an embedded software engineer writing about Linux, code, and the things I’m learning. This blog is also a place to untangle my thoughts. Expect experiments, self-reflection and the occasional strong opinions.
 
 ## Background
 
