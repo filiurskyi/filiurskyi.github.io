@@ -44,6 +44,28 @@ export const obsidianIntegration = (): AstroIntegration => ({
   },
 });
 
+/**
+ * Obsidian callout types as aliases of the five GitHub alert types, for the
+ * `aliases` option of rehype-callouts, so `> [!attention]` renders as a
+ * warning. Obsidian's `caution` stays GitHub's own CAUTION.
+ */
+export const OBSIDIAN_CALLOUT_ALIASES: Record<string, string[]> = {
+  note: [
+    "abstract",
+    "summary",
+    "tldr",
+    "info",
+    "todo",
+    "example",
+    "quote",
+    "cite",
+  ],
+  tip: ["hint", "success", "check", "done"],
+  important: ["question", "help", "faq"],
+  warning: ["attention"],
+  caution: ["failure", "fail", "missing", "danger", "error", "bug"],
+};
+
 const IMAGE = /\.(png|jpe?g|gif|webp|avif|svg|tiff?)$/i;
 const SIZE = /^\d+(x\d+)?$/;
 const FENCE = /^(?:[ \t]*>)*[ \t]*(`{3,}|~{3,})/;

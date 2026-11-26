@@ -9,7 +9,7 @@ draft: false
 
 %% optional keys: modDatetime, hideToc, hideEditPost, ogImage, timezone, canonicalUrl, syndication, author. The folder year must match pubDatetime. %%
 
-> [!attention] Raw text with no AI assistance, not even grammar corrections.
+> [!WARNING] Raw text with no AI assistance, not even grammar corrections.
 
 Hi there! I finally finished perfecting my `astro` blog. It has beautiful theme and is also published as MIT. Now its time to start actually posting to it, where to start...
 

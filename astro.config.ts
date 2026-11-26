@@ -15,6 +15,7 @@ import { rehypeBlockLabels } from "./src/utils/rehypeBlockLabels";
 import { rehypeTableWrapper } from "./src/utils/rehypeTableWrapper";
 import { rehypeTodoMarkers } from "./src/utils/rehypeTodoMarkers";
 import {
+  OBSIDIAN_CALLOUT_ALIASES,
   obsidianIntegration,
   remarkObsidian,
 } from "./src/utils/remarkObsidian";
@@ -134,7 +135,13 @@ export default defineConfig({
             },
           },
         ],
-        [rehypeCallouts, { theme: "github" }],
+        [
+          rehypeCallouts,
+          {
+            theme: "github",
+            ...(OBSIDIAN && { aliases: OBSIDIAN_CALLOUT_ALIASES }),
+          },
+        ],
         rehypeBlockLabels,
         rehypeTodoMarkers,
         [rehypeTableWrapper, { label: strings.a11y.scrollableTable }],
