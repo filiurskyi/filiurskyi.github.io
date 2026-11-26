@@ -1,10 +1,10 @@
 ---
 title: Hello World
-description: Hello World! Finally, I get to blogging
+description: Hello World! Finally, I get to blogging...
 pubDatetime: 2026-11-25T23:48:07+01:00
 tags:
   - thoughts
-draft: true
+draft: false
 ---
 
 %% optional keys: modDatetime, hideToc, hideEditPost, ogImage, timezone, canonicalUrl, syndication, author. The folder year must match pubDatetime. %%
