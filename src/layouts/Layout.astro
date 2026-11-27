@@ -1,9 +1,10 @@
 ---
 import { useLocale } from "@/i18n";
-import { Font } from "astro:assets";
+import { Font, fontData } from "astro:assets";
 import { ClientRouter } from "astro:transitions";
 import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 import { getAssetPath } from "@/utils/withBase";
+import { corePreloads } from "@/utils/fontPreloads";
 import { getSections } from "@/utils/content/sections";
 import config from "@/config";
 import { paletteCss } from "@/palettes";
@@ -117,12 +118,23 @@ const PREVIEW_BOOT = `(function () {
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="generator" content={Astro.generator} />
 
-    <Font
-      cssVariable="--font-inter"
-      preload={[{ weight: 400, style: "normal" }]}
-    />
+    <Font cssVariable="--font-inter" />
     <Font cssVariable="--font-jetbrains-mono" />
-    <Font cssVariable="--font-wordmark" preload />
+    <Font cssVariable="--font-wordmark" />
+    {[
+      ...corePreloads(fontData["--font-inter"], [
+        { weight: "400", style: "normal" },
+      ]),
+      ...corePreloads(fontData["--font-wordmark"]),
+    ].map(({ url, type }) => (
+      <link
+        rel="preload"
+        href={url}
+        as="font"
+        type={`font/${type}`}
+        crossorigin
+      />
+    ))}
 
     <title>{title}</title>
     <meta name="title" content={title} />

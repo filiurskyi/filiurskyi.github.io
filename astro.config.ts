@@ -28,6 +28,7 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import userConfig from "./starglow.config";
 import { parseStarglowConfig } from "./src/types/config";
+import { splitVariant } from "./src/utils/fontSubset";
 
 // Single source of the site origin. Override per build with SITE_URL (shell or
 // .env); the default is the starglow demo origin; set your own.
@@ -170,32 +171,10 @@ export default defineConfig({
       display: "swap",
       options: {
         variants: [
-          {
-            weight: 400,
-            style: "normal",
-            src: [
-              "./src/assets/fonts/inter-latin-400-normal.woff2",
-              "./src/assets/fonts/inter-latin-400-normal.woff",
-            ],
-          },
-          {
-            weight: 400,
-            style: "italic",
-            src: ["./src/assets/fonts/inter-latin-400-italic.woff2"],
-          },
-          {
-            weight: 600,
-            style: "normal",
-            src: [
-              "./src/assets/fonts/inter-latin-600-normal.woff2",
-              "./src/assets/fonts/inter-latin-600-normal.woff",
-            ],
-          },
-          {
-            weight: 600,
-            style: "italic",
-            src: ["./src/assets/fonts/inter-latin-600-italic.woff2"],
-          },
+          ...splitVariant("inter-latin-400-normal", 400, "normal"),
+          ...splitVariant("inter-latin-400-italic", 400, "italic"),
+          ...splitVariant("inter-latin-600-normal", 600, "normal"),
+          ...splitVariant("inter-latin-600-italic", 600, "italic"),
         ],
       },
     },
@@ -207,21 +186,13 @@ export default defineConfig({
       display: "swap",
       options: {
         variants: [
-          {
-            weight: 400,
-            style: "normal",
-            src: ["./src/assets/fonts/jetbrains-mono-latin-400-normal.woff2"],
-          },
-          {
-            weight: 400,
-            style: "italic",
-            src: ["./src/assets/fonts/jetbrains-mono-latin-400-italic.woff2"],
-          },
+          ...splitVariant("jetbrains-mono-latin-400-normal", 400, "normal"),
+          ...splitVariant("jetbrains-mono-latin-400-italic", 400, "italic"),
         ],
       },
     },
     {
-      // The wordmark face (site title in the header). Replace name and src to
+      // The wordmark face (site title in the header). Replace name and file to
       // swap it; only its Latin subset ships.
       name: "Pixelify Sans",
       cssVariable: "--font-wordmark",
@@ -230,11 +201,7 @@ export default defineConfig({
       display: "swap",
       options: {
         variants: [
-          {
-            weight: 400,
-            style: "normal",
-            src: ["./src/assets/fonts/pixelify-sans-latin-400-normal.woff2"],
-          },
+          ...splitVariant("pixelify-sans-latin-400-normal", 400, "normal"),
         ],
       },
     },
