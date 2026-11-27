@@ -45,7 +45,7 @@ export default defineStarglowConfig({
     },
   },
   // Optional homepage Person structured data. Empty fields are left out.
-  person: { jobTitle: "" },
+  person: { jobTitle: "Embedded software engineer" },
   posts: {
     perPage: 10,
     perIndex: 4,
@@ -106,7 +106,7 @@ export default defineStarglowConfig({
   // Your 88x31 button at /88x31.png, shown on /small-web/ with HTML to copy.
   // Add a label (e.g. your site name) to publish it. Listing webrings without
   // one publishes a TODO placeholder, which fails the deploy.
-  button: { icon: "sparkle" },
+  button: { icon: "sparkle", label: "filiurskyi" },
   footer: {
     // "powered by starglow" in the footer. Keeping it is appreciated.
     credit: true,
