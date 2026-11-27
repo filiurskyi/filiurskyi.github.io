@@ -302,6 +302,18 @@ describe("config schema", () => {
     expect(problems({ site, button: { icon: ["#"] } })).toEqual(
       expect.arrayContaining([expect.stringMatching(/^button\.icon/)])
     );
+    expect(
+      parseStarglowConfig({
+        site,
+        button: { image: "/b.png", imageLight: "/b-light.png" },
+      }).button
+    ).toMatchObject({ image: "/b.png", imageLight: "/b-light.png" });
+    expect(problems({ site, button: { imageLight: "/b-light.png" } })).toEqual([
+      "button.imageLight: set image together with imageLight",
+    ]);
+    expect(
+      problems({ site, button: { image: "//cdn.example/b.png" } })
+    ).toEqual([expect.stringMatching(/^button\.image: expected a path/)]);
   });
 
   it("needs site.sourceUrl for features.editPost", () => {

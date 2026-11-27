@@ -14,6 +14,43 @@ const TEXT_CANVAS = 400;
 
 type ButtonConfig = { label: string; icon: string | string[] };
 
+const PNG_SIGNATURE = "89504e470d0a1a0a";
+
+/** Width and height from a PNG's IHDR chunk, or undefined if it is no PNG. */
+export function pngSize(data: Uint8Array): [number, number] | undefined {
+  const bytes = Buffer.from(data.buffer, data.byteOffset, data.byteLength);
+  if (bytes.length < 24) return undefined;
+  if (bytes.subarray(0, 8).toString("hex") !== PNG_SIGNATURE) return undefined;
+  if (bytes.subarray(12, 16).toString("latin1") !== "IHDR") return undefined;
+  return [bytes.readUInt32BE(16), bytes.readUInt32BE(20)];
+}
+
+/**
+ * Bytes of a button image under public/, given as a site path such as
+ * "/button.png". Throws unless the file exists and is an 88x31 PNG.
+ */
+export async function readButtonImage(
+  path: string,
+  key = "button.image",
+  root = process.cwd()
+): Promise<Buffer> {
+  const file = join(root, "public", path);
+  let data: Buffer;
+  try {
+    data = await readFile(file);
+  } catch {
+    throw new Error(`[button] ${key} "${path}": public${path} is missing`);
+  }
+  const size = pngSize(data);
+  if (!size)
+    throw new Error(`[button] ${key} "${path}": public${path} is not a PNG`);
+  if (size[0] !== BUTTON_WIDTH || size[1] !== BUTTON_HEIGHT)
+    throw new Error(
+      `[button] ${key} "${path}": public${path} is ${size[0]}x${size[1]}, expected ${BUTTON_WIDTH}x${BUTTON_HEIGHT}`
+    );
+  return data;
+}
+
 export function buttonIcon(icon: ButtonConfig["icon"]): {
   bitmap: string[];
   fill: string;

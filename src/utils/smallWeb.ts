@@ -11,9 +11,38 @@ export type RingLink = {
   href?: string;
 };
 
+type Button = ResolvedStarglowConfig["button"];
+
 export const hasSmallWebPage = (
   config: Pick<ResolvedStarglowConfig, "webrings" | "button">
-): boolean => config.webrings.length > 0 || !isPlaceholder(config.button.label);
+): boolean =>
+  config.webrings.length > 0 ||
+  config.button.image !== undefined ||
+  !isPlaceholder(config.button.label);
+
+/** Published button files: the main one, then the light-background one. */
+export const BUTTON_FILES = ["88x31", "88x31-light"] as const;
+
+export type ButtonFile = (typeof BUTTON_FILES)[number];
+
+/** The button files a config publishes. */
+export const buttonFiles = (button: Button): ButtonFile[] =>
+  button.imageLight === undefined ? ["88x31"] : [...BUTTON_FILES];
+
+/** The public/ path an own button image is read from, if any. */
+export const buttonSource = (
+  button: Button,
+  file: ButtonFile
+): string | undefined => (file === "88x31" ? button.image : button.imageLight);
+
+/**
+ * Alt text of the button: the label, or with an own `image` and the label
+ * unset, the site title.
+ */
+export const buttonAlt = (button: Button, siteTitle: string): string =>
+  button.image !== undefined && isPlaceholder(button.label)
+    ? siteTitle
+    : button.label;
 
 export function ringLinks(
   ring: Webring,

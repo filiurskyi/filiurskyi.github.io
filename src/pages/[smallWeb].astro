@@ -6,6 +6,8 @@ import Main from "@/components/Main.astro";
 import Footer from "@/components/Footer.astro";
 import {
   SMALL_WEB_PATH,
+  buttonAlt,
+  buttonFiles,
   buttonSnippet,
   hasSmallWebPage,
   ringLinks,
@@ -26,12 +28,16 @@ const rings = config.webrings.map(ring => ({
   name: ring.name,
   links: ringLinks(ring, site, seen),
 }));
-const buttonPath = getAssetPath("/88x31.png");
-const snippet = buttonSnippet(
-  new URL(getAssetPath("/"), site).href,
-  new URL(buttonPath, site).href,
-  config.button.label
-);
+const alt = buttonAlt(config.button, config.site.title);
+const home = new URL(getAssetPath("/"), site).href;
+const buttons = buttonFiles(config.button).map(file => {
+  const path = getAssetPath(`/${file}.png`);
+  return {
+    path,
+    hint: file === "88x31" ? t.smallWeb.buttonHint : t.smallWeb.buttonLightHint,
+    snippet: buttonSnippet(home, new URL(path, site).href, alt),
+  };
+});
 const text = {
   prev: t.smallWeb.previous,
   next: t.smallWeb.next,
@@ -98,17 +104,21 @@ const label = {
         {t.smallWeb.button}
       </h2>
       <div class="app-prose">
-        <p>
-          <img
-            class="site-button"
-            src={buttonPath}
-            width="88"
-            height="31"
-            alt={config.button.label}
-          />
-        </p>
-        <p>{t.smallWeb.buttonHint}</p>
-        <pre class="snippet"><code>{snippet}</code></pre>
+        {buttons.map(button => (
+          <>
+            <p>
+              <img
+                class="site-button"
+                src={button.path}
+                width="88"
+                height="31"
+                alt={alt}
+              />
+            </p>
+            <p>{button.hint}</p>
+            <pre class="snippet"><code>{button.snippet}</code></pre>
+          </>
+        ))}
       </div>
     </section>
   </Main>
