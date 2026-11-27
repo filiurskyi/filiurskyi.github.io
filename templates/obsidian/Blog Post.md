@@ -30,4 +30,4 @@ tags:<% yamlList(tags) %>
 draft: true
 ---
 
-%% optional keys: modDatetime, hideToc, hideEditPost, ogImage, timezone, canonicalUrl, syndication, author. The folder year must match pubDatetime. %%
+%% optional keys: modDatetime, hideToc, hideEditPost, ogImage, timezone, canonicalUrl, syndication, author. The folder year must match pubDatetime in the site timezone; Templater writes the time in this computer's zone. %%

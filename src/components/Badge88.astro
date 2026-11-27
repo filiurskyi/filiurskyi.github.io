@@ -1,6 +1,7 @@
 ---
 import { BADGE_ICONS, BADGE_TEXT, badgeIcon, badgeRects } from "@/utils/badges";
 import { getAssetPath } from "@/utils/withBase";
+import EmailReveal from "./EmailReveal.astro";
 
 /**
  * One 88x31 pixel badge: bevelled frame, an 11x11 icon in 2px cells and a
@@ -14,11 +15,11 @@ type Props = {
   title?: string;
   rel?: string;
   class?: string;
-  /** Site path of an 88x31 image shown instead of the drawn badge. */
   image?: string;
+  email?: string;
 };
 
-const { type, label, title, rel, class: className, image } = Astro.props;
+const { type, label, title, rel, class: className, image, email } = Astro.props;
 const href = /^\/(?!\/)/.test(Astro.props.href)
   ? getAssetPath(Astro.props.href)
   : Astro.props.href;
@@ -34,7 +35,14 @@ const squeeze =
     : {};
 ---
 
-<a class:list={["b88", className]} href={href} rel={rel} title={name}>
+<a
+  class:list={["b88", className]}
+  href={href}
+  rel={rel}
+  title={name}
+  data-badge={type}
+  data-email={email}
+>
   {image ? (
     <img
       src={getAssetPath(image)}
@@ -74,3 +82,4 @@ const squeeze =
   )}
   {!image && <span class="sr-only">{name}</span>}
 </a>
+{email && <EmailReveal />}

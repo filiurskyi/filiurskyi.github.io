@@ -13,7 +13,7 @@ function xmlAttr(value: string): string {
 
 export async function GET(context: APIContext) {
   if (!context.site) {
-    throw new Error("[rss] site is not configured (SITE_URL)");
+    throw new Error("[rss] site is not configured (site.url)");
   }
 
   const items = await getAllItems();

@@ -1,0 +1,24 @@
+<script>
+  import { decodeEmail } from "@/utils/hiddenEmail";
+
+  const target = (link: HTMLElement) => decodeEmail(link.dataset.email ?? "");
+
+  const reveal = (event: Event) => {
+    const link =
+      event.target instanceof Element && event.target.closest("a[data-email]");
+    if (link instanceof HTMLAnchorElement) link.href = `mailto:${target(link)}`;
+  };
+  for (const type of ["pointerover", "focusin", "click"])
+    document.addEventListener(type, reveal, { capture: true });
+
+  document.addEventListener("astro:page-load", () => {
+    for (const text of document.querySelectorAll<HTMLElement>(
+      "a[data-email] [data-email-text]"
+    )) {
+      const link = text.closest<HTMLAnchorElement>("a[data-email]");
+      if (!link) continue;
+      link.href = `mailto:${target(link)}`;
+      text.textContent = target(link).split("?")[0] ?? "";
+    }
+  });
+</script>

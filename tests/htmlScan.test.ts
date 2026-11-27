@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   attr,
+  badgeTypesIn,
   decodeEntities,
   footerOf,
   headOf,
@@ -80,5 +81,16 @@ describe("page readers", () => {
       '<footer><a href="/privacy/">privacy</a></footer>'
     );
     expect(footerOf("<p>none</p>")).toBe("");
+  });
+});
+
+describe("badgeTypesIn", () => {
+  it("reads the data-badge type of drawn and image badges", () => {
+    const markup = [
+      '<a class="b88" href="/rss.xml" data-badge="rss"><svg></svg></a>',
+      '<a class="b88" href="/p/" data-badge="nocookies"><img src="/b.webp" alt="x"></a>',
+      '<a href="/x/" title=\'data-badge="1mb"\'>x</a>',
+    ].join("");
+    expect(badgeTypesIn(markup)).toEqual(new Set(["rss", "nocookies"]));
   });
 });

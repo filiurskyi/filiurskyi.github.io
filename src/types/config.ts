@@ -46,15 +46,13 @@ export type BadgeType =
  */
 export const REMOVED_KEYS: Record<string, string> = {
   socials:
-    'removed in v0.1.1 (see UPGRADING.md): add each profile to `links` as a badge, e.g. { type: "github", url: "https://github.com/you" }',
+    'removed in v0.1.1 (see its release notes): add each profile to `links` as a badge, e.g. { type: "github", url: "https://github.com/you" }',
   "person.description":
-    "removed in v0.1.1 (see UPGRADING.md): site.description describes the site; the Person keeps only jobTitle",
+    "removed in v0.1.1 (see its release notes): site.description describes the site; the Person keeps only jobTitle",
   "site.fediverseCreator":
-    'removed in v0.1.1 (see UPGRADING.md): add a mastodon badge to `links` ({ type: "mastodon", url: "https://instance/@user" }); the fediverse:creator meta comes from it',
+    'removed in v0.1.1 (see its release notes): add a mastodon badge to `links` ({ type: "mastodon", url: "https://instance/@user" }); the fediverse:creator meta comes from it',
   "features.editPost.url":
-    'removed in v0.1.1 (see UPGRADING.md): set site.sourceUrl to the repository; features.editPost.path ("edit/main/" by default) is appended',
-  "site.url":
-    "not set in this file: the site origin comes from the SITE_URL environment variable",
+    'removed in v0.1.1 (see its release notes): set site.sourceUrl to the repository; features.editPost.path ("edit/main/" by default) is appended',
 };
 
 const isTimezone = (zone: string) => {
@@ -69,6 +67,20 @@ const isTimezone = (zone: string) => {
 const isHttpUrl = (value: string) => {
   try {
     return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+};
+
+/** An http(s) origin: no path, query or hash. */
+const isOrigin = (value: string) => {
+  try {
+    const url = new URL(value);
+    return (
+      ["http:", "https:"].includes(url.protocol) &&
+      url.pathname === "/" &&
+      !/[?#]/.test(value)
+    );
   } catch {
     return false;
   }
@@ -134,6 +146,33 @@ const count = z
 const siteSchema = z.strictObject({
   /** Blog title shown in header and meta tags */
   title: z.string().min(1),
+  /**
+   * Origin the site is served from, e.g. "https://example.com": canonical
+   * links, the sitemap, RSS and OG images. A subpath goes in `base`.
+   *
+   * Used by: astro.config.ts, scripts/verify-dist.ts.
+   */
+  url: z
+    .string()
+    .refine(isOrigin, {
+      error:
+        'expected an http(s) origin without path, query or hash, e.g. "https://example.com"',
+    })
+    .transform(url => new URL(url).origin),
+  /**
+   * Subpath the site is served under, e.g. "/repo" for
+   * https://user.github.io/repo/. Defaults to "", the root of `url`.
+   *
+   * Used by: astro.config.ts, scripts/verify-dist.ts, scripts/site-config.ts
+   * (./dev.sh links, the link check in .github/actions/site-checks).
+   */
+  base: z
+    .string()
+    .regex(/^(\/[\w.-]+)*\/?$/, {
+      error: 'expected a subpath like "/repo" or "/a/b", or "" for the root',
+    })
+    .transform(base => base.replace(/\/+$/, ""))
+    .default(""),
   /**
    * One sentence about the site: the home page meta description, the RSS
    * feed and the WebSite structured data.
@@ -236,7 +275,7 @@ const siteSchema = z.strictObject({
    */
   dir: z.enum(["ltr", "rtl", "auto"]).default("ltr"),
   /**
-   * Google Search Console verification meta tag value
+   * Google Search Console verification meta tag value. Empty = no tag.
    *
    * Used by: src/layouts/Layout.astro.
    */
@@ -452,14 +491,29 @@ const badgeSchema = z.strictObject({
   /** Tooltip and accessible name. Defaults per type, e.g. "GitHub". */
   title: z.string().optional(),
   /**
-   * An 88x31 image under public/, such as "/badges/foo.webp", shown instead
-   * of the drawn badge. Self-hosted only, so visitors make no third-party
-   * requests.
+   * An 88x31 image under public/, e.g. "/badges/foo.webp", shown instead of
+   * the drawn badge. Self-hosted only, so the badge loads from the site's
+   * own origin. The `type` still sets the default title and the checks of
+   * pnpm verify.
+   *
+   * Used by: src/components/Badge88.astro.
    */
   image: z
     .string()
     .regex(/^\/(?!\/)/, { error: 'expected a path starting with "/"' })
     .optional(),
+  /**
+   * For a mailto: `url`: keep the address out of the built HTML. The badge
+   * links to /contact/#email, where the address is listed, and a small
+   * script makes it a mailto: link on hover, focus or click. Without
+   * JavaScript, /contact/ spells the address as "hi [at] example [dot] com".
+   * Being on /contact/, the badge takes the place of the footer's contact
+   * link. Defaults to false.
+   *
+   * Used by: src/config.ts, src/utils/content/sections.ts,
+   * src/components/EmailReveal.astro.
+   */
+  hideAddress: z.boolean().optional(),
 });
 
 const httpUrl = z.string().refine(url => isHttpUrl(url.trim()), {
@@ -555,7 +609,15 @@ export const starglowConfigSchema = z
      * Used by: src/utils/footer.ts, src/pages/index.astro (sameAs),
      * src/config.ts (fediverse:creator).
      */
-    links: z.array(badgeSchema).default([]),
+    links: z
+      .array(
+        badgeSchema.refine(
+          badge =>
+            !badge.hideAddress || /^mailto:/i.test(badge.url?.trim() ?? ""),
+          { error: "needs a mailto: url", path: ["hideAddress"] }
+        )
+      )
+      .default([]),
     /**
      * Webrings this site is a member of, listed on /small-web/, which the
      * footer links while the page has a ring or the button. Defaults to none.
@@ -583,12 +645,22 @@ export const starglowConfigSchema = z
          */
         credit: z.boolean().default(true),
         /**
-         * Extra text links on the right of the badge row, for example an
-         * Impressum or a privacy policy. A root-relative `href` such as
-         * "/impressum/" gets the base path; other hrefs are used as written.
+         * Text links in the footer's pages row, after contact and small web,
+         * for example a uses or a now page. A root-relative `href` such as
+         * "/uses/" gets the base path; other hrefs are used as written.
          * Defaults to none.
+         *
+         * Used by: src/utils/footer.ts.
          */
         links: z.array(footerLinkSchema).default([]),
+        /**
+         * Legal text links, for example an Impressum or a privacy policy,
+         * kept together at the end of the footer's pages row. An `href` works
+         * as in `links`. Defaults to none.
+         *
+         * Used by: src/utils/footer.ts.
+         */
+        legal: z.array(footerLinkSchema).default([]),
       })
       .prefault({}),
     /** Build-time processing of Markdown and MDX images. */
@@ -622,8 +694,7 @@ export const starglowConfigSchema = z
       .strictObject({
         /**
          * Cloudflare Web Analytics site token: loads Cloudflare's cookieless
-         * beacon on every page. Empty = PUBLIC_CF_WEB_ANALYTICS_TOKEN from the
-         * environment, or no script at all.
+         * beacon on every page. Empty = no script.
          *
          * Used by: src/layouts/Layout.astro.
          */
@@ -660,8 +731,6 @@ export interface ResolvedStarglowConfig {
     fediverseCreator?: string;
     /** Header wordmark text, `title` when not set */
     wordmark: string;
-    /** Site origin from SITE_URL (via astro.config.ts) */
-    url: string;
   };
   person: PersonConfig;
   posts: Parsed["posts"];
@@ -671,7 +740,7 @@ export interface ResolvedStarglowConfig {
   };
   appearance: Parsed["appearance"];
   /** Badges with a usable URL. The footer drops repeated URLs (utils/footer.ts). */
-  links: (BadgeLink & { url: string })[];
+  links: (BadgeLink & { url: string; email?: string })[];
   webrings: Parsed["webrings"];
   button: Parsed["button"];
   footer: Parsed["footer"];

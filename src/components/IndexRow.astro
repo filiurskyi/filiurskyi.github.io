@@ -21,6 +21,8 @@ type Props = {
   /** Accessible name of the plain end text, e.g. "3 entries". */
   endLabel?: string;
   rel?: string;
+  id?: string;
+  email?: string;
   /** Muted line under the row, e.g. a project description. */
   desc?: string;
   /** view-transition-name of the title, shared with the page's h1. */
@@ -37,6 +39,8 @@ const {
   end,
   endLabel,
   rel,
+  id,
+  email,
   desc,
   transitionName,
 } = Astro.props;
@@ -44,7 +48,7 @@ const t = useTranslations(useLocale(Astro));
 ---
 
 <li>
-  <a href={href} rel={rel} class="index-row">
+  <a href={href} rel={rel} id={id} data-email={email} class="index-row">
     {kind && <span class="kind">{kind}</span>}
     <span
       class="name"
@@ -68,6 +72,7 @@ const t = useTranslations(useLocale(Astro));
         class:list={["end", { status }]}
         data-status={status}
         aria-label={endLabel}
+        data-email-text={email ? "" : undefined}
       >
         {end}
       </span>

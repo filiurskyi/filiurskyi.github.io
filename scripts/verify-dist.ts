@@ -2,9 +2,7 @@
 //
 // Run: ./dev.sh pnpm verify          (node scripts/verify-dist.ts [distDir])
 import { existsSync, readFileSync, statSync } from "node:fs";
-import { registerHooks } from "node:module";
 import { join, relative, sep } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
 import { gunzipSync, gzipSync } from "node:zlib";
 import { findDraftOnlyAssets } from "./draft-assets.ts";
 import { profileLinks } from "../src/utils/badges.ts";
@@ -25,6 +23,7 @@ import {
 } from "../src/utils/cookieFree.ts";
 import {
   attr,
+  badgeTypesIn,
   decodeEntities,
   footerOf,
   headOf,
@@ -45,28 +44,10 @@ import {
   type PageWeight,
 } from "../src/utils/pageWeight.ts";
 import { sameLinkKey } from "../src/utils/sameLinkKey.ts";
+import { config } from "./site-config.ts";
 
-if (existsSync(".env")) process.loadEnvFile(".env");
-
-const SRC = pathToFileURL("src/").href;
-registerHooks({
-  resolve(specifier, context, nextResolve) {
-    const target = specifier.startsWith("@/")
-      ? SRC + specifier.slice(2)
-      : specifier;
-    if (!/^(\.{1,2}\/|file:)/.test(target) || !context.parentURL)
-      return nextResolve(target, context);
-    const url = new URL(target, context.parentURL);
-    const path = fileURLToPath(url);
-    const extensionless = !existsSync(path) && existsSync(`${path}.ts`);
-    return nextResolve(extensionless ? `${url.href}.ts` : url.href, context);
-  },
-});
-const { default: userConfig } = await import("../starglow.config.ts");
-const { parseStarglowConfig } = await import("../src/types/config.ts");
 const { SMALL_WEB_PATH, hasSmallWebPage } =
   await import("../src/utils/smallWeb.ts");
-const config = parseStarglowConfig(userConfig);
 
 const DIST = process.argv[2] ?? "dist";
 
@@ -122,20 +103,9 @@ const files = walk(DIST);
 const robots = existsSync(join(DIST, "robots.txt"))
   ? read(join(DIST, "robots.txt"))
   : "";
-const sitemapUrl = /^Sitemap:\s*(\S+)/m.exec(robots)?.[1];
-const configuredSite = process.env.SITE_URL || sitemapUrl;
-if (!configuredSite)
-  stopSetup(
-    "no origin: set SITE_URL or build with a Sitemap: line in robots.txt"
-  );
-const BASE = (
-  process.env.BASE_PATH ||
-  (sitemapUrl
-    ? new URL(sitemapUrl).pathname.replace(/\/sitemap-index\.xml$/, "")
-    : "")
-).replace(/\/+$/, "");
+const BASE = config.site.base;
 /** The site root, base path included: https://example.com or https://u.github.io/repo. */
-const origin = new URL(configuredSite).origin + BASE;
+const origin = config.site.url + BASE;
 const site = new URL(`${origin}/`);
 
 type Page = {
@@ -175,19 +145,13 @@ function distFileOf(url: string, base = site.href): string | undefined {
 }
 
 function footerBadgeTypes(html: string): Set<string> {
-  return new Set(
-    [...footerOf(html).matchAll(/var\(--badge-([\w-]+)\)/g)].map(
-      ([, type = ""]) => type
-    )
-  );
+  return badgeTypesIn(footerOf(html));
 }
 
 const CF_BEACON = "https://static.cloudflareinsights.com/beacon.min.js";
 const CF_BEACON_UNCOMPRESSED_BYTES = 24_000;
 const CF_BEACON_GZIP_BYTES = 9_000;
-const CF_TOKEN =
-  config.analytics.cloudflareToken?.trim() ||
-  process.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN?.trim();
+const CF_TOKEN = config.analytics.cloudflareToken?.trim();
 
 /** The Cloudflare Web Analytics beacon for the configured token. */
 function isAllowedBeacon(tag: string): boolean {

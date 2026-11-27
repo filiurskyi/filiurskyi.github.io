@@ -94,6 +94,8 @@ export interface UIStrings {
     poweredBy: string;
     /** Accessible name of the 88x31 badge list. */
     elsewhere: string;
+    /** Accessible name of the legal link list. */
+    legal: string;
   };
   smallWeb: {
     title: string;

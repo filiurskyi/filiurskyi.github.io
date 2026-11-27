@@ -31,16 +31,15 @@ public/pagefind
 # pnpm
 .pnpm-store
 
-# docker compose
-compose.override.yaml
-.planning/
-
-# obsidian: commit settings, not window state, trash or third-party plugin and theme code
+# obsidian vault
 .obsidian/workspace*.json
-#.obsidian/plugins/*/*
-#!.obsidian/plugins/*/data.json
-#.obsidian/themes/
 .trash/
 
-# agent notes: local only
-/AGENTS.md
+# docker compose
+compose.override.yaml
+
+# local agent instructions
+AGENTS.md
+
+# local planning notes
+.planning/

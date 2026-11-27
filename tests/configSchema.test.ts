@@ -8,7 +8,12 @@ import {
   starglowConfigSchema,
 } from "@/types/config";
 
-const site = { title: "t", description: "d", author: "a" };
+const site = {
+  title: "t",
+  url: "https://example.com",
+  description: "d",
+  author: "a",
+};
 
 /** The problem lines of a config that must fail. */
 const problems = (input: unknown): string[] => {
@@ -31,6 +36,7 @@ describe("config schema", () => {
   it("applies defaults to a minimal config", () => {
     const config = parseStarglowConfig({ site });
     expect(config.site).toMatchObject({
+      base: "",
       lang: "en",
       timezone: "UTC",
       dir: "ltr",
@@ -47,12 +53,26 @@ describe("config schema", () => {
       light: "starglow",
     });
     expect(config.links).toEqual([]);
-    expect(config.footer).toEqual({ credit: true, links: [] });
+    expect(config.footer).toEqual({ credit: true, links: [], legal: [] });
     expect(config.images).toEqual({
       maxWidth: 1200,
       format: "webp",
       quality: 80,
     });
+  });
+
+  it("takes footer page and legal links in the same shape", () => {
+    const link = { label: "impressum", href: "/impressum/" };
+    expect(
+      parseStarglowConfig({ site, footer: { links: [link], legal: [link] } })
+        .footer
+    ).toEqual({ credit: true, links: [link], legal: [link] });
+    expect(
+      problems({ site, footer: { legal: [{ label: "", href: "/x/" }] } })
+    ).toHaveLength(1);
+    expect(
+      problems({ site, footer: { legal: [{ label: "x", url: "/x/" }] } })[0]
+    ).toMatch(/^footer\.legal\[0\]\.href: /);
   });
 
   it("checks the image options", () => {
@@ -95,7 +115,6 @@ describe("config schema", () => {
         ...site,
         sourceUrl: "https://x",
         fediverseCreator: "@a@b",
-        url: "https://x",
       },
       socials: [],
       person: { description: "x" },
@@ -103,7 +122,7 @@ describe("config schema", () => {
         editPost: { enabled: true, url: "https://x/edit/" },
       },
     });
-    expect(lines).toHaveLength(5);
+    expect(lines).toHaveLength(4);
     for (const key of [
       "site.fediverseCreator",
       "socials",
@@ -114,9 +133,35 @@ describe("config schema", () => {
         expect.stringMatching(new RegExp(`^${key}: removed in v0.1.1`))
       );
     }
-    expect(lines).toContainEqual(
-      expect.stringMatching(/^site\.url: .*SITE_URL/)
-    );
+  });
+
+  it("checks the site origin and base path", () => {
+    expect(
+      parseStarglowConfig({
+        site: { ...site, url: "https://u.github.io/", base: "/repo/" },
+      }).site
+    ).toMatchObject({ url: "https://u.github.io", base: "/repo" });
+    expect(
+      parseStarglowConfig({ site: { ...site, base: "/a/b.c" } }).site.base
+    ).toBe("/a/b.c");
+    const { url: _, ...noUrl } = site;
+    expect(problems({ site: noUrl })).toEqual([
+      expect.stringMatching(/^site\.url: /),
+    ]);
+    for (const url of [
+      "example.com",
+      "ftp://example.com",
+      "https://example.com/blog",
+      "https://example.com/?a",
+      "https://example.com#top",
+    ])
+      expect(problems({ site: { ...site, url } })).toEqual([
+        expect.stringMatching(/^site\.url: expected an http\(s\) origin/),
+      ]);
+    for (const base of ["repo", "/a b", "//repo", "/a//b"])
+      expect(problems({ site: { ...site, base } })).toEqual([
+        expect.stringMatching(/^site\.base: expected a subpath/),
+      ]);
   });
 
   it("rejects wrong types and values with the key path", () => {
@@ -150,6 +195,39 @@ describe("config schema", () => {
     expect(problems({ site: { ...site, ogImage: "../secret.jpg" } })).toEqual([
       expect.stringMatching(/^site\.ogImage: expected a single filename/),
     ]);
+  });
+
+  it("takes a self-hosted badge image only", () => {
+    const badge = { type: "nocookies", url: "/privacy/" };
+    expect(
+      parseStarglowConfig({
+        site,
+        links: [{ ...badge, image: "/badges/cookiezero.webp" }],
+      }).links[0]?.image
+    ).toBe("/badges/cookiezero.webp");
+    for (const image of [
+      "https://example.com/b.webp",
+      "//example.com/b.webp",
+      "badges/b.webp",
+    ])
+      expect(problems({ site, links: [{ ...badge, image }] })).toEqual([
+        `links[0].image: expected a path starting with "/", got "${image}"`,
+      ]);
+  });
+
+  it("hides an address only for a mailto: badge", () => {
+    expect(
+      parseStarglowConfig({
+        site,
+        links: [{ type: "email", url: "mailto:hi@x.org", hideAddress: true }],
+      }).links[0]?.hideAddress
+    ).toBe(true);
+    expect(
+      problems({
+        site,
+        links: [{ type: "email", url: "/contact/", hideAddress: true }],
+      })
+    ).toEqual(["links[0].hideAddress: needs a mailto: url"]);
   });
 
   it("checks webrings", () => {

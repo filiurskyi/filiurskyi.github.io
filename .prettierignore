@@ -14,9 +14,11 @@
 !vitest.config.ts
 !/tests
 !README.md
+!/docs
 !.vscode
+
+# Obsidian vault: uncomment to keep notes as Obsidian writes them
+/src/content
 
 # Ignore MDX files
 *.mdx
-# Content is written in Obsidian; its formatting is not checked
-/src/content/

@@ -22,10 +22,14 @@ export async function getSections() {
 
 /**
  * /contact/ is built and linked when contact.md exists or `links` has a
- * profile badge. The page lists every profile, even those the footer dedupes.
+ * profile badge or a `hideAddress` email badge. The page lists every
+ * profile, even those the footer dedupes, and the hidden address.
  */
 export async function getContactPage() {
   const entry = await getEntry("pages", "contact");
   const profiles = profileLinks(config.links);
-  return entry || profiles.length > 0 ? { entry, profiles } : undefined;
+  const email = config.links.find(link => link.email);
+  return entry || profiles.length > 0 || email
+    ? { entry, profiles, email }
+    : undefined;
 }

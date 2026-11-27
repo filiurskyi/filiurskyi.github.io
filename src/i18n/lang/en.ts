@@ -83,6 +83,7 @@ export default {
     source: "source",
     poweredBy: "powered by",
     elsewhere: "Elsewhere",
+    legal: "Legal",
   },
   smallWeb: {
     title: "Small web",

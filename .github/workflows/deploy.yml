@@ -20,15 +20,6 @@ jobs:
     timeout-minutes: 15
     permissions:
       contents: read
-    env:
-      # Public value for the optional Search Console meta tag. An unset variable is empty and renders nothing.
-      PUBLIC_GOOGLE_SITE_VERIFICATION: ${{ vars.PUBLIC_GOOGLE_SITE_VERIFICATION }}
-      # Optional Cloudflare Web Analytics token. Unset = no beacon.
-      PUBLIC_CF_WEB_ANALYTICS_TOKEN: ${{ vars.PUBLIC_CF_WEB_ANALYTICS_TOKEN }}
-      # Site origin, e.g. https://example.com. Unset = the default in astro.config.ts.
-      SITE_URL: ${{ vars.SITE_URL }}
-      # Subpath for a project site, e.g. /repo for https://<user>.github.io/repo/. Unset = root.
-      BASE_PATH: ${{ vars.BASE_PATH }}
     steps:
       - name: Checkout (full history for git-based note dates)
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

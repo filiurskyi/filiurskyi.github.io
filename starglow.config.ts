@@ -3,11 +3,13 @@ import { glowingDark, glowingLight } from "./src/custom/palettes";
 
 // starglow theme configuration. Every key is documented in src/types/config.ts
 // (hover it in your editor).
-// The site origin is not set here: astro.config.ts reads it from SITE_URL.
 export default defineStarglowConfig({
   site: {
     // Header, <title> and feeds. Used by: Layout, Header, rss.xml, OG images.
     title: "Andrii Filiurskyi",
+    // Origin the site is served from, and the subpath under it ("" = root).
+    url: "https://filiurskyi.github.io",
+    base: "",
     // The home page meta description, the RSS feed and the WebSite data.
     description:
       "Engineering notes and projects on Embedded Linux, Yocto, Linux systems, Rust, Python and hardware.",
@@ -21,8 +23,7 @@ export default defineStarglowConfig({
     // IANA timezone for post dates. ./dev.sh reads this line too.
     timezone: "Europe/Berlin",
     dir: "ltr",
-    // Search Console verification value. Empty = PUBLIC_GOOGLE_SITE_VERIFICATION
-    // from the environment, or no meta tag.
+    // Search Console verification value. Empty = no meta tag.
     googleVerification: "BW8ORG-wacMtYvWuByNQoGA747CuLXKT-_s7C9VDBG4",
     // Header wordmark in the pixel face. Defaults to title.
     wordmark: "filiurskyi",
@@ -109,8 +110,11 @@ export default defineStarglowConfig({
   footer: {
     // "powered by starglow" in the footer. Keeping it is appreciated.
     credit: true,
-    // Text links on the badge row, e.g. pages from src/content/pages/.
-    links: [
+    // Text links after contact and small web, e.g. pages from
+    // src/content/pages/.
+    links: [],
+    // Legal links, kept together at the end of the same row.
+    legal: [
       { label: "impressum", href: "/impressum/" },
       { label: "privacy", href: "/privacy/" },
     ],
@@ -120,7 +124,6 @@ export default defineStarglowConfig({
     format: "webp",
     quality: 80,
   },
-  // Cloudflare Web Analytics (cookieless). Unset = no script. The token may
-  // also come from PUBLIC_CF_WEB_ANALYTICS_TOKEN in the environment.
+  // Cloudflare Web Analytics (cookieless). Unset = no script.
   analytics: { cloudflareToken: "a0c597e94640487e8ee34c05d15facf0" },
 });

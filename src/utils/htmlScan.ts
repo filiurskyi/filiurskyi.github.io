@@ -88,6 +88,19 @@ export function footerOf(html: string): string {
   return /<footer\b[\s\S]*?<\/footer>/i.exec(html)?.[0] ?? "";
 }
 
+/** The `data-badge` types of the badges in some markup. */
+export function badgeTypesIn(markup: string): Set<string> {
+  return new Set(
+    [
+      ...markup.matchAll(
+        new RegExp(String.raw`<[a-z][a-z0-9-]*\b${TAG_REST}>`, "gi")
+      ),
+    ]
+      .map(([tag]) => attr(tag, "data-badge"))
+      .filter((type): type is string => Boolean(type))
+  );
+}
+
 export type Meta = { key: string; content: string };
 
 export function metaTags(head: string): Meta[] {

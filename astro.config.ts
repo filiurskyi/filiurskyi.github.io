@@ -1,9 +1,4 @@
-import {
-  defineConfig,
-  envField,
-  fontProviders,
-  svgoOptimizer,
-} from "astro/config";
+import { defineConfig, fontProviders, svgoOptimizer } from "astro/config";
 import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
@@ -36,9 +31,6 @@ import { splitVariant } from "./src/utils/fontSubset";
 import { remarkImages } from "./src/utils/remarkImages";
 import { sitemapLastmod } from "./src/utils/sitemapLastmod";
 
-// Single source of the site origin. Override per build with SITE_URL (shell or
-// .env); the default is this site's origin.
-if (existsSync(".env")) process.loadEnvFile(".env");
 // Fails here, before anything else runs, on an unknown key or a wrong value.
 const config = parseStarglowConfig(userConfig);
 const OBSIDIAN = config.features.obsidian;
@@ -56,38 +48,7 @@ if (!existsSync(LANG_FILE)) {
 const strings: UIStrings = (
   (await import(/* @vite-ignore */ LANG_FILE.href)) as { default: UIStrings }
 ).default;
-const SITE_URL = process.env.SITE_URL || "https://filiurskyi.github.io";
-
-const siteUrl = (() => {
-  try {
-    return new URL(SITE_URL);
-  } catch {
-    throw new Error(
-      `SITE_URL must be an absolute http(s) origin, got "${SITE_URL}"`
-    );
-  }
-})();
-if (
-  !["http:", "https:"].includes(siteUrl.protocol) ||
-  siteUrl.pathname !== "/" ||
-  siteUrl.search ||
-  siteUrl.hash
-) {
-  throw new Error(
-    `SITE_URL must be an http(s) origin without path, query or hash, got "${SITE_URL}"`
-  );
-}
-
-// Optional subpath, for a project site such as https://<user>.github.io/<repo>/.
-// Empty = the site lives at the root of SITE_URL.
-const BASE_PATH = (process.env.BASE_PATH || "").replace(/\/+$/, "");
-if (BASE_PATH && !/^(\/[\w.-]+)+$/.test(BASE_PATH)) {
-  throw new Error(
-    `BASE_PATH must look like /repo or /a/b, got "${process.env.BASE_PATH}"`
-  );
-}
-
-const lastmod = sitemapLastmod(BASE_PATH);
+const lastmod = sitemapLastmod(config.site.base);
 
 // Plain text of a hast node (hast-util-to-string is not a direct dependency).
 type HastNode = { type: string; value?: string; children?: HastNode[] };
@@ -97,8 +58,8 @@ const hastText = (node: HastNode): string =>
     : (node.children ?? []).map(hastText).join("");
 
 export default defineConfig({
-  site: SITE_URL,
-  ...(BASE_PATH && { base: BASE_PATH }),
+  site: config.site.url,
+  ...(config.site.base && { base: config.site.base }),
   trailingSlash: "always",
   build: { format: "directory" },
   integrations: [
@@ -218,20 +179,6 @@ export default defineConfig({
       },
     },
   ],
-  env: {
-    schema: {
-      PUBLIC_GOOGLE_SITE_VERIFICATION: envField.string({
-        access: "public",
-        context: "client",
-        optional: true,
-      }),
-      PUBLIC_CF_WEB_ANALYTICS_TOKEN: envField.string({
-        access: "public",
-        context: "client",
-        optional: true,
-      }),
-    },
-  },
   experimental: {
     svgOptimizer: svgoOptimizer(),
   },

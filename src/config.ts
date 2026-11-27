@@ -5,10 +5,7 @@ import {
   type BadgeLink,
   type ResolvedStarglowConfig,
 } from "./types/config";
-import {
-  PUBLIC_CF_WEB_ANALYTICS_TOKEN,
-  PUBLIC_GOOGLE_SITE_VERIFICATION,
-} from "astro:env/client";
+import { EMAIL_CONTACT_PATH, encodeEmail } from "./utils/hiddenEmail";
 
 // public/default-og.jpg is intentionally absent. It is only used when
 // `dynamicOgImage` is false; add a real image here before turning that off.
@@ -37,10 +34,19 @@ function resolveEditPost(
 }
 
 /** Badges with a URL; the schema has already checked its form. */
-const resolveLinks = (list: BadgeLink[]) =>
+const resolveLinks = (list: BadgeLink[]): ResolvedStarglowConfig["links"] =>
   list.flatMap(entry => {
     const url = entry.url?.trim();
-    return url ? [{ ...entry, url }] : [];
+    if (!url) return [];
+    return entry.hideAddress
+      ? [
+          {
+            ...entry,
+            url: EMAIL_CONTACT_PATH,
+            email: encodeEmail(url.replace(/^mailto:/i, "")),
+          },
+        ]
+      : [{ ...entry, url }];
   });
 
 const parsed = parseStarglowConfig(userConfig);
@@ -49,12 +55,8 @@ const sourceUrl = parsed.site.sourceUrl?.trim() || undefined;
 const config: ResolvedStarglowConfig = {
   site: {
     ...parsed.site,
-    url: import.meta.env.SITE,
     ogImage: parsed.site.ogImage ?? DEFAULT_OG_IMAGE,
-    googleVerification:
-      parsed.site.googleVerification?.trim() ||
-      PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() ||
-      undefined,
+    googleVerification: parsed.site.googleVerification?.trim() || undefined,
     sourceUrl,
     fediverseCreator: fediverseHandle(parsed.links),
     wordmark: parsed.site.wordmark?.trim() || parsed.site.title,
@@ -74,10 +76,7 @@ const config: ResolvedStarglowConfig = {
   footer: parsed.footer,
   images: parsed.images,
   analytics: {
-    cloudflareToken:
-      parsed.analytics.cloudflareToken?.trim() ||
-      PUBLIC_CF_WEB_ANALYTICS_TOKEN?.trim() ||
-      undefined,
+    cloudflareToken: parsed.analytics.cloudflareToken?.trim() || undefined,
   },
 };
 
