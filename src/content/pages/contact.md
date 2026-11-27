@@ -2,4 +2,4 @@
 title: Contact
 ---
 
-Email: <a id="email" href="/contact/#email">hi [at] glowing [dot] space</a>
+Email: <a id="email" href="/contact/#email">shown with JavaScript on</a>
