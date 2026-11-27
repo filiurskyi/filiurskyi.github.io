@@ -60,6 +60,8 @@ Made by [Andrii Filiurskyi](https://github.com/filiurskyi), a
 Originally inspired by [AstroPaper](https://github.com/satnaing/astro-paper).
 Thanks, Sat Naing. Fonts: Inter, JetBrains Mono and Pixelify Sans (SIL OFL). See [NOTICE](NOTICE).
 
+AI was used in research, writing, or editing.
+
 ## Licence
 
 [MIT](LICENSE). Keeping the "powered by starglow" footer credit is
