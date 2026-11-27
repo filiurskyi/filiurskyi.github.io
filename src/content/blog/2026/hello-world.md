@@ -1,12 +1,13 @@
 ---
 title: Hello World
 description: Hello World! Finally, I get to blogging...
+pubDatetime: 2026-11-26T01:39:22+01:00
 tags:
   - thoughts
 draft: false
 ---
 
-%% optional keys: description, updated, canonicalUrl, syndication. Dates come from git. %%
+%% optional keys: modDatetime, hideToc, hideEditPost, ogImage, timezone, canonicalUrl, syndication, author. The folder year must match pubDatetime. %%
 
 > [!WARNING] Raw text with no AI assistance, not even grammar corrections.
 
