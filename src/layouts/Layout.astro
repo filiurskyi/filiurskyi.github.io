@@ -26,6 +26,7 @@ export type Props = {
   ogImageSize?: { width: number; height: number } | null;
   /** Asks search engines to leave the page out of their index (404 page). */
   noindex?: boolean;
+  bodyClass?: string;
 };
 
 const { site } = config;
@@ -40,6 +41,7 @@ const {
   ogImageAlt = site.title,
   ogImageSize = { width: 1200, height: 630 },
   noindex = false,
+  bodyClass,
 } = Astro.props;
 
 const socialImageURL = new URL(ogImage, Astro.site ?? Astro.url);
@@ -189,7 +191,12 @@ const PREVIEW_BOOT = `(function () {
 
     <CustomHead {title} description={description ?? ""} />
   </head>
-  <body class="bg-background font-app text-foreground flex min-h-svh flex-col">
+  <body
+    class:list={[
+      "bg-background font-app text-foreground flex min-h-svh flex-col",
+      bodyClass,
+    ]}
+  >
     <slot />
     {
       // After the page head in tree order, so it can anchor to it.

@@ -57,8 +57,8 @@ first; security issues go through [SECURITY.md](SECURITY.md).
 Made by [Andrii Filiurskyi](https://github.com/filiurskyi), a
 [glowing.space](https://glowing.space) project.
 
-Originally based on [AstroPaper](https://github.com/satnaing/astro-paper) by
-Sat Naing. Fonts: Inter, JetBrains Mono and Pixelify Sans (SIL OFL). See [NOTICE](NOTICE).
+Originally inspired by [AstroPaper](https://github.com/satnaing/astro-paper).
+Thanks, Sat Naing. Fonts: Inter, JetBrains Mono and Pixelify Sans (SIL OFL). See [NOTICE](NOTICE).
 
 ## Licence
 

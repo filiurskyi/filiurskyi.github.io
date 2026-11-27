@@ -5,9 +5,10 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 type Props = {
   tag: string;
   tagName: string;
+  category?: boolean;
 };
 
-const { tag, tagName } = Astro.props;
+const { tag, tagName, category = false } = Astro.props;
 
 const locale = useLocale(Astro);
 const href = getRelativeLocaleUrl(locale, `tags/${tag}/`);
@@ -15,6 +16,6 @@ const href = getRelativeLocaleUrl(locale, `tags/${tag}/`);
 
 <li>
   <a href={href} transition:name={tag} class="tag">
-    #{tagName}
+    #<span class={category ? "p-category" : undefined}>{tagName}</span>
   </a>
 </li>

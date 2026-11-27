@@ -13,9 +13,10 @@ type Props = {
   label?: string;
   title?: string;
   rel?: string;
+  class?: string;
 };
 
-const { type, label, title, rel } = Astro.props;
+const { type, label, title, rel, class: className } = Astro.props;
 const href = /^\/(?!\/)/.test(Astro.props.href)
   ? getAssetPath(Astro.props.href)
   : Astro.props.href;
@@ -31,7 +32,7 @@ const squeeze =
     : {};
 ---
 
-<a class="b88" href={href} rel={rel} title={name}>
+<a class:list={["b88", className]} href={href} rel={rel} title={name}>
   <svg
     width="88"
     height="31"

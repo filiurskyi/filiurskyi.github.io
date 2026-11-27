@@ -68,13 +68,14 @@ const homeJsonLd = toJsonLd(
 ---
 
 <Layout
+  bodyClass="h-card"
   description={config.site.description}
   canonicalURL={intro.data.canonicalUrl}
 >
   <Fragment slot="head">
     <script type="application/ld+json" is:inline set:html={homeJsonLd} />
   </Fragment>
-  <Header />
+  <Header hCard />
   <Main pageTitle={config.site.title} hideTitle>
     <Fragment slot="head">
       <div class="page-lead">
@@ -134,5 +135,5 @@ const homeJsonLd = toJsonLd(
       </section>
     )}
   </Main>
-  <Footer />
+  <Footer hCard />
 </Layout>
