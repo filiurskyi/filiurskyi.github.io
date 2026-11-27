@@ -19,5 +19,13 @@ export default [
   },
   { rules: { "no-console": "error" } },
   { files: ["scripts/**/*.ts"], rules: { "no-console": "off" } },
-  { ignores: ["dist/**", ".astro/**", "public/pagefind/**"] },
+  {
+    ignores: [
+      "dist/**",
+      ".astro/**",
+      "public/pagefind/**",
+      ".obsidian/**",
+      ".trash/**",
+    ],
+  },
 ];

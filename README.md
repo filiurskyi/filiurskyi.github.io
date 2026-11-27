@@ -14,7 +14,7 @@ Dark first, its own colour palettes, a little 2000s glow.
 
 - Posts, notes and projects, with tags and related content
 - Banded header with an optional ambient glow and a pixel wordmark
-- Labelled code, table and callout blocks; GitHub alerts; MDX; optional Obsidian syntax
+- Labelled code, table and callout blocks; GitHub alerts; MDX; optional Obsidian syntax and Templater templates in `templates/obsidian/`
 - Vim-style statusline with h/j/k/l, 88x31 footer badges, a terminal-style 404
 - Pagefind search, RSS, sitemap, generated Open Graph images, JSON-LD
 - 4 dark and 5 light palettes, or your own, checked for WCAG AA; a live preview panel for demos

@@ -17,5 +17,8 @@
 !/docs
 !.vscode
 
+# Obsidian vault: uncomment to keep notes as Obsidian writes them
+# /src/content
+
 # Ignore MDX files
 *.mdx

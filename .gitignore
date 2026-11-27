@@ -31,6 +31,10 @@ public/pagefind
 # pnpm
 .pnpm-store
 
+# obsidian vault
+.obsidian/workspace*.json
+.trash/
+
 # docker compose
 compose.override.yaml
 
