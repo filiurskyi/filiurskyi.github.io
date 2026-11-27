@@ -140,6 +140,7 @@ const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
     pageTitle={title}
     titleStyle={{ viewTransitionName: toTransitionName(`post:${post.id}`) }}
     trackBack={false}
+    entry
     data-pagefind-body
   >
     <Fragment slot="meta">
@@ -150,6 +151,8 @@ const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
         {timezone}
         {draft}
         minutes={readingTime(post.body)}
+        author={post.data.author}
+        summary={description}
       />
       <BackButton />
     </Fragment>
@@ -162,7 +165,7 @@ const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
 
     <div class="post-body">
       <PostToc headings={tocHeadings} />
-      <article id="article" class="app-prose">
+      <article id="article" class="app-prose e-content">
         <Content />
       </article>
     </div>
@@ -173,7 +176,7 @@ const canonical = canonicalUrl ?? new URL(Astro.url.pathname, Astro.site).href;
     {tags.length > 0 && (
       <ul class="post-tags" aria-label={t.post.tagLabel}>
         {tags.map(tag => (
-          <Tag tag={slugifyStr(tag)} tagName={tag} />
+          <Tag tag={slugifyStr(tag)} tagName={tag} category />
         ))}
       </ul>
     )}

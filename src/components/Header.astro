@@ -8,6 +8,9 @@ import { getSections } from "@/utils/content/sections";
 import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
 
+type Props = { hCard?: boolean };
+
+const { hCard = false } = Astro.props;
 const { site, features } = config;
 
 const locale = useLocale(Astro);
@@ -68,7 +71,7 @@ const navItems = [
     <div class="site-bar">
       <a
         href={homeUrl}
-        class="wordmark"
+        class:list={["wordmark", { "u-url": hCard }]}
         aria-current={currentPath === "/" ? "page" : undefined}
       >
         {site.wordmark}

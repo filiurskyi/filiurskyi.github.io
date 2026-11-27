@@ -5,7 +5,10 @@
  */
 import { z } from "astro/zod";
 import { darkPalettes, lightPalettes, type Palette } from "../palettes";
-import { PLACEHOLDER_MARKERS } from "../utils/markers";
+import {
+  BUTTON_LABEL_PLACEHOLDER,
+  PLACEHOLDER_MARKERS,
+} from "../utils/markers";
 
 /** Theme repository, linked from the footer credit. */
 export const STARGLOW_REPO = "https://github.com/glowing-space/starglow";
@@ -28,6 +31,13 @@ export type BadgeType =
   | "email"
   | "rss"
   | "sparkle"
+  | "512kb-green"
+  | "512kb-orange"
+  | "512kb-blue"
+  | "250kb"
+  | "1mb"
+  | "darktheme"
+  | "nocookies"
   | (string & {});
 
 /**
@@ -415,7 +425,13 @@ const badgeSchema = z.strictObject({
   /**
    * Icon and default label: "github", "gitlab", "codeberg", "srht",
    * "linkedin", "mastodon", "bluesky", "stack", "hackaday", "crates",
-   * "email", "rss" or "sparkle". Any other name gets a generic icon.
+   * "email", "rss", "sparkle", the size clubs "512kb-green",
+   * "512kb-orange", "512kb-blue", "250kb", "1mb" (pnpm verify checks the
+   * homepage weight against them), "darktheme" or "nocookies" (pnpm verify
+   * then requires every page to load its files from the site's own origin
+   * and its scripts to leave the cookie APIs alone; the Cloudflare Web
+   * Analytics beacon is the one exception). Any other name gets a generic
+   * icon.
    */
   type: z.custom<BadgeType>(
     value => typeof value === "string" && value !== "",
@@ -435,15 +451,56 @@ const badgeSchema = z.strictObject({
   label: z.string().optional(),
   /** Tooltip and accessible name. Defaults per type, e.g. "GitHub". */
   title: z.string().optional(),
+});
+
+const httpUrl = z.string().refine(url => isHttpUrl(url.trim()), {
+  error: "expected an http(s) URL",
+});
+
+const webringSchema = z
+  .strictObject({
+    /** Ring name, linked to `url`. */
+    name: z.string().min(1),
+    /** The ring's own page. */
+    url: httpUrl,
+    /** This site's "previous" link from the ring. Set together with `next`. */
+    prev: httpUrl.optional(),
+    /** This site's "next" link from the ring. Set together with `prev`. */
+    next: httpUrl.optional(),
+    /** A random member of the ring. */
+    random: httpUrl.optional(),
+  })
+  .refine(ring => (ring.prev === undefined) === (ring.next === undefined), {
+    error: "set prev and next together, or neither",
+    path: ["next"],
+  });
+
+const buttonSchema = z.strictObject({
   /**
-   * An 88x31 image under public/, such as "/badges/foo.webp", shown instead
-   * of the drawn badge. Self-hosted only, so visitors make no third-party
-   * requests.
+   * One-line button text, e.g. the site name. Until it is set, a TODO
+   * placeholder that the strict marker check fails on once the button is
+   * published; the image then reads "[[TODO]]".
+   *
+   * Used by: src/utils/siteButton.ts, src/utils/smallWeb.ts.
    */
-  image: z
-    .string()
-    .regex(/^\/(?!\/)/, { error: 'expected a path starting with "/"' })
-    .optional(),
+  label: z.string().trim().min(1).default(BUTTON_LABEL_PLACEHOLDER),
+  /**
+   * A badge type whose icon and colour it takes, e.g. "sparkle", or your
+   * own 11x11 bitmap: 11 rows of 11 cells, "#" lit and "." off, drawn in
+   * the `link` colour. Defaults to "sparkle".
+   *
+   * Used by: src/utils/siteButton.ts.
+   */
+  icon: z
+    .union([
+      z.string().min(1),
+      z
+        .array(
+          z.string().regex(/^[#.]{11}$/, 'expected 11 cells of "#" or "."')
+        )
+        .length(11, { error: "expected 11 rows" }),
+    ])
+    .default("sparkle"),
 });
 
 const footerLinkSchema = z.strictObject({
@@ -490,6 +547,21 @@ export const starglowConfigSchema = z
      * src/config.ts (fediverse:creator).
      */
     links: z.array(badgeSchema).default([]),
+    /**
+     * Webrings this site is a member of, listed on /small-web/, which the
+     * footer links while the page has a ring or the button. Defaults to none.
+     *
+     * Used by: src/utils/smallWeb.ts, src/pages/[smallWeb].astro.
+     */
+    webrings: z.array(webringSchema).default([]),
+    /**
+     * This site's own 88x31 button, built as /88x31.png and offered on
+     * /small-web/ with HTML to copy. A set label makes /small-web/ on its
+     * own.
+     *
+     * Used by: src/pages/[button].png.ts, src/pages/[smallWeb].astro.
+     */
+    button: buttonSchema.prefault({}),
     /** Footer options. */
     footer: z
       .strictObject({
@@ -508,6 +580,32 @@ export const starglowConfigSchema = z
          * Defaults to none.
          */
         links: z.array(footerLinkSchema).default([]),
+      })
+      .prefault({}),
+    /** Build-time processing of Markdown and MDX images. */
+    images: z
+      .strictObject({
+        /**
+         * Widest output in px; a larger original is scaled down and a smaller
+         * one is kept. An Obsidian size part such as `![[x.png|alt|600]]` sets
+         * a narrower width. Defaults to 1200, the 36rem column at 2x.
+         *
+         * Used by: src/utils/remarkImages.ts.
+         */
+        maxWidth: z.number().int().min(64).default(1200),
+        /**
+         * Output format: "webp" or "avif". AVIF encodes slower and beats
+         * WebP only at a lower quality, about 50. Defaults to "webp".
+         *
+         * Used by: src/utils/remarkImages.ts.
+         */
+        format: z.enum(["webp", "avif"]).default("webp"),
+        /**
+         * Encoder quality from 1 to 100. Defaults to 80.
+         *
+         * Used by: src/utils/remarkImages.ts.
+         */
+        quality: z.number().int().min(1).max(100).default(80),
       })
       .prefault({}),
     /** Optional visitor analytics. Off unless a token is set. */
@@ -565,7 +663,10 @@ export interface ResolvedStarglowConfig {
   appearance: Parsed["appearance"];
   /** Badges with a usable URL. The footer drops repeated URLs (utils/footer.ts). */
   links: (BadgeLink & { url: string })[];
+  webrings: Parsed["webrings"];
+  button: Parsed["button"];
   footer: Parsed["footer"];
+  images: Parsed["images"];
   analytics: Parsed["analytics"];
 }
 

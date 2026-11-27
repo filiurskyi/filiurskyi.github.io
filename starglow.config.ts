@@ -82,23 +82,28 @@ export default defineStarglowConfig({
     preview: false,
   },
   // 88x31 footer badges. Profile types (github, mastodon, linkedin, ...) are
-  // also your rel="me" links and the homepage sameAs; a mastodon URL like
-  // https://host/@you sets the fediverse:creator meta. The rss badge shows
-  // once a post or note is published. A URL the footer already has (the
-  // credit, an earlier badge) is left out.
+  // also your rel="me" links, listed on /contact/, and the homepage sameAs; a
+  // mastodon URL like https://host/@you sets the fediverse:creator meta. The
+  // rss badge shows once a post or note is published. A URL the footer
+  // already has (the credit, an earlier badge) is left out of the footer.
   links: [
     { type: "rss", url: "/rss.xml" },
     { type: "github", url: "https://github.com/filiurskyi" },
-    // Turned into a mailto: link on hover, focus or click by src/custom/BodyEnd.astro.
+    // Becomes a mailto: link on hover, focus or click (src/custom/BodyEnd.astro).
     { type: "email", url: "/contact/#email" },
     {
-      type: "cookie-zero",
+      type: "nocookies",
       url: "https://edleeman.co.uk/cookie-zero/",
       title: "Cookie Zero: this site sets no cookies",
-      // Self-hosted copy of https://edleeman.co.uk/images/cookiezero.webp.
-      image: "/badges/cookiezero.webp",
     },
   ],
+  // Webrings on /small-web/, linked from the footer once one is listed:
+  // { name, url, prev?, next?, random? }, prev and next together.
+  webrings: [],
+  // Your 88x31 button at /88x31.png, shown on /small-web/ with HTML to copy.
+  // Add a label (e.g. your site name) to publish it. Listing webrings without
+  // one publishes a TODO placeholder, which fails the deploy.
+  button: { icon: "sparkle" },
   footer: {
     // "powered by starglow" in the footer. Keeping it is appreciated.
     credit: true,
@@ -107,6 +112,11 @@ export default defineStarglowConfig({
       { label: "impressum", href: "/impressum/" },
       { label: "privacy", href: "/privacy/" },
     ],
+  },
+  images: {
+    maxWidth: 1200,
+    format: "webp",
+    quality: 80,
   },
   // Cloudflare Web Analytics (cookieless). Unset = no script. The token may
   // also come from PUBLIC_CF_WEB_ANALYTICS_TOKEN in the environment.

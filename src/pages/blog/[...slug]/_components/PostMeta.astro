@@ -4,6 +4,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import config from "@/config";
 import { useTranslations, tplStr, useLocale } from "@/i18n";
+import { getRelativeLocaleUrl } from "astro:i18n";
 import { resolveTimezone } from "@/utils/resolveTimezone";
 
 dayjs.extend(utc);
@@ -21,6 +22,8 @@ type Props = {
   timezone?: string;
   draft?: boolean;
   minutes: number;
+  author?: string;
+  summary?: string;
 };
 
 const {
@@ -31,9 +34,13 @@ const {
   timezone: postTimezone,
   draft,
   minutes,
+  author,
+  summary,
 } = Astro.props;
 
-const t = useTranslations(useLocale(Astro));
+const locale = useLocale(Astro);
+const t = useTranslations(locale);
+const homeUrl = getRelativeLocaleUrl(locale, "");
 const zone = resolveTimezone(postTimezone ?? config.site.timezone);
 
 const main = date ? dayjs(date).tz(zone) : null;
@@ -47,21 +54,39 @@ const format = "YYYY-MM-DD";
   <span>{kind}</span>
   <span aria-hidden="true"> · </span>
   {main ? (
-    <time datetime={main.toISOString()}>{main.format(format)}</time>
+    <time class="dt-published" datetime={main.toISOString()}>
+      {main.format(format)}
+    </time>
   ) : (
-    <time datetime={year}>{year}</time>
+    <time class="dt-published" datetime={year}>
+      {year}
+    </time>
   )}
   {isUpdated && updated && (
     <>
       <span aria-hidden="true"> · </span>
       <span>
         {t.post.updatedAt.toLowerCase()}{" "}
-        <time datetime={updated.toISOString()}>{updated.format(format)}</time>
+        <time class="dt-updated" datetime={updated.toISOString()}>
+          {updated.format(format)}
+        </time>
       </span>
     </>
   )}
   <span aria-hidden="true"> · </span>
   <span>{tplStr(t.post.readingTime, { minutes })}</span>
+  {author && (
+    <span class="p-author h-card" hidden>
+      {author === config.site.author ? (
+        <a class="p-name u-url" href={homeUrl}>
+          {author}
+        </a>
+      ) : (
+        <span class="p-name">{author}</span>
+      )}
+    </span>
+  )}
+  {summary && <data class="p-summary" value={summary} hidden />}
   {import.meta.env.DEV && draft && (
     <>
       <span aria-hidden="true"> · </span>

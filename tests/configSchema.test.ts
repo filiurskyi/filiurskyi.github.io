@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import userConfig from "@/starglow.config";
 import { darkPalettes } from "@/palettes";
+import { BUTTON_LABEL_PLACEHOLDER } from "@/utils/markers";
 import {
   closestKey,
   parseStarglowConfig,
@@ -47,6 +48,27 @@ describe("config schema", () => {
     });
     expect(config.links).toEqual([]);
     expect(config.footer).toEqual({ credit: true, links: [] });
+    expect(config.images).toEqual({
+      maxWidth: 1200,
+      format: "webp",
+      quality: 80,
+    });
+  });
+
+  it("checks the image options", () => {
+    expect(
+      parseStarglowConfig({ site, images: { format: "avif", quality: 50 } })
+        .images
+    ).toEqual({ maxWidth: 1200, format: "avif", quality: 50 });
+    expect(problems({ site, images: { maxWidth: 0 } })).toEqual([
+      expect.stringMatching(/^images\.maxWidth: /),
+    ]);
+    expect(problems({ site, images: { quality: 101 } })).toEqual([
+      expect.stringMatching(/^images\.quality: /),
+    ]);
+    expect(problems({ site, images: { format: "png" } })).toEqual([
+      expect.stringMatching(/^images\.format: /),
+    ]);
   });
 
   it("names an unknown key and suggests the closest one", () => {
@@ -128,6 +150,40 @@ describe("config schema", () => {
     expect(problems({ site: { ...site, ogImage: "../secret.jpg" } })).toEqual([
       expect.stringMatching(/^site\.ogImage: expected a single filename/),
     ]);
+  });
+
+  it("checks webrings", () => {
+    const ring = { name: "Ring", url: "https://ring.example/" };
+    expect(parseStarglowConfig({ site }).webrings).toEqual([]);
+    expect(
+      parseStarglowConfig({
+        site,
+        webrings: [
+          { ...ring, prev: "https://a.example/", next: "https://b.example/" },
+        ],
+      }).webrings
+    ).toHaveLength(1);
+    expect(
+      problems({ site, webrings: [{ ...ring, prev: "https://a.example/" }] })
+    ).toEqual(["webrings[0].next: set prev and next together, or neither"]);
+    expect(
+      problems({ site, webrings: [{ ...ring, url: "mailto:x@example.com" }] })
+    ).toEqual([
+      expect.stringMatching(/^webrings\[0\]\.url: expected an http\(s\) URL/),
+    ]);
+  });
+
+  it("checks the button", () => {
+    expect(parseStarglowConfig({ site }).button).toEqual({
+      label: BUTTON_LABEL_PLACEHOLDER,
+      icon: "sparkle",
+    });
+    expect(problems({ site, button: { label: " " } })).toEqual([
+      expect.stringMatching(/^button\.label: /),
+    ]);
+    expect(problems({ site, button: { icon: ["#"] } })).toEqual(
+      expect.arrayContaining([expect.stringMatching(/^button\.icon/)])
+    );
   });
 
   it("needs site.sourceUrl for features.editPost", () => {

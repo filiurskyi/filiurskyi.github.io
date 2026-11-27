@@ -1,5 +1,5 @@
 ---
-import { BADGE_ICONS, badgeIcon, bitmapRuns } from "@/utils/badges";
+import { BADGE_ICONS, BADGE_TEXT, badgeIcon, badgeRects } from "@/utils/badges";
 import { getAssetPath } from "@/utils/withBase";
 
 /**
@@ -13,11 +13,10 @@ type Props = {
   label?: string;
   title?: string;
   rel?: string;
-  /** Site path of an 88x31 image drawn instead of the SVG badge. */
-  image?: string;
+  class?: string;
 };
 
-const { type, label, title, rel, image } = Astro.props;
+const { type, label, title, rel, class: className } = Astro.props;
 const href = /^\/(?!\/)/.test(Astro.props.href)
   ? getAssetPath(Astro.props.href)
   : Astro.props.href;
@@ -25,52 +24,40 @@ const known = Object.hasOwn(BADGE_ICONS, type);
 const icon = badgeIcon(type);
 const text = label ?? (known ? icon.label : type);
 const name = title ?? (known ? icon.title : type);
-const colour = `var(--badge-${known ? type : "link"})`;
-const runs = bitmapRuns(icon.bitmap);
+const rects = badgeRects(icon.bitmap, `--badge-${known ? type : "link"}`);
 // Long labels are squeezed into the 56px text area.
 const squeeze =
-  text.length > 9 ? { textLength: 52, lengthAdjust: "spacingAndGlyphs" } : {};
+  text.length > BADGE_TEXT.squeezeAbove
+    ? { textLength: BADGE_TEXT.width, lengthAdjust: "spacingAndGlyphs" }
+    : {};
 ---
 
-<a class="b88" href={href} rel={rel} title={name}>
-  {image ? (
-    <img
-      src={getAssetPath(image)}
-      width="88"
-      height="31"
-      alt=""
-      loading="lazy"
-      decoding="async"
-    />
-  ) : (
-    <svg
-      width="88"
-      height="31"
-      viewBox="0 0 88 31"
-      shape-rendering="crispEdges"
-      aria-hidden="true"
+<a class:list={["b88", className]} href={href} rel={rel} title={name}>
+  <svg
+    width="88"
+    height="31"
+    viewBox="0 0 88 31"
+    shape-rendering="crispEdges"
+    aria-hidden="true"
+  >
+    {rects.map(({ x, y, width, height, fill }) => (
+      <rect
+        x={x || undefined}
+        y={y || undefined}
+        width={width}
+        height={height}
+        fill={`var(${fill})`}
+      />
+    ))}
+    <text
+      x={BADGE_TEXT.x}
+      y={BADGE_TEXT.y}
+      text-anchor="middle"
+      class="b88-text"
+      {...squeeze}
     >
-      <rect width="88" height="31" fill="var(--b-edge)"></rect>
-      <rect x="1" y="1" width="86" height="29" fill="var(--b-face)"></rect>
-      <rect x="1" y="1" width="86" height="1" fill="var(--b-hi)"></rect>
-      <rect x="1" y="1" width="1" height="29" fill="var(--b-hi)"></rect>
-      <rect x="1" y="29" width="86" height="1" fill="var(--b-lo)"></rect>
-      <rect x="86" y="1" width="1" height="29" fill="var(--b-lo)"></rect>
-      <rect x="2" y="2" width="28" height="27" fill="var(--b-icon)"></rect>
-      {runs.map(([x, y, length]) => (
-        <rect
-          x={5 + x * 2}
-          y={5 + y * 2}
-          width={length * 2}
-          height="2"
-          fill={colour}
-        />
-      ))}
-      <rect x="30" y="2" width="1" height="27" fill="var(--b-lo)"></rect>
-      <text x="59" y="19.5" text-anchor="middle" class="b88-text" {...squeeze}>
-        {text}
-      </text>
-    </svg>
-  )}
+      {text}
+    </text>
+  </svg>
   <span class="sr-only">{name}</span>
 </a>

@@ -57,6 +57,7 @@
 /* Light mode surfaces (default before the theme script runs) */
 :root,
 [data-theme="light"] {
+  color-scheme: light;
   --band: var(--crust);
   --code-bg: var(--mantle);
   --glow-c: color-mix(in srgb, var(--glow) 70%, transparent);
@@ -64,6 +65,7 @@
 
 /* Dark mode surfaces */
 [data-theme="dark"] {
+  color-scheme: dark;
   --band: var(--mantle);
   --code-bg: var(--crust);
   --glow-c: color-mix(in srgb, var(--glow) 18%, transparent);
@@ -100,6 +102,13 @@
   --badge-email: #c9b8ff;
   --badge-rss: #ffa040;
   --badge-sparkle: #ffd75e;
+  --badge-512kb-green: #5ee08a;
+  --badge-512kb-orange: #ff9a3c;
+  --badge-512kb-blue: #5aa9ff;
+  --badge-250kb: #6fdccb;
+  --badge-1mb: #f0eff5;
+  --badge-darktheme: #c9c4ff;
+  --badge-nocookies: #ff9aa8;
   --badge-link: #f0eff5;
 }
 
@@ -1375,6 +1384,27 @@ body {
   text-decoration-style: solid;
 }
 
+.webrings {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted-foreground);
+}
+
+.webrings li {
+  padding: var(--s2) 0;
+}
+
+.site-button {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.app-prose pre.snippet {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .facts {
   margin: var(--s6) 0 0;
 }
@@ -1472,8 +1502,7 @@ body {
   height: 31px;
 }
 
-.b88 svg,
-.b88 img {
+.b88 svg {
   display: block;
   image-rendering: pixelated;
 }

@@ -7,7 +7,11 @@ import {
 import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
+import {
+  rehypeHeadingIds,
+  unified,
+  type RemarkPlugins,
+} from "@astrojs/markdown-remark";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeCallouts from "rehype-callouts";
 import { createCssVariablesTheme } from "shiki";
@@ -28,6 +32,9 @@ import { existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import userConfig from "./starglow.config";
 import { parseStarglowConfig } from "./src/types/config";
+import { splitVariant } from "./src/utils/fontSubset";
+import { remarkImages } from "./src/utils/remarkImages";
+import { sitemapLastmod } from "./src/utils/sitemapLastmod";
 
 // Single source of the site origin. Override per build with SITE_URL (shell or
 // .env); the default is this site's origin.
@@ -80,6 +87,8 @@ if (BASE_PATH && !/^(\/[\w.-]+)+$/.test(BASE_PATH)) {
   );
 }
 
+const lastmod = sitemapLastmod(BASE_PATH);
+
 // Plain text of a hast node (hast-util-to-string is not a direct dependency).
 type HastNode = { type: string; value?: string; children?: HastNode[] };
 const hastText = (node: HastNode): string =>
@@ -95,7 +104,8 @@ export default defineConfig({
   integrations: [
     ...(OBSIDIAN ? [obsidianIntegration()] : []),
     mdx(),
-    sitemap(),
+    lastmod.integration,
+    sitemap({ serialize: lastmod.serialize }),
   ],
   i18n: {
     locales: [LANG],
@@ -109,9 +119,12 @@ export default defineConfig({
     // callouts, block labels and TODO markers after callouts, table wrapper
     // last. Shiki runs before all of them. MDX inherits this processor.
     processor: unified({
-      remarkPlugins: OBSIDIAN
-        ? [[remarkObsidian, { timezone: config.site.timezone }]]
-        : [],
+      remarkPlugins: [
+        ...((OBSIDIAN
+          ? [[remarkObsidian, { timezone: config.site.timezone }]]
+          : []) satisfies RemarkPlugins),
+        [remarkImages, config.images],
+      ],
       rehypePlugins: [
         rehypeHeadingIds,
         [
@@ -170,32 +183,10 @@ export default defineConfig({
       display: "swap",
       options: {
         variants: [
-          {
-            weight: 400,
-            style: "normal",
-            src: [
-              "./src/assets/fonts/inter-latin-400-normal.woff2",
-              "./src/assets/fonts/inter-latin-400-normal.woff",
-            ],
-          },
-          {
-            weight: 400,
-            style: "italic",
-            src: ["./src/assets/fonts/inter-latin-400-italic.woff2"],
-          },
-          {
-            weight: 600,
-            style: "normal",
-            src: [
-              "./src/assets/fonts/inter-latin-600-normal.woff2",
-              "./src/assets/fonts/inter-latin-600-normal.woff",
-            ],
-          },
-          {
-            weight: 600,
-            style: "italic",
-            src: ["./src/assets/fonts/inter-latin-600-italic.woff2"],
-          },
+          ...splitVariant("inter-latin-400-normal", 400, "normal"),
+          ...splitVariant("inter-latin-400-italic", 400, "italic"),
+          ...splitVariant("inter-latin-600-normal", 600, "normal"),
+          ...splitVariant("inter-latin-600-italic", 600, "italic"),
         ],
       },
     },
@@ -207,21 +198,13 @@ export default defineConfig({
       display: "swap",
       options: {
         variants: [
-          {
-            weight: 400,
-            style: "normal",
-            src: ["./src/assets/fonts/jetbrains-mono-latin-400-normal.woff2"],
-          },
-          {
-            weight: 400,
-            style: "italic",
-            src: ["./src/assets/fonts/jetbrains-mono-latin-400-italic.woff2"],
-          },
+          ...splitVariant("jetbrains-mono-latin-400-normal", 400, "normal"),
+          ...splitVariant("jetbrains-mono-latin-400-italic", 400, "italic"),
         ],
       },
     },
     {
-      // The wordmark face (site title in the header). Replace name and src to
+      // The wordmark face (site title in the header). Replace name and file to
       // swap it; only its Latin subset ships.
       name: "Pixelify Sans",
       cssVariable: "--font-wordmark",
@@ -230,11 +213,7 @@ export default defineConfig({
       display: "swap",
       options: {
         variants: [
-          {
-            weight: 400,
-            style: "normal",
-            src: ["./src/assets/fonts/pixelify-sans-latin-400-normal.woff2"],
-          },
+          ...splitVariant("pixelify-sans-latin-400-normal", 400, "normal"),
         ],
       },
     },

@@ -88,11 +88,25 @@ export interface UIStrings {
   };
   footer: {
     contact: string;
+    smallWeb: string;
     source: string;
     /** Text before the linked theme name, e.g. "powered by". */
     poweredBy: string;
     /** Accessible name of the 88x31 badge list. */
     elsewhere: string;
+  };
+  smallWeb: {
+    title: string;
+    description: string;
+    webrings: string;
+    previous: string;
+    next: string;
+    random: string;
+    previousLabel: string;
+    nextLabel: string;
+    randomLabel: string;
+    button: string;
+    buttonHint: string;
   };
   pages: {
     tagTitle: string;

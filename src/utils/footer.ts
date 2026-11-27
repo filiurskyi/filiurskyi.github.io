@@ -4,36 +4,20 @@ import { STARGLOW_REPO } from "@/types/config";
 import { PROFILE_BADGES } from "@/utils/badges";
 import { getAssetPath } from "@/utils/withBase";
 import { getContactPage, getSections } from "@/utils/content/sections";
-
-/**
- * What makes two hrefs the same link: host without `www.`, path without a
- * trailing slash or index.html, the query and the hash. Scheme is ignored.
- */
-export function sameLinkKey(href: string, site: URL): string {
-  try {
-    const url = new URL(href, site);
-    if (url.protocol === "mailto:") return url.href.toLowerCase();
-    const host = url.host.toLowerCase().replace(/^www\./, "");
-    const path = url.pathname
-      .replace(/\/index\.html?$/, "/")
-      .replace(/\/+$/, "");
-    return `${host}${path}${url.search}${url.hash}`;
-  } catch {
-    return href.trim();
-  }
-}
+import { sameLinkKey } from "@/utils/sameLinkKey";
+import { SMALL_WEB_PATH, hasSmallWebPage } from "@/utils/smallWeb";
 
 const withBase = (href: string) =>
   /^\/(?!\/)/.test(href) ? getAssetPath(href) : href;
 
 /**
  * Every footer link, each URL once. Earlier wins: the credit, the badges,
- * `footer.links`, then contact and source. The RSS badge waits for a post
- * or a note.
+ * `footer.links`, then contact, small web and source. The RSS badge waits
+ * for a post or a note.
  */
 export async function getFooterLinks(
   locale: string,
-  labels: { contact: string; source: string }
+  labels: { contact: string; smallWeb: string; source: string }
 ) {
   const site = new URL(import.meta.env.SITE);
   const seen = new Set<string>();
@@ -64,6 +48,10 @@ export async function getFooterLinks(
   if (await getContactPage()) {
     const href = getRelativeLocaleUrl(locale, "contact");
     if (fresh(href)) nav.push({ label: labels.contact, href });
+  }
+  if (hasSmallWebPage(config)) {
+    const href = getRelativeLocaleUrl(locale, SMALL_WEB_PATH);
+    if (fresh(href)) nav.push({ label: labels.smallWeb, href });
   }
   const source = config.site.sourceUrl;
   if (source && fresh(source)) nav.push({ label: labels.source, href: source });

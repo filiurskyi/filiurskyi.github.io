@@ -79,9 +79,23 @@ export default {
   },
   footer: {
     contact: "contact",
+    smallWeb: "small web",
     source: "source",
     poweredBy: "powered by",
     elsewhere: "Elsewhere",
+  },
+  smallWeb: {
+    title: "Small web",
+    description: "The webrings this site belongs to, and its 88x31 button.",
+    webrings: "Webrings",
+    previous: "previous",
+    next: "next",
+    random: "random",
+    previousLabel: "Previous site in {{ring}}",
+    nextLabel: "Next site in {{ring}}",
+    randomLabel: "Random site in {{ring}}",
+    button: "88x31 button",
+    buttonHint: "To link here with it, copy this HTML:",
   },
   pages: {
     tagTitle: "Tag",

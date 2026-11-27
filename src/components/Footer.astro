@@ -5,9 +5,9 @@ import { getFooterLinks } from "@/utils/footer";
 import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
 
-type Props = HTMLAttributes<"footer">;
+type Props = HTMLAttributes<"footer"> & { hCard?: boolean };
 
-const { class: className, ...attrs } = Astro.props;
+const { class: className, hCard = false, ...attrs } = Astro.props;
 
 const locale = useLocale(Astro);
 const t = useTranslations(locale);
@@ -15,6 +15,7 @@ const currentYear = new Date().getFullYear();
 
 const { credit, badges, extra, nav } = await getFooterLinks(locale, {
   contact: t.footer.contact,
+  smallWeb: t.footer.smallWeb,
   source: t.footer.source,
 });
 ---
@@ -22,7 +23,11 @@ const { credit, badges, extra, nav } = await getFooterLinks(locale, {
 <footer class:list={["site-footer col", className]} {...attrs}>
   <div class="colophon">
     <span>
-      {`© ${currentYear} ${config.site.author}`}
+      {`© ${currentYear} `}
+      <span class={hCard ? "p-name" : undefined}>{config.site.author}</span>
+      {hCard && config.person.jobTitle && (
+        <data class="p-job-title" value={config.person.jobTitle} hidden />
+      )}
       {credit && (
         <>
           <span class="credit-sep" aria-hidden="true">
@@ -60,7 +65,7 @@ const { credit, badges, extra, nav } = await getFooterLinks(locale, {
                 label={link.label}
                 title={link.title}
                 rel={link.rel}
-                image={link.image}
+                class={hCard && link.rel === "me" ? "u-url" : undefined}
               />
             </li>
           ))}

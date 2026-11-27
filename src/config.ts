@@ -69,7 +69,10 @@ const config: ResolvedStarglowConfig = {
   },
   appearance: parsed.appearance,
   links: resolveLinks(parsed.links),
+  webrings: parsed.webrings,
+  button: parsed.button,
   footer: parsed.footer,
+  images: parsed.images,
   analytics: {
     cloudflareToken:
       parsed.analytics.cloudflareToken?.trim() ||

@@ -1,28 +1,22 @@
-// Lists every unfilled `[[TODO: ...]]` placeholder marker in the source.
+// Lists every unfilled `[[TODO: ...]]` placeholder marker in the source and in
+// the built dist/**/*.html. Drafts, `_` entries and Markdown code are skipped.
 //
 // Run: ./dev.sh pnpm markers          (node scripts/check-markers.ts [--strict])
 //
-// `node:` builtins plus src/utils/contentFiles.ts (Astro's frontmatter
-// parser); erasable TypeScript only, so Node >= 22.18 strips the types natively.
-//
 // Warn mode (default) exits 0. Strict mode (`--strict` or MARKERS_STRICT=true)
-// exits 1 while any marker remains, so a deploy cannot publish one. No `.env`
-// is read, so a local `.env` can never make a local build strict.
-//
-// Drafts, `_` entries and code (fenced and inline) are skipped, so docs that
-// show the syntax are not markers. src/utils/rehypeTodoMarkers.ts uses the same
-// marker shape. The built dist/**/*.html is scanned too, as a backstop; strict
-// mode also fails when dist/ is missing or has no HTML.
+// exits 1 while a marker remains and 2 while dist/ holds no HTML to scan.
 import { existsSync, readFileSync } from "node:fs";
 import { sep } from "node:path";
+import { NOTE_PATH, PROJECT_PATH } from "../src/utils/content/entryIds.ts";
 import { isDraft, walk } from "../src/utils/contentFiles.ts";
+import { decodeEntities } from "../src/utils/htmlScan.ts";
 
 const SCANNED = /\.(md|mdx|ts|astro|json|ya?ml)$/;
 const MARKDOWN = /\.mdx?$/;
 const CONTENT_ROOTS = [
   "src/content/blog",
-  "src/content/notes",
-  "src/content/projects",
+  NOTE_PATH,
+  PROJECT_PATH,
   "src/content/pages",
 ];
 const EXTRA_FILES = ["starglow.config.ts"];
@@ -30,12 +24,12 @@ const DIST = "dist";
 
 // Each bracket may carry a Markdown backslash escape, in case a formatter
 // writes one. The body runs to the first closing pair: it may hold a single `]`
-// and wrap across soft line breaks, but never a blank line (a paragraph break).
-// Global: use it with matchAll only (never `.test()`, which keeps lastIndex).
+// and wrap across soft line breaks, and ends at a blank line (a paragraph
+// break). Global: use it with matchAll.
 const MARKER =
   /\\?\[\\?\[TODO:((?:(?!\\?\]\\?\])[^\n]|\n(?![ \t]*\n))+)\\?\]\\?\]/g;
 const FENCE = /^ {0,3}(`{3,}|~{3,})/;
-// A run of non-blank lines: one Markdown paragraph. Code spans never cross it.
+// A run of non-blank lines: one Markdown paragraph, the reach of a code span.
 const PARAGRAPH = /[^\n]*\S[^\n]*(?:\n[^\n]*\S[^\n]*)*/g;
 
 type Marker = { path: string; line: number; text: string };
@@ -48,7 +42,7 @@ function posix(file: string): string {
   return file.split(sep).join("/");
 }
 
-/** True for a built-never entry: a `_` name or `draft: true` content entry. */
+/** True for an entry the build skips: a `_` name or a `draft: true` content entry. */
 function isSkippedEntry(file: string, text: string): boolean {
   const path = posix(file);
   const root = CONTENT_ROOTS.find(base => path.startsWith(`${base}/`));
@@ -71,7 +65,7 @@ function blankCodeSpans(paragraph: string): string {
   while (i < paragraph.length) {
     const char = paragraph.charAt(i);
     if (char === "\\") {
-      // An escaped character, including an escaped backtick, opens nothing.
+      // An escaped character, including an escaped backtick, is plain text.
       out += paragraph.slice(i, i + 2);
       i += 2;
       continue;
@@ -147,31 +141,15 @@ function markersIn(file: string): Marker[] {
   return found;
 }
 
-const ENTITIES: Record<string, string> = {
-  amp: "&",
-  lt: "<",
-  gt: ">",
-  quot: '"',
-  apos: "'",
-};
-
 /** Plain text of a rendered marker: entities decoded, whitespace collapsed. */
 function renderedText(value: string): string {
-  return value
-    .replace(/&#x([0-9a-f]+);/gi, (_, hex: string) =>
-      String.fromCodePoint(parseInt(hex, 16))
-    )
-    .replace(/&#(\d+);/g, (_, dec: string) =>
-      String.fromCodePoint(parseInt(dec, 10))
-    )
-    .replace(/&([a-z]+);/gi, (all, name: string) => ENTITIES[name] ?? all)
-    .replace(/\s+/g, " ");
+  return decodeEntities(value).replace(/\s+/g, " ");
 }
 
 /**
- * Literal `[[TODO` in the built HTML that the source scan did not report. Text
- * inside `pre` and `code` is skipped, like the source scan skips code. Returns
- * undefined when dist/ is absent or holds no HTML.
+ * Literal `[[TODO` in the built HTML beyond the markers of the source scan.
+ * Text inside `pre` and `code` is skipped, like the source scan skips code.
+ * Returns undefined when dist/ is absent or holds no HTML.
  */
 function distHits(reported: Marker[]): Marker[] | undefined {
   const pages = walk(DIST).filter(file => file.endsWith(".html"));
@@ -193,7 +171,7 @@ function distHits(reported: Marker[]): Marker[] | undefined {
   return found;
 }
 
-// Fail closed: a gate that scanned nothing must not report "clean".
+// Fail closed: an empty scan is an error.
 if (!existsSync("src")) {
   console.error(
     "error: Placeholder check: src/ not found. Run it from the repository root."
@@ -252,7 +230,7 @@ for (const hit of unreported) {
 const count = markers.length;
 const fileCount = new Set(markers.map(marker => marker.path)).size;
 const counted = `${count} [[TODO]] ${count === 1 ? "marker remains" : "markers remain"} in ${fileCount} ${fileCount === 1 ? "file" : "files"}`;
-const builtCounted = `${DIST}/ holds ${unreported.length} literal [[TODO]] ${unreported.length === 1 ? "string" : "strings"} the source scan did not report`;
+const builtCounted = `${DIST}/ holds ${unreported.length} literal [[TODO]] ${unreported.length === 1 ? "string" : "strings"} beyond the source markers`;
 
 if (strict) {
   if (count > 0) {
