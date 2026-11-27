@@ -47,6 +47,27 @@ describe("config schema", () => {
     });
     expect(config.links).toEqual([]);
     expect(config.footer).toEqual({ credit: true, links: [] });
+    expect(config.images).toEqual({
+      maxWidth: 1200,
+      format: "webp",
+      quality: 80,
+    });
+  });
+
+  it("checks the image options", () => {
+    expect(
+      parseStarglowConfig({ site, images: { format: "avif", quality: 50 } })
+        .images
+    ).toEqual({ maxWidth: 1200, format: "avif", quality: 50 });
+    expect(problems({ site, images: { maxWidth: 0 } })).toEqual([
+      expect.stringMatching(/^images\.maxWidth: /),
+    ]);
+    expect(problems({ site, images: { quality: 101 } })).toEqual([
+      expect.stringMatching(/^images\.quality: /),
+    ]);
+    expect(problems({ site, images: { format: "png" } })).toEqual([
+      expect.stringMatching(/^images\.format: /),
+    ]);
   });
 
   it("names an unknown key and suggests the closest one", () => {

@@ -501,6 +501,32 @@ export const starglowConfigSchema = z
         links: z.array(footerLinkSchema).default([]),
       })
       .prefault({}),
+    /** Build-time processing of Markdown and MDX images. */
+    images: z
+      .strictObject({
+        /**
+         * Widest output in px; a larger original is scaled down and a smaller
+         * one is kept. An Obsidian size part such as `![[x.png|alt|600]]` sets
+         * a narrower width. Defaults to 1200, the 36rem column at 2x.
+         *
+         * Used by: src/utils/remarkImages.ts.
+         */
+        maxWidth: z.number().int().min(64).default(1200),
+        /**
+         * Output format: "webp" or "avif". AVIF encodes slower and beats
+         * WebP only at a lower quality, about 50. Defaults to "webp".
+         *
+         * Used by: src/utils/remarkImages.ts.
+         */
+        format: z.enum(["webp", "avif"]).default("webp"),
+        /**
+         * Encoder quality from 1 to 100. Defaults to 80.
+         *
+         * Used by: src/utils/remarkImages.ts.
+         */
+        quality: z.number().int().min(1).max(100).default(80),
+      })
+      .prefault({}),
     /** Optional visitor analytics. Off unless a token is set. */
     analytics: z
       .strictObject({
@@ -557,6 +583,7 @@ export interface ResolvedStarglowConfig {
   /** Badges with a usable URL. The footer drops repeated URLs (utils/footer.ts). */
   links: (BadgeLink & { url: string })[];
   footer: Parsed["footer"];
+  images: Parsed["images"];
   analytics: Parsed["analytics"];
 }
 

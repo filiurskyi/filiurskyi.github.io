@@ -7,7 +7,11 @@ import {
 import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
-import { rehypeHeadingIds, unified } from "@astrojs/markdown-remark";
+import {
+  rehypeHeadingIds,
+  unified,
+  type RemarkPlugins,
+} from "@astrojs/markdown-remark";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeCallouts from "rehype-callouts";
 import { createCssVariablesTheme } from "shiki";
@@ -29,6 +33,7 @@ import { fileURLToPath } from "node:url";
 import userConfig from "./starglow.config";
 import { parseStarglowConfig } from "./src/types/config";
 import { splitVariant } from "./src/utils/fontSubset";
+import { remarkImages } from "./src/utils/remarkImages";
 
 // Single source of the site origin. Override per build with SITE_URL (shell or
 // .env); the default is the starglow demo origin; set your own.
@@ -110,9 +115,12 @@ export default defineConfig({
     // callouts, block labels and TODO markers after callouts, table wrapper
     // last. Shiki runs before all of them. MDX inherits this processor.
     processor: unified({
-      remarkPlugins: OBSIDIAN
-        ? [[remarkObsidian, { timezone: config.site.timezone }]]
-        : [],
+      remarkPlugins: [
+        ...((OBSIDIAN
+          ? [[remarkObsidian, { timezone: config.site.timezone }]]
+          : []) satisfies RemarkPlugins),
+        [remarkImages, config.images],
+      ],
       rehypePlugins: [
         rehypeHeadingIds,
         [

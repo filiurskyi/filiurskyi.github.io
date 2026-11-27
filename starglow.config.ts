@@ -100,6 +100,11 @@ export default defineStarglowConfig({
     // The privacy page is linked by the "no cookies" badge above.
     links: [{ label: "impressum", href: "/impressum/" }],
   },
+  images: {
+    maxWidth: 1200,
+    format: "webp",
+    quality: 80,
+  },
   // Cloudflare Web Analytics (cookieless). Unset = no script. The token may
   // also come from PUBLIC_CF_WEB_ANALYTICS_TOKEN in the environment.
   // analytics: { cloudflareToken: "" },

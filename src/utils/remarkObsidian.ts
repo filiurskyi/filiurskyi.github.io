@@ -6,8 +6,9 @@
  * - `%%comments%%` are removed (an unclosed one runs to the end, as in Obsidian)
  * - `[[Note]]`, `[[Note#Heading|text]]` link to the matching post, note or
  *   project (file name, title or alias, case-insensitive), else plain text
- * - `![[img.png|alt|400]]` becomes `![alt](_assets/img.png)`; size parts are
- *   ignored, alt text is required, `![[Note]]` renders as a wikilink
+ * - `![[img.png|alt|400]]` becomes `![alt](_assets/img.png)` at most 400px
+ *   wide (the height of `400x300` is ignored), alt text is required,
+ *   `![[Note]]` renders as a wikilink
  *
  * Fenced code blocks and inline code spans are left alone, and so are
  * placeholder markers (scripts/check-markers.ts reports them).
@@ -46,6 +47,7 @@ export const obsidianIntegration = (): AstroIntegration => ({
 
 const IMAGE = /\.(png|jpe?g|gif|webp|avif|svg|tiff?)$/i;
 const SIZE = /^\d+(x\d+)?$/;
+const WIDTH_MARK = "#obsidian-width=";
 const FENCE = /^(?:[ \t]*>)*[ \t]*(`{3,}|~{3,})/;
 const PARAGRAPH = /[^\n]*\S[^\n]*(?:\n[^\n]*\S[^\n]*)*/g;
 const TOKEN =
@@ -257,7 +259,29 @@ function embed(file: string, inner: string): string | undefined {
       `![[${inner}]]: _assets/${name} not found next to ${basename(file)}`
     );
   }
-  return `![${escapeMarkdown(alt)}](<_assets/${name}>)`;
+  const width = rest.map(part => part.trim()).find(part => SIZE.test(part));
+  const mark = width ? `${WIDTH_MARK}${parseInt(width, 10)}` : "";
+  return `![${escapeMarkdown(alt)}](<_assets/${name}${mark}>)`;
+}
+
+type MdNode = {
+  type: string;
+  url?: string;
+  data?: { hProperties?: Record<string, unknown> };
+  children?: MdNode[];
+};
+
+export function applyEmbedWidths(node: MdNode): void {
+  const at = node.type === "image" ? (node.url?.indexOf(WIDTH_MARK) ?? -1) : -1;
+  if (node.url && at >= 0) {
+    const width = Number(node.url.slice(at + WIDTH_MARK.length));
+    node.url = node.url.slice(0, at);
+    node.data = {
+      ...node.data,
+      hProperties: { ...node.data?.hProperties, width },
+    };
+  }
+  node.children?.forEach(applyEmbedWidths);
 }
 
 /** Converts Obsidian syntax in a Markdown body to CommonMark. */
@@ -292,11 +316,13 @@ export function remarkObsidian(this: unknown, options: Options) {
   };
   const parse = self.parser;
   if (!parse) return;
-  self.parser = (doc, file) =>
-    parse(
-      file.path?.endsWith(".md")
-        ? convertObsidian(String(doc), file.path, options.timezone)
-        : doc,
+  self.parser = (doc, file) => {
+    if (!file.path?.endsWith(".md")) return parse(doc, file);
+    const tree = parse(
+      convertObsidian(String(doc), file.path, options.timezone),
       file
-    );
+    ) as MdNode;
+    applyEmbedWidths(tree);
+    return tree;
+  };
 }
