@@ -1205,6 +1205,26 @@ function checkRobots(origin: string): void {
     if (!lines.includes(line)) fail("robots.txt", `missing "${line}"`);
 }
 
+function checkRssFeed(origin: string): void {
+  const file = join(DIST, "rss.xml");
+  if (!existsSync(file)) return;
+  const xml = read(file);
+  const channel = xml.split("<item>")[0] ?? "";
+  if (!/<rss\b[^>]*\sxmlns:atom="http:\/\/www\.w3\.org\/2005\/Atom"/.test(xml))
+    fail("rss.xml", "atom namespace not declared");
+  const self = [...channel.matchAll(/<atom:link\b[^>]*>/g)]
+    .map(match => match[0])
+    .find(tag => attr(tag, "rel") === "self");
+  const href = self === undefined ? undefined : attr(self, "href");
+  if (href === undefined) fail("rss.xml", 'no atom:link rel="self"');
+  else if (href !== `${origin}/rss.xml`)
+    fail("rss.xml", `self link ${href} is not ${origin}/rss.xml`);
+  if (!/<language>\s*\S[^<]*<\/language>/.test(channel))
+    fail("rss.xml", "no <language>");
+  if (xml.includes("<pubDate>") && !/<lastBuildDate>[^<]+</.test(channel))
+    fail("rss.xml", "items have a pubDate but there is no <lastBuildDate>");
+}
+
 /** Images that only a draft references must not reach dist/_astro. */
 function checkDraftAssets(): void {
   for (const file of findDraftOnlyAssets(DIST))
@@ -1473,6 +1493,7 @@ run("search-bundle", () => {
 run("search-page", () => checkSearchPage(indexed));
 run("sitemap", () => checkSitemap(htmlFiles, entries, origin));
 run("robots", () => checkRobots(origin));
+run("rss-feed", () => checkRssFeed(origin));
 run("draft-assets", () => checkDraftAssets());
 run("palettes", () => checkPalettes());
 run("og-images", () => checkOgImages(files));
