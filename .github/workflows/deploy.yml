@@ -3,17 +3,32 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - "*.md"
+      - "LICENSE*"
+      - NOTICE
+      - templates/**
+      - .obsidian/**
+      - .trash/**
+      - .claude/**
+      - .vscode/**
+      - .githooks/**
+      - .github/assets/**
+      - .github/ISSUE_TEMPLATE/**
+      - .github/pull_request_template.md
+      - .github/FUNDING.yml
+      - .github/dependabot.yml
+      - .github/release.yml
   workflow_dispatch:
 
 permissions: {}
 
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
   build:
     name: Check and build
+    concurrency:
+      group: pages-build
+      cancel-in-progress: true
     # A manual dispatch from another branch must not build or publish it.
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
@@ -39,6 +54,9 @@ jobs:
     name: Deploy
     needs: build
     if: github.ref == 'refs/heads/main'
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:
