@@ -5,7 +5,6 @@ stack: [Astro, TypeScript, Tailwind CSS, Pagefind]
 status: active
 featured: true
 githubUrl: https://github.com/glowing-space/starglow
-docsUrl: https://github.com/glowing-space/starglow/tree/main/docs
 websiteUrl: https://glowing-space.github.io/starglow/
 relatedPosts:
   - 2026/building-starglow
