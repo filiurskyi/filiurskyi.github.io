@@ -18,13 +18,32 @@ runs:
     - name: Install dependencies
       shell: bash
       run: pnpm install --frozen-lockfile
+    - name: Detect a content-only push
+      id: scope
+      shell: bash
+      env:
+        EVENT: ${{ github.event_name }}
+        BEFORE: ${{ github.event.before }}
+      run: |
+        content_only=false
+        if [ "$EVENT" = push ] && [ -n "$BEFORE" ] && [ -n "${BEFORE//0/}" ] \
+          && git cat-file -e "$BEFORE^{commit}" 2>/dev/null; then
+          changed=$(git diff --name-only "$BEFORE" HEAD)
+          if [ -n "$changed" ] && ! grep -qv '^src/content/' <<<"$changed"; then
+            content_only=true
+          fi
+        fi
+        echo "content-only=$content_only" >> "$GITHUB_OUTPUT"
     - name: Format check
+      if: steps.scope.outputs.content-only != 'true'
       shell: bash
       run: pnpm run format:check
     - name: Lint
+      if: steps.scope.outputs.content-only != 'true'
       shell: bash
       run: pnpm run lint
     - name: Unit tests
+      if: steps.scope.outputs.content-only != 'true'
       shell: bash
       run: pnpm run test
     - name: Astro check

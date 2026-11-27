@@ -247,7 +247,7 @@ if (strict) {
 }
 if (count > 0) {
   console.log(
-    `warning: Placeholder check: ${counted}. Fill them before deploying (README: External setup checklist).`
+    `warning: Placeholder check: ${counted}. Fill them before deploying.`
   );
 }
 if (unreported.length > 0) {
