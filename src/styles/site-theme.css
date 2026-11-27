@@ -57,6 +57,7 @@
 /* Light mode surfaces (default before the theme script runs) */
 :root,
 [data-theme="light"] {
+  color-scheme: light;
   --band: var(--crust);
   --code-bg: var(--mantle);
   --glow-c: color-mix(in srgb, var(--glow) 70%, transparent);
@@ -64,6 +65,7 @@
 
 /* Dark mode surfaces */
 [data-theme="dark"] {
+  color-scheme: dark;
   --band: var(--mantle);
   --code-bg: var(--crust);
   --glow-c: color-mix(in srgb, var(--glow) 18%, transparent);
