@@ -89,6 +89,15 @@ export default defineStarglowConfig({
   links: [
     { type: "rss", url: "/rss.xml" },
     { type: "github", url: "https://github.com/filiurskyi" },
+    // Turned into a mailto: link on click by src/custom/BodyEnd.astro.
+    { type: "email", url: "/contact/#email" },
+    {
+      type: "cookie-zero",
+      url: "https://edleeman.co.uk/cookie-zero/",
+      title: "Cookie Zero: this site sets no cookies",
+      // Self-hosted copy of https://edleeman.co.uk/images/cookiezero.webp.
+      image: "/badges/cookiezero.webp",
+    },
   ],
   footer: {
     // "powered by starglow" in the footer. Keeping it is appreciated.

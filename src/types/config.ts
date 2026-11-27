@@ -435,6 +435,15 @@ const badgeSchema = z.strictObject({
   label: z.string().optional(),
   /** Tooltip and accessible name. Defaults per type, e.g. "GitHub". */
   title: z.string().optional(),
+  /**
+   * An 88x31 image under public/, such as "/badges/foo.webp", shown instead
+   * of the drawn badge. Self-hosted only, so visitors make no third-party
+   * requests.
+   */
+  image: z
+    .string()
+    .regex(/^\/(?!\/)/, { error: 'expected a path starting with "/"' })
+    .optional(),
 });
 
 const footerLinkSchema = z.strictObject({

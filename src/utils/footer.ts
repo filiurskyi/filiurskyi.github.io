@@ -7,7 +7,7 @@ import { getContactPage, getSections } from "@/utils/content/sections";
 
 /**
  * What makes two hrefs the same link: host without `www.`, path without a
- * trailing slash or index.html, and the query. Scheme and hash are ignored.
+ * trailing slash or index.html, the query and the hash. Scheme is ignored.
  */
 export function sameLinkKey(href: string, site: URL): string {
   try {
@@ -17,7 +17,7 @@ export function sameLinkKey(href: string, site: URL): string {
     const path = url.pathname
       .replace(/\/index\.html?$/, "/")
       .replace(/\/+$/, "");
-    return `${host}${path}${url.search}`;
+    return `${host}${path}${url.search}${url.hash}`;
   } catch {
     return href.trim();
   }

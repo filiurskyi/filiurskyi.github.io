@@ -3,3 +3,30 @@
 // or widgets here. This file is yours: starglow never changes it
 // after release.
 ---
+
+<script>
+  // The email address is put together in the browser, so the HTML holds no
+  // address for crawlers. Email links point to /contact/#email, which shows
+  // it in words without JS; on hover, focus or click they become mailto:.
+  const address = () =>
+    atob("ZWNhcHMuZ25pd29sZ0BpaA==").split("").reverse().join("");
+  const SELECTOR = 'a[href$="/contact/#email"], a#email';
+
+  const reveal = (event: Event) => {
+    const link =
+      event.target instanceof Element && event.target.closest(SELECTOR);
+    if (link instanceof HTMLAnchorElement) link.href = `mailto:${address()}`;
+  };
+  for (const type of ["pointerover", "focusin", "click"]) {
+    document.addEventListener(type, reveal, { capture: true });
+  }
+
+  // On /contact/, show the address itself.
+  document.addEventListener("astro:page-load", () => {
+    const link = document.getElementById("email");
+    if (link instanceof HTMLAnchorElement) {
+      link.textContent = address();
+      link.href = `mailto:${address()}`;
+    }
+  });
+</script>
