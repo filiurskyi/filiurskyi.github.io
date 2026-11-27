@@ -95,6 +95,8 @@ export default defineStarglowConfig({
       type: "nocookies",
       url: "https://edleeman.co.uk/cookie-zero/",
       title: "Cookie Zero: this site sets no cookies",
+      // Self-hosted copy of https://edleeman.co.uk/images/cookiezero.webp.
+      image: "/badges/cookiezero.webp",
     },
   ],
   // Webrings on /small-web/, linked from the footer once one is listed:

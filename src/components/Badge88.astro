@@ -14,9 +14,11 @@ type Props = {
   title?: string;
   rel?: string;
   class?: string;
+  /** Site path of an 88x31 image shown instead of the drawn badge. */
+  image?: string;
 };
 
-const { type, label, title, rel, class: className } = Astro.props;
+const { type, label, title, rel, class: className, image } = Astro.props;
 const href = /^\/(?!\/)/.test(Astro.props.href)
   ? getAssetPath(Astro.props.href)
   : Astro.props.href;
@@ -33,31 +35,42 @@ const squeeze =
 ---
 
 <a class:list={["b88", className]} href={href} rel={rel} title={name}>
-  <svg
-    width="88"
-    height="31"
-    viewBox="0 0 88 31"
-    shape-rendering="crispEdges"
-    aria-hidden="true"
-  >
-    {rects.map(({ x, y, width, height, fill }) => (
-      <rect
-        x={x || undefined}
-        y={y || undefined}
-        width={width}
-        height={height}
-        fill={`var(${fill})`}
-      />
-    ))}
-    <text
-      x={BADGE_TEXT.x}
-      y={BADGE_TEXT.y}
-      text-anchor="middle"
-      class="b88-text"
-      {...squeeze}
+  {image ? (
+    <img
+      src={getAssetPath(image)}
+      width="88"
+      height="31"
+      alt={name}
+      loading="lazy"
+      decoding="async"
+    />
+  ) : (
+    <svg
+      width="88"
+      height="31"
+      viewBox="0 0 88 31"
+      shape-rendering="crispEdges"
+      aria-hidden="true"
     >
-      {text}
-    </text>
-  </svg>
-  <span class="sr-only">{name}</span>
+      {rects.map(({ x, y, width, height, fill }) => (
+        <rect
+          x={x || undefined}
+          y={y || undefined}
+          width={width}
+          height={height}
+          fill={`var(${fill})`}
+        />
+      ))}
+      <text
+        x={BADGE_TEXT.x}
+        y={BADGE_TEXT.y}
+        text-anchor="middle"
+        class="b88-text"
+        {...squeeze}
+      >
+        {text}
+      </text>
+    </svg>
+  )}
+  {!image && <span class="sr-only">{name}</span>}
 </a>

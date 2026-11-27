@@ -21,7 +21,7 @@ git fetch starglow
 git merge starglow/main
 ```
 
-Keep personal changes in `starglow.config.ts`, `src/custom/` and `src/content/`, so merges stay clean. Provenance of the theme and its AstroPaper origin is in [NOTICE](NOTICE).
+Keep personal changes in `starglow.config.ts`, `src/custom/` and `src/content/`, so merges stay clean. Exception: image badges (the Cookie Zero badge) patch `Badge88.astro`, `Footer.astro`, `src/types/config.ts` and `site-theme.css`; expect conflicts there. Provenance of the theme and its AstroPaper origin is in [NOTICE](NOTICE).
 
 ## License
 
