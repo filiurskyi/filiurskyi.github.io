@@ -567,33 +567,63 @@ const webringSchema = z
     path: ["next"],
   });
 
-const buttonSchema = z.strictObject({
-  /**
-   * One-line button text, e.g. the site name. Until it is set, a TODO
-   * placeholder that the strict marker check fails on once the button is
-   * published; the image then reads "[[TODO]]".
-   *
-   * Used by: src/utils/siteButton.ts, src/utils/smallWeb.ts.
-   */
-  label: z.string().trim().min(1).default(BUTTON_LABEL_PLACEHOLDER),
-  /**
-   * A badge type whose icon and colour it takes, e.g. "sparkle", or your
-   * own 11x11 bitmap: 11 rows of 11 cells, "#" lit and "." off, drawn in
-   * the `link` colour. Defaults to "sparkle".
-   *
-   * Used by: src/utils/siteButton.ts.
-   */
-  icon: z
-    .union([
-      z.string().min(1),
-      z
-        .array(
-          z.string().regex(/^[#.]{11}$/, 'expected 11 cells of "#" or "."')
-        )
-        .length(11, { error: "expected 11 rows" }),
-    ])
-    .default("sparkle"),
-});
+const buttonImagePath = z
+  .string()
+  .regex(/^\/(?!\/)/, { error: 'expected a path starting with "/"' });
+
+const buttonSchema = z
+  .strictObject({
+    /**
+     * One-line button text, e.g. the site name. Until it is set, a TODO
+     * placeholder that the strict marker check fails on once the button is
+     * published; the image then reads "[[TODO]]". With `image` set, it is
+     * only the alt text, and the site title stands in while it is unset.
+     *
+     * Used by: src/utils/siteButton.ts, src/utils/smallWeb.ts.
+     */
+    label: z.string().trim().min(1).default(BUTTON_LABEL_PLACEHOLDER),
+    /**
+     * A badge type whose icon and colour it takes, e.g. "sparkle", or your
+     * own 11x11 bitmap: 11 rows of 11 cells, "#" lit and "." off, drawn in
+     * the `link` colour. Defaults to "sparkle".
+     *
+     * Used by: src/utils/siteButton.ts.
+     */
+    icon: z
+      .union([
+        z.string().min(1),
+        z
+          .array(
+            z.string().regex(/^[#.]{11}$/, 'expected 11 cells of "#" or "."')
+          )
+          .length(11, { error: "expected 11 rows" }),
+      ])
+      .default("sparkle"),
+    /**
+     * Your own 88x31 PNG under public/, e.g. "/button.png", published as
+     * /88x31.png instead of the drawn button, which then needs no `label` or
+     * `icon`. Self-hosted only. The build fails if the file is missing or not
+     * an 88x31 PNG.
+     *
+     * Used by: src/pages/[button].png.ts, src/utils/smallWeb.ts.
+     */
+    image: buttonImagePath.optional(),
+    /**
+     * With `image`: a second 88x31 PNG under public/ for light backgrounds,
+     * published as /88x31-light.png and offered on /small-web/ next to the
+     * first, with its own HTML to copy.
+     *
+     * Used by: src/pages/[button].png.ts, src/utils/smallWeb.ts.
+     */
+    imageLight: buttonImagePath.optional(),
+  })
+  .refine(
+    button => button.imageLight === undefined || button.image !== undefined,
+    {
+      error: "set image together with imageLight",
+      path: ["imageLight"],
+    }
+  );
 
 const footerLinkSchema = z.strictObject({
   /** Link text, shown as written. */
@@ -679,9 +709,9 @@ export const starglowConfigSchema = z
      */
     webrings: z.array(webringSchema).default([]),
     /**
-     * This site's own 88x31 button, built as /88x31.png and offered on
-     * /small-web/ with HTML to copy. A set label makes /small-web/ on its
-     * own.
+     * This site's own 88x31 button, built as /88x31.png (or your own PNG,
+     * see `image`) and offered on /small-web/ with HTML to copy. A set
+     * label or image makes /small-web/ on its own.
      *
      * Used by: src/pages/[button].png.ts, src/pages/[smallWeb].astro.
      */

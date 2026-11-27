@@ -51,7 +51,7 @@ import {
 import { sameLinkKey } from "../src/utils/sameLinkKey.ts";
 import { config } from "./site-config.ts";
 
-const { SMALL_WEB_PATH, hasSmallWebPage } =
+const { SMALL_WEB_PATH, buttonFiles, hasSmallWebPage } =
   await import("../src/utils/smallWeb.ts");
 
 const DIST = process.argv[2] ?? "dist";
@@ -280,7 +280,13 @@ function expectedRoutes(): Set<string> {
     [has("blog") || has("notes"), ["/rss.xml"]],
     [published.some(entry => entry.tagged), ["/tags/"]],
     [config.features.search === "pagefind", ["/search/"]],
-    [hasSmallWebPage(config), [`/${SMALL_WEB_PATH}/`, "/88x31.png"]],
+    [
+      hasSmallWebPage(config),
+      [
+        `/${SMALL_WEB_PATH}/`,
+        ...buttonFiles(config.button).map(file => `/${file}.png`),
+      ],
+    ],
     [profileLinks(config.links).some(link => link.url?.trim()), ["/contact/"]],
   ];
   return new Set([

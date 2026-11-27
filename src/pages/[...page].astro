@@ -39,7 +39,13 @@ export const getStaticPaths = (async () => {
 
   const entries = await getCollection("pages");
   const paths = entries
-    .filter(entry => !DEDICATED.has(entry.id) && entry.id !== "contact")
+    // contact.md and small-web.md are rendered on their own theme pages.
+    .filter(
+      entry =>
+        !DEDICATED.has(entry.id) &&
+        entry.id !== "contact" &&
+        entry.id !== "small-web"
+    )
     .map(entry => {
       const first = entry.id.split("/")[0] ?? "";
       if (RESERVED.has(first) || DEDICATED.has(first)) {

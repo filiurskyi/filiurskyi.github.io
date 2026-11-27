@@ -1539,6 +1539,16 @@ body {
   height: 31px;
 }
 
+/* Badges placed in Markdown/MDX content keep their footer size. */
+.app-prose .b88 {
+  margin: var(--s4) 0;
+}
+
+.app-prose .b88 img {
+  margin: 0;
+  border: 0;
+}
+
 .b88 svg,
 .b88 img {
   display: block;

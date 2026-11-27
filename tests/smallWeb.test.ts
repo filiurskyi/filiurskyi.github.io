@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { BUTTON_LABEL_PLACEHOLDER } from "@/utils/markers";
-import { hasSmallWebPage, ringLinks } from "@/utils/smallWeb";
+import {
+  buttonAlt,
+  buttonFiles,
+  buttonSource,
+  hasSmallWebPage,
+  ringLinks,
+} from "@/utils/smallWeb";
 
 const site = new URL("https://me.example");
 const ring = {
@@ -48,5 +54,30 @@ describe("hasSmallWebPage", () => {
     expect(
       hasSmallWebPage({ webrings: [], button: { ...unset, label: "me" } })
     ).toBe(true);
+  });
+});
+
+describe("own button image", () => {
+  const unset = { label: BUTTON_LABEL_PLACEHOLDER, icon: "sparkle" };
+  const own = { ...unset, image: "/b.png" };
+  const both = { ...own, imageLight: "/b-light.png" };
+
+  it("publishes /small-web/ without a label", () => {
+    expect(hasSmallWebPage({ webrings: [], button: own })).toBe(true);
+  });
+
+  it("lists the light button only when it is set", () => {
+    expect(buttonFiles(unset)).toEqual(["88x31"]);
+    expect(buttonFiles(own)).toEqual(["88x31"]);
+    expect(buttonFiles(both)).toEqual(["88x31", "88x31-light"]);
+    expect(buttonSource(both, "88x31")).toBe("/b.png");
+    expect(buttonSource(both, "88x31-light")).toBe("/b-light.png");
+    expect(buttonSource(unset, "88x31")).toBeUndefined();
+  });
+
+  it("takes the alt text from the label, else the site title", () => {
+    expect(buttonAlt(own, "My Site")).toBe("My Site");
+    expect(buttonAlt({ ...own, label: "me" }, "My Site")).toBe("me");
+    expect(buttonAlt(unset, "My Site")).toBe(BUTTON_LABEL_PLACEHOLDER);
   });
 });

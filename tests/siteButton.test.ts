@@ -1,9 +1,15 @@
+import { mkdtemp, mkdir, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import { BADGE_ICONS } from "@/utils/badges";
 import { BUTTON_LABEL_PLACEHOLDER } from "@/utils/markers";
 import {
   buttonIcon,
   buttonText,
+  pngSize,
+  readButtonImage,
   renderButton,
   textBounds,
   themeTokens,
@@ -54,5 +60,41 @@ describe("site button", () => {
     ).toBe(
       '<a href="https://me.example/"><img src="https://me.example/88x31.png" width="88" height="31" alt="a &quot;b&quot; &lt;c&gt;"></a>'
     );
+  });
+});
+
+const blank = (width: number, height: number) =>
+  sharp({
+    create: { width, height, channels: 4, background: "#000" },
+  })
+    .png()
+    .toBuffer();
+
+describe("own button image", () => {
+  it("reads the size of a PNG", async () => {
+    expect(pngSize(await blank(88, 31))).toEqual([88, 31]);
+    expect(pngSize(Buffer.from("GIF89a, not a png at all"))).toBeUndefined();
+    expect(pngSize(new Uint8Array(4))).toBeUndefined();
+  });
+
+  it("serves an 88x31 PNG from public/ and rejects anything else", async () => {
+    const root = await mkdtemp(join(tmpdir(), "starglow-button-"));
+    await mkdir(join(root, "public/b"), { recursive: true });
+    const good = await blank(88, 31);
+    await writeFile(join(root, "public/b/ok.png"), good);
+    await writeFile(join(root, "public/big.png"), await blank(88, 32));
+    await writeFile(join(root, "public/fake.png"), "not a png");
+    expect(await readButtonImage("/b/ok.png", "button.image", root)).toEqual(
+      good
+    );
+    await expect(
+      readButtonImage("/gone.png", "button.image", root)
+    ).rejects.toThrow('button.image "/gone.png": public/gone.png is missing');
+    await expect(
+      readButtonImage("/big.png", "button.imageLight", root)
+    ).rejects.toThrow("is 88x32, expected 88x31");
+    await expect(
+      readButtonImage("/fake.png", "button.image", root)
+    ).rejects.toThrow("public/fake.png is not a PNG");
   });
 });

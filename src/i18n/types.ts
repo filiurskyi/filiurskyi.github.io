@@ -111,6 +111,7 @@ export interface UIStrings {
     randomLabel: string;
     button: string;
     buttonHint: string;
+    buttonLightHint: string;
   };
   pages: {
     tagTitle: string;

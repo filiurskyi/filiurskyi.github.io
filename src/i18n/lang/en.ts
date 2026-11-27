@@ -98,6 +98,7 @@ export default {
     randomLabel: "Random site in {{ring}}",
     button: "88x31 button",
     buttonHint: "To link here with it, copy this HTML:",
+    buttonLightHint: "For light backgrounds, copy this HTML:",
   },
   pages: {
     tagTitle: "Tag",
