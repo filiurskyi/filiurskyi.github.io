@@ -81,6 +81,7 @@ const { credit, badges, pages, legal, source } = await getFooterLinks(locale, {
             label={link.label}
             title={link.title}
             rel={link.rel}
+            image={link.image}
             class={hCard && link.rel === "me" ? "u-url" : undefined}
           />
         </li>

@@ -166,6 +166,24 @@ describe("config schema", () => {
     ]);
   });
 
+  it("takes a self-hosted badge image only", () => {
+    const badge = { type: "nocookies", url: "/privacy/" };
+    expect(
+      parseStarglowConfig({
+        site,
+        links: [{ ...badge, image: "/badges/cookiezero.webp" }],
+      }).links[0]?.image
+    ).toBe("/badges/cookiezero.webp");
+    for (const image of [
+      "https://example.com/b.webp",
+      "//example.com/b.webp",
+      "badges/b.webp",
+    ])
+      expect(problems({ site, links: [{ ...badge, image }] })).toEqual([
+        `links[0].image: expected a path starting with "/", got "${image}"`,
+      ]);
+  });
+
   it("checks webrings", () => {
     const ring = { name: "Ring", url: "https://ring.example/" };
     expect(parseStarglowConfig({ site }).webrings).toEqual([]);

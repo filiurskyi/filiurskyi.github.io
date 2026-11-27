@@ -25,6 +25,7 @@ import {
 } from "../src/utils/cookieFree.ts";
 import {
   attr,
+  badgeTypesIn,
   decodeEntities,
   footerOf,
   headOf,
@@ -175,11 +176,7 @@ function distFileOf(url: string, base = site.href): string | undefined {
 }
 
 function footerBadgeTypes(html: string): Set<string> {
-  return new Set(
-    [...footerOf(html).matchAll(/var\(--badge-([\w-]+)\)/g)].map(
-      ([, type = ""]) => type
-    )
-  );
+  return badgeTypesIn(footerOf(html));
 }
 
 const CF_BEACON = "https://static.cloudflareinsights.com/beacon.min.js";

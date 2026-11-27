@@ -451,6 +451,18 @@ const badgeSchema = z.strictObject({
   label: z.string().optional(),
   /** Tooltip and accessible name. Defaults per type, e.g. "GitHub". */
   title: z.string().optional(),
+  /**
+   * An 88x31 image under public/, e.g. "/badges/foo.webp", shown instead of
+   * the drawn badge. Self-hosted only, so the badge loads from the site's
+   * own origin. The `type` still sets the default title and the checks of
+   * pnpm verify.
+   *
+   * Used by: src/components/Badge88.astro.
+   */
+  image: z
+    .string()
+    .regex(/^\/(?!\/)/, { error: 'expected a path starting with "/"' })
+    .optional(),
 });
 
 const httpUrl = z.string().refine(url => isHttpUrl(url.trim()), {

@@ -1539,7 +1539,8 @@ body {
   height: 31px;
 }
 
-.b88 svg {
+.b88 svg,
+.b88 img {
   display: block;
   image-rendering: pixelated;
 }
