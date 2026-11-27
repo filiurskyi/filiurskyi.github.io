@@ -14,6 +14,7 @@ import {
 } from "@/utils/smallWeb";
 import { getAssetPath } from "@/utils/withBase";
 import { tplStr, useTranslations, useLocale } from "@/i18n";
+import { getEntry, render } from "astro:content";
 import config from "@/config";
 
 export const getStaticPaths = (() =>
@@ -22,6 +23,10 @@ export const getStaticPaths = (() =>
     : []) satisfies GetStaticPaths;
 
 const t = useTranslations(useLocale(Astro));
+// Optional intro from src/content/pages/small-web.md(x), above the sections.
+const intro = await getEntry("pages", SMALL_WEB_PATH);
+const Intro = intro ? (await render(intro)).Content : undefined;
+const title = intro?.data.title ?? t.smallWeb.title;
 const site = new URL(import.meta.env.SITE);
 const seen = new Set<string>();
 const rings = config.webrings.map(ring => ({
@@ -51,12 +56,17 @@ const label = {
 ---
 
 <Layout
-  title={`${t.smallWeb.title} | ${config.site.title}`}
-  description={t.smallWeb.description}
+  title={`${title} | ${config.site.title}`}
+  description={intro?.data.description ?? t.smallWeb.description}
 >
   <Header />
 
-  <Main pageTitle={t.smallWeb.title}>
+  <Main pageTitle={title}>
+    {Intro && (
+      <article class="app-prose">
+        <Intro />
+      </article>
+    )}
     {rings.length > 0 && (
       <section aria-labelledby="webrings">
         <h2 id="webrings" class="section-title">
