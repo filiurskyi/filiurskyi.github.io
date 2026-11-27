@@ -6,5 +6,6 @@ stack:
   - astro
   - typescript
 draft: false
+featured: true
 githubUrl: https://github.com/glowing-space/starglow
 ---
