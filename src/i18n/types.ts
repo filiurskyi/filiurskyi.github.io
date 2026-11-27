@@ -85,6 +85,8 @@ export interface UIStrings {
     title: string;
     /** Heading of the profile list. */
     methods: string;
+    /** Email row of a `keepMailto` badge until the script fills it in. */
+    emailWithScript: string;
   };
   footer: {
     contact: string;

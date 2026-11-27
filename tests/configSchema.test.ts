@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import userConfig from "@/starglow.config";
 import { darkPalettes } from "@/palettes";
+import { encodeEmail } from "@/utils/hiddenEmail";
 import { BUTTON_LABEL_PLACEHOLDER } from "@/utils/markers";
 import {
   closestKey,
@@ -228,6 +229,45 @@ describe("config schema", () => {
         links: [{ type: "email", url: "/contact/", hideAddress: true }],
       })
     ).toEqual(["links[0].hideAddress: needs a mailto: url"]);
+    expect(
+      problems({
+        site,
+        links: [{ type: "email", url: "mailto:", hideAddress: true }],
+      })
+    ).toEqual([
+      "links[0].hideAddress: needs an address in url or encodedAddress",
+    ]);
+  });
+
+  it("takes an encoded address with a bare mailto: url", () => {
+    const email = {
+      type: "email",
+      url: "mailto:",
+      hideAddress: true,
+      encodedAddress: encodeEmail("hi@x.org"),
+      keepMailto: true,
+    };
+    expect(parseStarglowConfig({ site, links: [email] }).links[0]).toEqual(
+      email
+    );
+    expect(
+      problems({ site, links: [{ ...email, encodedAddress: "hi@x.org" }] })
+    ).toEqual([
+      'links[0].encodedAddress: expected an address encoded with encodeEmail(), got "hi@x.org"',
+    ]);
+    for (const badge of [
+      { ...email, url: "mailto:hi@x.org" },
+      { ...email, hideAddress: undefined, keepMailto: undefined },
+    ])
+      expect(problems({ site, links: [badge] })).toEqual([
+        'links[0].encodedAddress: needs hideAddress: true and url "mailto:"',
+      ]);
+    expect(
+      problems({ site, links: [{ ...email, hideAddress: false }] })
+    ).toEqual([
+      'links[0].encodedAddress: needs hideAddress: true and url "mailto:"',
+      "links[0].keepMailto: needs hideAddress: true",
+    ]);
   });
 
   it("checks webrings", () => {

@@ -86,6 +86,17 @@ export default defineStarglowConfig({
   links: [
     { type: "rss", url: "/rss.xml" },
     { type: "github", url: "https://github.com/glowing-space/starglow" },
+    // An address kept out of the HTML: { type: "email", url: "mailto:you@x",
+    // hideAddress: true } links to /contact/#email. encodedAddress (from
+    // encodeEmail) keeps it out of the repo too, and keepMailto keeps the
+    // badge a mailto: link that a script fills in on hover, focus or click.
+    {
+      type: "email",
+      url: "mailto:",
+      hideAddress: true,
+      encodedAddress: "bW9jLmVscG1heGVAaWg=",
+      keepMailto: true,
+    },
     {
       type: "sparkle",
       url: "https://astro.build",

@@ -5,6 +5,7 @@
  */
 import { z } from "astro/zod";
 import { darkPalettes, lightPalettes, type Palette } from "../palettes";
+import { BARE_MAILTO, isEncodedEmail } from "../utils/hiddenEmail";
 import {
   BUTTON_LABEL_PLACEHOLDER,
   PLACEHOLDER_MARKERS,
@@ -508,13 +509,41 @@ const badgeSchema = z.strictObject({
    * script makes it a mailto: link on hover, focus or click. Without
    * JavaScript, /contact/ spells the address as "hi [at] example [dot] com".
    * Being on /contact/, the badge takes the place of the footer's contact
-   * link. Defaults to false.
+   * link; `keepMailto` keeps the badge a mailto: link instead. Defaults to
+   * false.
    *
-   * Used by: src/config.ts, src/utils/content/sections.ts,
-   * src/components/EmailReveal.astro.
+   * Used by: src/config.ts, src/utils/hiddenEmail.ts,
+   * src/utils/content/sections.ts, src/components/EmailReveal.astro.
    */
   hideAddress: z.boolean().optional(),
+  /**
+   * With `hideAddress`: the address as encodeEmail() in
+   * src/utils/hiddenEmail.ts gives it (reversed, then base64), so the plain
+   * address stays out of the repository. Set `url` to "mailto:". Encode it
+   * with: node -p 'btoa([..."hi@example.com"].reverse().join(""))'.
+   *
+   * Used by: src/utils/hiddenEmail.ts.
+   */
+  encodedAddress: z
+    .string()
+    .refine(isEncodedEmail, {
+      error: "expected an address encoded with encodeEmail()",
+    })
+    .optional(),
+  /**
+   * With `hideAddress`: the badge stays a mailto: link whose address the
+   * script fills in on hover, focus or click, and the footer keeps its
+   * contact link. Without JavaScript, the Email row on /contact/ reads
+   * "shown with JavaScript on" instead of the spelled address. Defaults to
+   * false.
+   *
+   * Used by: src/config.ts, src/pages/[...page].astro.
+   */
+  keepMailto: z.boolean().optional(),
 });
+
+const isBareMailto = (url: string | undefined) =>
+  url?.trim().toLowerCase() === BARE_MAILTO;
 
 const httpUrl = z.string().refine(url => isHttpUrl(url.trim()), {
   error: "expected an http(s) URL",
@@ -611,11 +640,35 @@ export const starglowConfigSchema = z
      */
     links: z
       .array(
-        badgeSchema.refine(
-          badge =>
-            !badge.hideAddress || /^mailto:/i.test(badge.url?.trim() ?? ""),
-          { error: "needs a mailto: url", path: ["hideAddress"] }
-        )
+        badgeSchema
+          .refine(
+            badge =>
+              !badge.hideAddress || /^mailto:/i.test(badge.url?.trim() ?? ""),
+            { error: "needs a mailto: url", path: ["hideAddress"] }
+          )
+          .refine(
+            badge =>
+              !badge.hideAddress ||
+              badge.encodedAddress !== undefined ||
+              !isBareMailto(badge.url),
+            {
+              error: "needs an address in url or encodedAddress",
+              path: ["hideAddress"],
+            }
+          )
+          .refine(
+            badge =>
+              badge.encodedAddress === undefined ||
+              (badge.hideAddress && isBareMailto(badge.url)),
+            {
+              error: 'needs hideAddress: true and url "mailto:"',
+              path: ["encodedAddress"],
+            }
+          )
+          .refine(badge => !badge.keepMailto || badge.hideAddress, {
+            error: "needs hideAddress: true",
+            path: ["keepMailto"],
+          })
       )
       .default([]),
     /**
