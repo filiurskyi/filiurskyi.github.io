@@ -2,7 +2,7 @@ import { defineStarglowConfig } from "./src/types/config";
 import { glowingDark, glowingLight } from "./src/custom/palettes";
 
 // starglow theme configuration. Every key is documented in src/types/config.ts
-// (hover it in your editor) and in docs/02-configuration.md.
+// (hover it in your editor).
 // The site origin is not set here: astro.config.ts reads it from SITE_URL.
 export default defineStarglowConfig({
   site: {
