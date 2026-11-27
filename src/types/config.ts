@@ -46,13 +46,13 @@ export type BadgeType =
  */
 export const REMOVED_KEYS: Record<string, string> = {
   socials:
-    'removed in v0.1.1 (see UPGRADING.md): add each profile to `links` as a badge, e.g. { type: "github", url: "https://github.com/you" }',
+    'removed in v0.1.1 (see its release notes): add each profile to `links` as a badge, e.g. { type: "github", url: "https://github.com/you" }',
   "person.description":
-    "removed in v0.1.1 (see UPGRADING.md): site.description describes the site; the Person keeps only jobTitle",
+    "removed in v0.1.1 (see its release notes): site.description describes the site; the Person keeps only jobTitle",
   "site.fediverseCreator":
-    'removed in v0.1.1 (see UPGRADING.md): add a mastodon badge to `links` ({ type: "mastodon", url: "https://instance/@user" }); the fediverse:creator meta comes from it',
+    'removed in v0.1.1 (see its release notes): add a mastodon badge to `links` ({ type: "mastodon", url: "https://instance/@user" }); the fediverse:creator meta comes from it',
   "features.editPost.url":
-    'removed in v0.1.1 (see UPGRADING.md): set site.sourceUrl to the repository; features.editPost.path ("edit/main/" by default) is appended',
+    'removed in v0.1.1 (see its release notes): set site.sourceUrl to the repository; features.editPost.path ("edit/main/" by default) is appended',
 };
 
 const isTimezone = (zone: string) => {

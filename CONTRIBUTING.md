@@ -24,8 +24,8 @@ Run the same checks as CI: `./dev.sh ci`, or natively
 
 Release notes are generated on GitHub from pull request labels, so label
 user-visible changes `enhancement`, `bug` or `documentation`. If a change
-breaks an existing site, label it `breaking` and add upgrade steps to
-[UPGRADING.md](UPGRADING.md).
+breaks an existing site, label it `breaking` and write the upgrade steps in the pull request
+description; they go into the release's upgrade steps.
 
 ## Commit messages
 
