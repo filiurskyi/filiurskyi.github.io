@@ -52,6 +52,7 @@ const projects = sortProjects(
 // The same rel="me" profiles the footer shows.
 const { badges } = await getFooterLinks(locale, {
   contact: t.footer.contact,
+  smallWeb: t.footer.smallWeb,
   source: t.footer.source,
 });
 const homeJsonLd = toJsonLd(

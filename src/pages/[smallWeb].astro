@@ -1,0 +1,117 @@
+---
+import type { GetStaticPaths } from "astro";
+import Layout from "@/layouts/Layout.astro";
+import Header from "@/components/Header.astro";
+import Main from "@/components/Main.astro";
+import Footer from "@/components/Footer.astro";
+import {
+  SMALL_WEB_PATH,
+  buttonSnippet,
+  hasSmallWebPage,
+  ringLinks,
+} from "@/utils/smallWeb";
+import { getAssetPath } from "@/utils/withBase";
+import { tplStr, useTranslations, useLocale } from "@/i18n";
+import config from "@/config";
+
+export const getStaticPaths = (() =>
+  hasSmallWebPage(config)
+    ? [{ params: { smallWeb: SMALL_WEB_PATH } }]
+    : []) satisfies GetStaticPaths;
+
+const t = useTranslations(useLocale(Astro));
+const site = new URL(import.meta.env.SITE);
+const seen = new Set<string>();
+const rings = config.webrings.map(ring => ({
+  name: ring.name,
+  links: ringLinks(ring, site, seen),
+}));
+const buttonPath = getAssetPath("/88x31.png");
+const snippet = buttonSnippet(
+  new URL(getAssetPath("/"), site).href,
+  new URL(buttonPath, site).href,
+  config.button.label
+);
+const text = {
+  prev: t.smallWeb.previous,
+  next: t.smallWeb.next,
+  random: t.smallWeb.random,
+};
+const label = {
+  prev: t.smallWeb.previousLabel,
+  next: t.smallWeb.nextLabel,
+  random: t.smallWeb.randomLabel,
+};
+---
+
+<Layout
+  title={`${t.smallWeb.title} | ${config.site.title}`}
+  description={t.smallWeb.description}
+>
+  <Header />
+
+  <Main pageTitle={t.smallWeb.title}>
+    {rings.length > 0 && (
+      <section aria-labelledby="webrings">
+        <h2 id="webrings" class="section-title">
+          {t.smallWeb.webrings}
+        </h2>
+        <ul class="webrings">
+          {rings.map(ring => (
+            <li>
+              {ring.links.map((link, index) => (
+                <>
+                  {index > 0 && <span aria-hidden="true"> · </span>}
+                  {link.kind === "ring" ? (
+                    link.href ? (
+                      <a href={link.href} class="text-link">
+                        {ring.name}
+                      </a>
+                    ) : (
+                      <span>{ring.name}</span>
+                    )
+                  ) : (
+                    <a
+                      href={link.href}
+                      class="text-link"
+                      rel={link.kind === "random" ? undefined : link.kind}
+                      aria-label={tplStr(label[link.kind], { ring: ring.name })}
+                    >
+                      {link.kind === "prev" && (
+                        <span aria-hidden="true">← </span>
+                      )}
+                      {text[link.kind]}
+                      {link.kind === "next" && (
+                        <span aria-hidden="true"> →</span>
+                      )}
+                    </a>
+                  )}
+                </>
+              ))}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    <section aria-labelledby="button">
+      <h2 id="button" class="section-title">
+        {t.smallWeb.button}
+      </h2>
+      <div class="app-prose">
+        <p>
+          <img
+            class="site-button"
+            src={buttonPath}
+            width="88"
+            height="31"
+            alt={config.button.label}
+          />
+        </p>
+        <p>{t.smallWeb.buttonHint}</p>
+        <pre class="snippet"><code>{snippet}</code></pre>
+      </div>
+    </section>
+  </Main>
+
+  <Footer />
+</Layout>

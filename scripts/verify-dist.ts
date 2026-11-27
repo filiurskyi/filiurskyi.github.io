@@ -1127,6 +1127,59 @@ function checkFooterLinks(name: string, html: string, origin: string): void {
   }
 }
 
+// --- Small web page ---------------------------------------------------------
+
+const WEBRINGS_CONFIGURED =
+  /^(?![ \t]*\/\/)[ \t]*webrings:\s*\[\s*[^\s\]]/m.test(
+    existsSync(CONFIG_FILE) ? readFileSync(CONFIG_FILE, "utf8") : ""
+  );
+
+function checkSmallWeb(origin: string): void {
+  const route = `${new URL(origin).pathname.replace(/\/+$/, "")}/small-web/`;
+  const file = join(DIST, "small-web", "index.html");
+  const built = existsSync(file);
+  const footer =
+    /<footer\b[\s\S]*?<\/footer>/i.exec(read(join(DIST, "index.html")))?.[0] ??
+    "";
+  const linked = [...footer.matchAll(/<a\b[^>]*>/gi)].some(([tag]) => {
+    try {
+      return new URL(attr(tag, "href") ?? "", `${origin}/`).pathname === route;
+    } catch {
+      return false;
+    }
+  });
+  if (built !== linked)
+    fail(
+      "index.html",
+      built
+        ? "the footer does not link the built /small-web/ page"
+        : "the footer links /small-web/, which is not built"
+    );
+  const button = join(DIST, "88x31.png");
+  if (built !== existsSync(button))
+    fail(
+      "88x31.png",
+      built
+        ? "missing, but /small-web/ offers it"
+        : "built without the /small-web/ page"
+    );
+  if (built && existsSync(button)) {
+    checkPng(button, "site button", 88, 31);
+    const offered = [...read(file).matchAll(/<img\b[^>]*>/gi)].some(([tag]) =>
+      (attr(tag, "src") ?? "").endsWith("/88x31.png")
+    );
+    if (!offered) fail("small-web/index.html", "does not show /88x31.png");
+  }
+  const rings = built && /<ul class="webrings"/.test(read(file));
+  if (WEBRINGS_CONFIGURED !== rings)
+    fail(
+      "small-web/index.html",
+      WEBRINGS_CONFIGURED
+        ? "webrings are configured but not listed"
+        : "lists webrings, but none are configured"
+    );
+}
+
 // --- Sitemap, robots and draft assets ---------------------------------------
 
 /** Every `<loc>` value of a sitemap file, in order. */
@@ -1437,19 +1490,26 @@ function checkOgImages(files: string[]): void {
     ) {
       fail(rel(file), "OG image without a page");
     }
-    const bytes = readFileSync(file);
-    if (bytes.subarray(0, 8).toString("hex") !== PNG_SIGNATURE) {
-      fail(rel(file), "OG image is not a PNG");
-      continue;
-    }
-    const width = bytes.readUInt32BE(16);
-    const height = bytes.readUInt32BE(20);
-    if (width !== OG_WIDTH || height !== OG_HEIGHT)
-      fail(
-        rel(file),
-        `OG image is ${width}x${height}, expected ${OG_WIDTH}x${OG_HEIGHT}`
-      );
+    checkPng(file, "OG image", OG_WIDTH, OG_HEIGHT);
   }
+}
+
+function checkPng(
+  file: string,
+  what: string,
+  expectedWidth: number,
+  expectedHeight: number
+): void {
+  const bytes = readFileSync(file);
+  if (bytes.subarray(0, 8).toString("hex") !== PNG_SIGNATURE)
+    return fail(rel(file), `${what} is not a PNG`);
+  const width = bytes.readUInt32BE(16);
+  const height = bytes.readUInt32BE(20);
+  if (width !== expectedWidth || height !== expectedHeight)
+    fail(
+      rel(file),
+      `${what} is ${width}x${height}, expected ${expectedWidth}x${expectedHeight}`
+    );
 }
 
 // --- Run --------------------------------------------------------------------
@@ -1500,6 +1560,7 @@ run("og-images", () => checkOgImages(files));
 run("routes", () => checkRoutes());
 run("posts-route", () => checkPostsRoute(files, origin));
 run("type-scale", () => checkTypeScale());
+run("small-web", () => checkSmallWeb(origin));
 for (const file of htmlFiles) {
   const html = read(file);
   const markup = visibleMarkup(html);

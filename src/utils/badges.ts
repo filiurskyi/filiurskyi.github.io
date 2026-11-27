@@ -289,3 +289,33 @@ export function bitmapRuns(bitmap: string[]): [number, number, number][] {
   });
   return runs;
 }
+
+export type BadgeRect = {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  fill: string;
+};
+
+export const BADGE_TEXT = { x: 59, y: 19.5, squeezeAbove: 9, width: 52 };
+
+export function badgeRects(bitmap: string[], iconFill: string): BadgeRect[] {
+  return [
+    { x: 0, y: 0, width: 88, height: 31, fill: "--b-edge" },
+    { x: 1, y: 1, width: 86, height: 29, fill: "--b-face" },
+    { x: 1, y: 1, width: 86, height: 1, fill: "--b-hi" },
+    { x: 1, y: 1, width: 1, height: 29, fill: "--b-hi" },
+    { x: 1, y: 29, width: 86, height: 1, fill: "--b-lo" },
+    { x: 86, y: 1, width: 1, height: 29, fill: "--b-lo" },
+    { x: 2, y: 2, width: 28, height: 27, fill: "--b-icon" },
+    ...bitmapRuns(bitmap).map(([x, y, length]) => ({
+      x: 5 + x * 2,
+      y: 5 + y * 2,
+      width: length * 2,
+      height: 2,
+      fill: iconFill,
+    })),
+    { x: 30, y: 2, width: 1, height: 27, fill: "--b-lo" },
+  ];
+}

@@ -1375,6 +1375,27 @@ body {
   text-decoration-style: solid;
 }
 
+.webrings {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--muted-foreground);
+}
+
+.webrings li {
+  padding: var(--s2) 0;
+}
+
+.site-button {
+  display: block;
+  image-rendering: pixelated;
+}
+
+.app-prose pre.snippet {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .facts {
   margin: var(--s6) 0 0;
 }
