@@ -41,3 +41,6 @@ compose.override.yaml
 #!.obsidian/plugins/*/data.json
 #.obsidian/themes/
 .trash/
+
+# agent notes: local only
+/AGENTS.md
