@@ -76,6 +76,7 @@ export default {
   contact: {
     title: "Contact",
     methods: "Contact methods",
+    emailWithScript: "shown with JavaScript on",
   },
   footer: {
     contact: "contact",

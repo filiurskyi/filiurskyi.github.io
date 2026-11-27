@@ -89,6 +89,15 @@ describe("getFooterLinks", () => {
     expect(source).toBeUndefined();
   });
 
+  it("keeps the contact link beside a mailto: email badge only", async () => {
+    state.config.links = [{ type: "email", url: "/contact/#email" }];
+    expect((await footer()).pages).toEqual([]);
+    state.config.links = [{ type: "email", url: "mailto:" }];
+    const { badges, pages } = await footer();
+    expect(badges.map(badge => badge.url)).toEqual(["mailto:"]);
+    expect(pages).toEqual([{ label: "contact", href: "/contact/" }]);
+  });
+
   it("links the source when no other link has its URL", async () => {
     state.config.footer.credit = false;
     state.config.site.sourceUrl = "https://git.example/me/site";

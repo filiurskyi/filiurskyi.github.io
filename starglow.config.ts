@@ -90,8 +90,14 @@ export default defineStarglowConfig({
   links: [
     { type: "rss", url: "/rss.xml" },
     { type: "github", url: "https://github.com/filiurskyi" },
-    // The address is filled in on hover, focus or click (src/custom/BodyEnd.astro).
-    { type: "email", url: "mailto:" },
+    // Kept out of the HTML and the repo; filled in on hover, focus or click.
+    {
+      type: "email",
+      url: "mailto:",
+      hideAddress: true,
+      encodedAddress: "ZWNhcHMuZ25pd29sZ0BpaA==",
+      keepMailto: true,
+    },
     {
       type: "nocookies",
       url: "https://edleeman.co.uk/cookie-zero/",

@@ -15,6 +15,11 @@ import {
 } from "../src/utils/contentFiles.ts";
 import { contrast } from "../src/utils/contrast.ts";
 import {
+  decodeEmail,
+  hiddenTarget,
+  spellEmail,
+} from "../src/utils/hiddenEmail.ts";
+import {
   NO_COOKIES_BADGE,
   cookieApisIn,
   inlineScripts,
@@ -759,6 +764,35 @@ function checkCookies(): void {
   }
 }
 
+// --- Hidden addresses -------------------------------------------------------
+
+const TEXT_FILES = /\.(html|xml|json|txt|m?js|css|webmanifest)$/;
+
+/**
+ * The address of a `hideAddress` badge appears in no built text file, and
+ * with `keepMailto` it is not spelled out either.
+ */
+function checkHiddenAddresses(): void {
+  const hidden = config.links.flatMap(link => {
+    const target = hiddenTarget(link);
+    if (!target) return [];
+    const address = decodeEmail(target).split("?")[0] ?? "";
+    const forms = [{ text: address, how: "holds" }];
+    if (link.keepMailto)
+      forms.push({ text: spellEmail(address), how: "spells" });
+    return forms.map(({ text, how }) => ({ text: text.toLowerCase(), how }));
+  });
+  if (hidden.length === 0) return;
+  for (const file of files) {
+    const name = rel(file);
+    if (!TEXT_FILES.test(name)) continue;
+    const text = decodeEntities(read(file)).toLowerCase();
+    for (const form of hidden)
+      if (text.includes(form.text))
+        fail(name, `${form.how} the address of a hideAddress badge`);
+  }
+}
+
 // --- Type scale -------------------------------------------------------------
 
 const TYPE_SCALE_FILES = /\.(astro|ts|tsx|js|md|mdx|css)$/;
@@ -875,6 +909,7 @@ run("claims", () => {
   checkPageWeight();
   checkCookies();
   checkDarkTheme();
+  checkHiddenAddresses();
 });
 
 const failed = checks.filter(check => check.problems.length > 0);

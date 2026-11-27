@@ -9,7 +9,7 @@ import Footer from "@/components/Footer.astro";
 import { badgeIcon } from "@/utils/badges";
 import EmailReveal from "@/components/EmailReveal.astro";
 import { getContactPage } from "@/utils/content/sections";
-import { decodeEmail, spellEmail } from "@/utils/hiddenEmail";
+import { BARE_MAILTO, decodeEmail, spellEmail } from "@/utils/hiddenEmail";
 import { excerpt } from "@/utils/excerpt";
 import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
@@ -103,10 +103,14 @@ const rows = profiles.map(link => ({
           ))}
           {email?.email && (
             <IndexRow
-              href="#email"
+              href={email.keepMailto ? BARE_MAILTO : "#email"}
               id="email"
               title={email.title ?? badgeIcon(email.type).title}
-              end={spellEmail(decodeEmail(email.email))}
+              end={
+                email.keepMailto
+                  ? t.contact.emailWithScript
+                  : spellEmail(decodeEmail(email.email))
+              }
               email={email.email}
             />
           )}

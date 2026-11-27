@@ -5,7 +5,11 @@ import {
   type BadgeLink,
   type ResolvedStarglowConfig,
 } from "./types/config";
-import { EMAIL_CONTACT_PATH, encodeEmail } from "./utils/hiddenEmail";
+import {
+  BARE_MAILTO,
+  EMAIL_CONTACT_PATH,
+  hiddenTarget,
+} from "./utils/hiddenEmail";
 
 // public/default-og.jpg is intentionally absent. It is only used when
 // `dynamicOgImage` is false; add a real image here before turning that off.
@@ -38,15 +42,15 @@ const resolveLinks = (list: BadgeLink[]): ResolvedStarglowConfig["links"] =>
   list.flatMap(entry => {
     const url = entry.url?.trim();
     if (!url) return [];
-    return entry.hideAddress
-      ? [
-          {
-            ...entry,
-            url: EMAIL_CONTACT_PATH,
-            email: encodeEmail(url.replace(/^mailto:/i, "")),
-          },
-        ]
-      : [{ ...entry, url }];
+    const email = hiddenTarget(entry);
+    if (!email) return [{ ...entry, url }];
+    return [
+      {
+        ...entry,
+        url: entry.keepMailto ? BARE_MAILTO : EMAIL_CONTACT_PATH,
+        email,
+      },
+    ];
   });
 
 const parsed = parseStarglowConfig(userConfig);
