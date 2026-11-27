@@ -25,8 +25,8 @@ links() {
     echo "Error: dist/index.html not found. Run ./dev.sh build first." >&2
     exit 1
   fi
-  local base="${BASE_PATH:-}"
-  base="${base%/}"
+  local base
+  base="$(run node scripts/site-config.ts)"
   docker run --rm --init -u "$HOST_UID:$HOST_GID" -v "$PROJECT_DIR:/repo:ro" \
     -v "$PROJECT_DIR/dist:/site$base:ro" -w /repo \
     "$LYCHEE_IMAGE" --root-dir /site 'dist/**/*.html'

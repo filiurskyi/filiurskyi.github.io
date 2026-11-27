@@ -2,11 +2,13 @@ import { defineStarglowConfig } from "./src/types/config";
 
 // starglow theme configuration. Every key is documented in src/types/config.ts
 // (hover it in your editor).
-// The site origin is not set here: astro.config.ts reads it from SITE_URL.
 export default defineStarglowConfig({
   site: {
     // Header, <title> and feeds. Used by: Layout, Header, rss.xml, OG images.
     title: "halvard",
+    // Origin the site is served from, and the subpath under it ("" = root).
+    url: "https://glowing-space.github.io",
+    base: "/starglow",
     // The home page meta description, the RSS feed and the WebSite data.
     description:
       "Noor Halvard writes about CSS, accessibility, typography and the starglow theme.",
@@ -20,8 +22,7 @@ export default defineStarglowConfig({
     // IANA timezone for post dates. ./dev.sh reads this line too.
     timezone: "UTC",
     dir: "ltr",
-    // Search Console verification value. Empty = PUBLIC_GOOGLE_SITE_VERIFICATION
-    // from the environment, or no meta tag.
+    // Search Console verification value. Empty = no meta tag.
     googleVerification: "",
     // Header wordmark in the pixel face. Defaults to title.
     wordmark: "halvard",
@@ -115,7 +116,6 @@ export default defineStarglowConfig({
     format: "webp",
     quality: 80,
   },
-  // Cloudflare Web Analytics (cookieless). Unset = no script. The token may
-  // also come from PUBLIC_CF_WEB_ANALYTICS_TOKEN in the environment.
+  // Cloudflare Web Analytics (cookieless). Unset = no script.
   // analytics: { cloudflareToken: "" },
 });

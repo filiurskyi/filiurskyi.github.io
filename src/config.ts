@@ -5,10 +5,6 @@ import {
   type BadgeLink,
   type ResolvedStarglowConfig,
 } from "./types/config";
-import {
-  PUBLIC_CF_WEB_ANALYTICS_TOKEN,
-  PUBLIC_GOOGLE_SITE_VERIFICATION,
-} from "astro:env/client";
 
 // public/default-og.jpg is intentionally absent. It is only used when
 // `dynamicOgImage` is false; add a real image here before turning that off.
@@ -49,12 +45,8 @@ const sourceUrl = parsed.site.sourceUrl?.trim() || undefined;
 const config: ResolvedStarglowConfig = {
   site: {
     ...parsed.site,
-    url: import.meta.env.SITE,
     ogImage: parsed.site.ogImage ?? DEFAULT_OG_IMAGE,
-    googleVerification:
-      parsed.site.googleVerification?.trim() ||
-      PUBLIC_GOOGLE_SITE_VERIFICATION?.trim() ||
-      undefined,
+    googleVerification: parsed.site.googleVerification?.trim() || undefined,
     sourceUrl,
     fediverseCreator: fediverseHandle(parsed.links),
     wordmark: parsed.site.wordmark?.trim() || parsed.site.title,
@@ -74,10 +66,7 @@ const config: ResolvedStarglowConfig = {
   footer: parsed.footer,
   images: parsed.images,
   analytics: {
-    cloudflareToken:
-      parsed.analytics.cloudflareToken?.trim() ||
-      PUBLIC_CF_WEB_ANALYTICS_TOKEN?.trim() ||
-      undefined,
+    cloudflareToken: parsed.analytics.cloudflareToken?.trim() || undefined,
   },
 };
 

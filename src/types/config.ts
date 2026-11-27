@@ -53,8 +53,6 @@ export const REMOVED_KEYS: Record<string, string> = {
     'removed in v0.1.1 (see UPGRADING.md): add a mastodon badge to `links` ({ type: "mastodon", url: "https://instance/@user" }); the fediverse:creator meta comes from it',
   "features.editPost.url":
     'removed in v0.1.1 (see UPGRADING.md): set site.sourceUrl to the repository; features.editPost.path ("edit/main/" by default) is appended',
-  "site.url":
-    "not set in this file: the site origin comes from the SITE_URL environment variable",
 };
 
 const isTimezone = (zone: string) => {
@@ -69,6 +67,20 @@ const isTimezone = (zone: string) => {
 const isHttpUrl = (value: string) => {
   try {
     return ["http:", "https:"].includes(new URL(value).protocol);
+  } catch {
+    return false;
+  }
+};
+
+/** An http(s) origin: no path, query or hash. */
+const isOrigin = (value: string) => {
+  try {
+    const url = new URL(value);
+    return (
+      ["http:", "https:"].includes(url.protocol) &&
+      url.pathname === "/" &&
+      !/[?#]/.test(value)
+    );
   } catch {
     return false;
   }
@@ -134,6 +146,33 @@ const count = z
 const siteSchema = z.strictObject({
   /** Blog title shown in header and meta tags */
   title: z.string().min(1),
+  /**
+   * Origin the site is served from, e.g. "https://example.com": canonical
+   * links, the sitemap, RSS and OG images. A subpath goes in `base`.
+   *
+   * Used by: astro.config.ts, scripts/verify-dist.ts.
+   */
+  url: z
+    .string()
+    .refine(isOrigin, {
+      error:
+        'expected an http(s) origin without path, query or hash, e.g. "https://example.com"',
+    })
+    .transform(url => new URL(url).origin),
+  /**
+   * Subpath the site is served under, e.g. "/repo" for
+   * https://user.github.io/repo/. Defaults to "", the root of `url`.
+   *
+   * Used by: astro.config.ts, scripts/verify-dist.ts, scripts/site-config.ts
+   * (./dev.sh links, the link check in .github/actions/site-checks).
+   */
+  base: z
+    .string()
+    .regex(/^(\/[\w.-]+)*\/?$/, {
+      error: 'expected a subpath like "/repo" or "/a/b", or "" for the root',
+    })
+    .transform(base => base.replace(/\/+$/, ""))
+    .default(""),
   /**
    * One sentence about the site: the home page meta description, the RSS
    * feed and the WebSite structured data.
@@ -236,7 +275,7 @@ const siteSchema = z.strictObject({
    */
   dir: z.enum(["ltr", "rtl", "auto"]).default("ltr"),
   /**
-   * Google Search Console verification meta tag value
+   * Google Search Console verification meta tag value. Empty = no tag.
    *
    * Used by: src/layouts/Layout.astro.
    */
@@ -635,8 +674,7 @@ export const starglowConfigSchema = z
       .strictObject({
         /**
          * Cloudflare Web Analytics site token: loads Cloudflare's cookieless
-         * beacon on every page. Empty = PUBLIC_CF_WEB_ANALYTICS_TOKEN from the
-         * environment, or no script at all.
+         * beacon on every page. Empty = no script.
          *
          * Used by: src/layouts/Layout.astro.
          */
@@ -673,8 +711,6 @@ export interface ResolvedStarglowConfig {
     fediverseCreator?: string;
     /** Header wordmark text, `title` when not set */
     wordmark: string;
-    /** Site origin from SITE_URL (via astro.config.ts) */
-    url: string;
   };
   person: PersonConfig;
   posts: Parsed["posts"];

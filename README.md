@@ -43,7 +43,7 @@ pnpm install
 pnpm dev                            # http://localhost:4321/
 ```
 
-Edit `starglow.config.ts` (hover a key for its docs), set `SITE_URL` to your origin, replace the demo content in `src/content/` and push: the GitHub Pages workflow deploys `dist/`.
+Edit `starglow.config.ts` (hover a key for its docs), set `site.url` and `site.base` to your origin and subpath, replace the demo content in `src/content/` and push: the GitHub Pages workflow deploys `dist/`.
 
 ## Contributing
 

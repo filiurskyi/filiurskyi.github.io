@@ -39,6 +39,20 @@ version elsewhere. Follow the steps of every release you skip.
 
 ## Upgrade steps
 
+### v0.2.1
+
+- Build values live in `starglow.config.ts`. Move each one from `.env` or a
+  repository variable to its key, then delete the `.env` file and the
+  repository variables (Settings → Secrets and variables → Actions →
+  Variables):
+
+  | Old variable                      | New key                     |
+  | --------------------------------- | --------------------------- |
+  | `SITE_URL`                        | `site.url` (required)       |
+  | `BASE_PATH`                       | `site.base`                 |
+  | `PUBLIC_CF_WEB_ANALYTICS_TOKEN`   | `analytics.cloudflareToken` |
+  | `PUBLIC_GOOGLE_SITE_VERIFICATION` | `site.googleVerification`   |
+
 ### v0.2.0
 
 - Translations: add the new `footer.smallWeb`, `footer.legal` and

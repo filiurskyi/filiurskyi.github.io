@@ -8,7 +8,12 @@ import {
   starglowConfigSchema,
 } from "@/types/config";
 
-const site = { title: "t", description: "d", author: "a" };
+const site = {
+  title: "t",
+  url: "https://example.com",
+  description: "d",
+  author: "a",
+};
 
 /** The problem lines of a config that must fail. */
 const problems = (input: unknown): string[] => {
@@ -31,6 +36,7 @@ describe("config schema", () => {
   it("applies defaults to a minimal config", () => {
     const config = parseStarglowConfig({ site });
     expect(config.site).toMatchObject({
+      base: "",
       lang: "en",
       timezone: "UTC",
       dir: "ltr",
@@ -109,7 +115,6 @@ describe("config schema", () => {
         ...site,
         sourceUrl: "https://x",
         fediverseCreator: "@a@b",
-        url: "https://x",
       },
       socials: [],
       person: { description: "x" },
@@ -117,7 +122,7 @@ describe("config schema", () => {
         editPost: { enabled: true, url: "https://x/edit/" },
       },
     });
-    expect(lines).toHaveLength(5);
+    expect(lines).toHaveLength(4);
     for (const key of [
       "site.fediverseCreator",
       "socials",
@@ -128,9 +133,35 @@ describe("config schema", () => {
         expect.stringMatching(new RegExp(`^${key}: removed in v0.1.1`))
       );
     }
-    expect(lines).toContainEqual(
-      expect.stringMatching(/^site\.url: .*SITE_URL/)
-    );
+  });
+
+  it("checks the site origin and base path", () => {
+    expect(
+      parseStarglowConfig({
+        site: { ...site, url: "https://u.github.io/", base: "/repo/" },
+      }).site
+    ).toMatchObject({ url: "https://u.github.io", base: "/repo" });
+    expect(
+      parseStarglowConfig({ site: { ...site, base: "/a/b.c" } }).site.base
+    ).toBe("/a/b.c");
+    const { url: _, ...noUrl } = site;
+    expect(problems({ site: noUrl })).toEqual([
+      expect.stringMatching(/^site\.url: /),
+    ]);
+    for (const url of [
+      "example.com",
+      "ftp://example.com",
+      "https://example.com/blog",
+      "https://example.com/?a",
+      "https://example.com#top",
+    ])
+      expect(problems({ site: { ...site, url } })).toEqual([
+        expect.stringMatching(/^site\.url: expected an http\(s\) origin/),
+      ]);
+    for (const base of ["repo", "/a b", "//repo", "/a//b"])
+      expect(problems({ site: { ...site, base } })).toEqual([
+        expect.stringMatching(/^site\.base: expected a subpath/),
+      ]);
   });
 
   it("rejects wrong types and values with the key path", () => {

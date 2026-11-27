@@ -33,15 +33,16 @@ runs:
     - name: Build (astro build + Pagefind)
       shell: bash
       run: pnpm run build:site
-    - name: Link check root (maps BASE_PATH onto dist)
+    - name: Link check root (maps site.base onto dist)
       id: link-root
       shell: bash
       run: |
         root="$GITHUB_WORKSPACE/dist"
-        if [ -n "${BASE_PATH:-}" ]; then
+        base="$(node scripts/site-config.ts)"
+        if [ -n "$base" ]; then
           root="$RUNNER_TEMP/site-root"
-          mkdir -p "$root$(dirname "$BASE_PATH")"
-          ln -sfn "$GITHUB_WORKSPACE/dist" "$root$BASE_PATH"
+          mkdir -p "$root$(dirname "$base")"
+          ln -sfn "$GITHUB_WORKSPACE/dist" "$root$base"
         fi
         echo "root=$root" >> "$GITHUB_OUTPUT"
     - name: Internal link check (offline)
