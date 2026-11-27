@@ -15,9 +15,8 @@ Docker with the Compose plugin is the only requirement on the host.
 
 ## Theme updates
 
-The site is based on starglow through a git remote. To take theme updates:
-
 ```sh
+git remote add starglow https://github.com/glowing-space/starglow.git   # once per clone
 git fetch starglow
 git merge starglow/main
 ```
@@ -26,4 +25,4 @@ Keep personal changes in `starglow.config.ts`, `src/custom/` and `src/content/`,
 
 ## License
 
-Code is MIT-licensed (see [LICENSE](LICENSE)). Written content and its images (`src/content/`) are CC BY 4.0 (see [LICENSE-CONTENT.md](LICENSE-CONTENT.md)). The glowing colour palette and the glowing.space name and logos are all rights reserved.
+Code: MIT ([LICENSE](LICENSE)). Content in `src/content/`: CC BY 4.0, with the exceptions listed in [LICENSE-CONTENT.md](LICENSE-CONTENT.md).

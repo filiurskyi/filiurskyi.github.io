@@ -89,7 +89,7 @@ export default defineStarglowConfig({
   links: [
     { type: "rss", url: "/rss.xml" },
     { type: "github", url: "https://github.com/filiurskyi" },
-    // Turned into a mailto: link on click by src/custom/BodyEnd.astro.
+    // Turned into a mailto: link on hover, focus or click by src/custom/BodyEnd.astro.
     { type: "email", url: "/contact/#email" },
     {
       type: "cookie-zero",
