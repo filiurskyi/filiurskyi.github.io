@@ -29,7 +29,7 @@ Dark first, its own colour palettes, a little 2000s glow.
 
 ![The same post section, with its five tinted callouts and the statusline, in all nine palettes, three by three: dark starglow, void, aurora and ember, then light starglow, paper, petal, frost and sand](.github/assets/palettes.png)
 
-![The bottom of the home page in the dark starglow palette: the writing list, the Projects section with two projects and their status, then the footer with the copyright line, the "powered by starglow" credit, a contact link, three 88x31 badges (rss, astro, no cookies) and an impressum link](.github/assets/footer.png)
+![The bottom of the home page in the dark starglow palette: the writing list and the Projects section, then the footer with contact and impressum links, a rule, the copyright line on the left and a "powered by starglow" credit on the right, and three 88x31 badges (rss, astro, no cookies)](.github/assets/footer.png)
 
 ![The preview panel open on the home page in the dark aurora palette, with selects for the dark and light palette and the ambient light, checkboxes for wordmark glow and statusline, and a reset button](.github/assets/preview-open.png)
 

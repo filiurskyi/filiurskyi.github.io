@@ -8,7 +8,7 @@ tags: [svg, starglow, css]
 
 I had a "Netscape Now!" button on my first homepage. It was 88 pixels wide and 31 tall, like nearly every button of that era, and I've wanted a row of them under a site ever since. starglow finally gave me an excuse.
 
-![A row of three 88x31 pixel badges, labelled rss, astro and no cookies, each with a small pixel icon on the left, under a copyright line with a "powered by starglow" credit, next to contact and impressum links](./_assets/footer-badges.webp)
+![A site footer: contact and impressum links over a rule, a copyright line with a "powered by starglow" credit, and below them three 88x31 pixel badges labelled rss, astro and no cookies, each with a small pixel icon on the left](./_assets/footer-badges.webp)
 
 _The footer of this site._
 
