@@ -24,6 +24,8 @@ export type Props = {
   ogImageAlt?: string;
   /** Pixel size of the preview image, or `null` when it is not known. */
   ogImageSize?: { width: number; height: number } | null;
+  publishedTime?: Date;
+  modifiedTime?: Date;
   /** Asks search engines to leave the page out of their index (404 page). */
   noindex?: boolean;
   bodyClass?: string;
@@ -41,6 +43,8 @@ const {
   ogImageAlt = site.title,
   ogImageSize = { width: 1200, height: 630 },
   noindex = false,
+  publishedTime,
+  modifiedTime,
   bodyClass,
 } = Astro.props;
 
@@ -117,6 +121,7 @@ const PREVIEW_BOOT = `(function () {
     <link rel="icon" type="image/svg+xml" href={getAssetPath("favicon.svg")} />
     <link rel="canonical" href={canonicalURL} />
     <style is:inline set:html={paletteStyles}></style>
+    <meta name="robots" content="max-image-preview:large" />
     {noindex && <meta name="robots" content="noindex" />}
     <meta name="generator" content={Astro.generator} />
 
@@ -139,7 +144,6 @@ const PREVIEW_BOOT = `(function () {
     ))}
 
     <title>{title}</title>
-    <meta name="title" content={title} />
     {description && <meta name="description" content={description} />}
     <meta name="author" content={site.author} />
     <link rel="sitemap" href={getAssetPath("sitemap-index.xml")} />
@@ -157,13 +161,20 @@ const PREVIEW_BOOT = `(function () {
       </>
     )}
     <meta property="og:image:alt" content={ogImageAlt} />
+    {publishedTime && (
+      <meta
+        property="article:published_time"
+        content={publishedTime.toISOString()}
+      />
+    )}
+    {modifiedTime && (
+      <meta
+        property="article:modified_time"
+        content={modifiedTime.toISOString()}
+      />
+    )}
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:url" content={canonicalURL} />
-    <meta name="twitter:title" content={title} />
-    {description && <meta name="twitter:description" content={description} />}
-    <meta name="twitter:image" content={socialImageURL} />
-    <meta name="twitter:image:alt" content={ogImageAlt} />
 
     {hasFeed && (
       <link

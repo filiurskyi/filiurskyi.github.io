@@ -34,6 +34,7 @@ import userConfig from "./starglow.config";
 import { parseStarglowConfig } from "./src/types/config";
 import { splitVariant } from "./src/utils/fontSubset";
 import { remarkImages } from "./src/utils/remarkImages";
+import { sitemapLastmod } from "./src/utils/sitemapLastmod";
 
 // Single source of the site origin. Override per build with SITE_URL (shell or
 // .env); the default is the starglow demo origin; set your own.
@@ -86,6 +87,8 @@ if (BASE_PATH && !/^(\/[\w.-]+)+$/.test(BASE_PATH)) {
   );
 }
 
+const lastmod = sitemapLastmod(BASE_PATH);
+
 // Plain text of a hast node (hast-util-to-string is not a direct dependency).
 type HastNode = { type: string; value?: string; children?: HastNode[] };
 const hastText = (node: HastNode): string =>
@@ -101,7 +104,8 @@ export default defineConfig({
   integrations: [
     ...(OBSIDIAN ? [obsidianIntegration()] : []),
     mdx(),
-    sitemap(),
+    lastmod.integration,
+    sitemap({ serialize: lastmod.serialize }),
   ],
   i18n: {
     locales: [LANG],

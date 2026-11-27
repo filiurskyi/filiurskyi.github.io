@@ -806,9 +806,6 @@ function checkPageHead(
     "og:image",
     "og:image:alt",
     "twitter:card",
-    "twitter:title",
-    "twitter:image",
-    "twitter:image:alt",
   ];
   for (const key of singletons) {
     if (count(key).length !== 1) fail(name, `${count(key).length} ${key} tags`);
@@ -838,7 +835,7 @@ function checkPageHead(
   if (descriptions.length > 1)
     fail(name, `${descriptions.length} meta description tags`);
   const description = descriptions[0]?.content;
-  for (const key of ["og:description", "twitter:description"]) {
+  for (const key of ["og:description"]) {
     const values = count(key).map(meta => meta.content);
     if (values.length !== (description === undefined ? 0 : 1))
       fail(name, `${values.length} ${key} tags`);

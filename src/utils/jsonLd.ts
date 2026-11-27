@@ -82,6 +82,10 @@ function author(site: URL, name: string): JsonLdObject {
   return { "@type": "Person", "@id": personId(site), name };
 }
 
+function webPage(url: string): JsonLdObject {
+  return { "@type": "WebPage", "@id": url };
+}
+
 type BlogPostingInput = {
   site: URL;
   headline: string;
@@ -102,6 +106,7 @@ export function blogPosting(input: BlogPostingInput): JsonLdObject {
       headline: input.headline,
       description: input.description,
       url: input.url,
+      mainEntityOfPage: webPage(input.url),
       image: input.image,
       datePublished: input.datePublished,
       dateModified: input.dateModified,
@@ -130,6 +135,7 @@ export function article(input: ArticleInput): JsonLdObject {
       headline: input.headline,
       description: input.description,
       url: input.url,
+      mainEntityOfPage: webPage(input.url),
       image: input.image,
       dateModified: input.dateModified,
       inLanguage: input.inLanguage,
