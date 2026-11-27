@@ -1,7 +1,7 @@
 ---
 title: Power Supply Meter
 description: KDE Plasma 6 widget that shows the wattage your charger can deliver and warns when the battery drains while plugged in.
-status: active
+status: maintained
 stack:
   - qml
   - kde plasma
