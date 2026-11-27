@@ -234,6 +234,18 @@ function wikilink(index: Index, inner: string): string {
     : escapeMarkdown(text);
 }
 
+function where(file: string, text: string): string {
+  const path = relative(state.root, file).split(sep).join("/");
+  let source = "";
+  try {
+    source = readFileSync(file, "utf8");
+  } catch {
+    return path;
+  }
+  const at = source.indexOf(text);
+  return at < 0 ? path : `${path}:${source.slice(0, at).split("\n").length}`;
+}
+
 function embed(file: string, inner: string): string | undefined {
   const [link, ...rest] = inner.split(/\\?\|/);
   const name = basename(link.split("#")[0].replace(/\\/g, "/")).trim();
@@ -250,8 +262,11 @@ function embed(file: string, inner: string): string | undefined {
     .filter(part => part && !SIZE.test(part))
     .join(" ");
   if (!alt) {
+    const bar = inner.includes("\\|") ? "\\|" : "|";
+    const parts = [link, ...rest.filter(part => part.trim())];
+    const fixed = [...parts, "what the image shows"].join(bar);
     throw new Error(
-      `![[${inner}]] needs alt text, e.g. ![[${name}|what the image shows]]`
+      `${where(file, `![[${inner}]]`)}: ![[${inner}]] has no alt text. Replace it with ![[${fixed}]], describing the image: alt text is required for screen readers.`
     );
   }
   if (!existsSync(join(dirname(file), "_assets", name))) {

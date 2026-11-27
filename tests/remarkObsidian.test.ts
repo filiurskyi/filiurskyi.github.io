@@ -37,3 +37,19 @@ describe("image embeds", () => {
     expect(plain).toEqual({ type: "image", url: "_assets/shot.png" });
   });
 });
+
+describe("missing alt text", () => {
+  it("names the file, line, embed and the fix", () => {
+    const post = join(dir, "no-alt.md");
+    writeFileSync(post, "---\ntitle: x\n---\n\nText\n\n![[shot.png|600]]\n");
+    expect(() => convertObsidian("Text\n\n![[shot.png|600]]\n", post)).toThrow(
+      /no-alt\.md:7: !\[\[shot\.png\|600\]\] has no alt text\. Replace it with !\[\[shot\.png\|600\|what the image shows\]\], describing the image: alt text is required for screen readers\.$/
+    );
+  });
+
+  it("keeps the escaped bar inside a table", () => {
+    expect(() => convertObsidian("| ![[shot.png\\|]] |", file)).toThrow(
+      "Replace it with ![[shot.png\\|what the image shows]]"
+    );
+  });
+});
