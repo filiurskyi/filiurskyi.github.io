@@ -103,9 +103,12 @@ export default defineStarglowConfig({
   footer: {
     // "powered by starglow" in the footer. Keeping it is appreciated.
     credit: true,
-    // Text links on the badge row, e.g. pages from src/content/pages/.
-    // The privacy page is linked by the "no cookies" badge above.
-    links: [{ label: "impressum", href: "/impressum/" }],
+    // Text links after contact and small web, e.g. pages from
+    // src/content/pages/.
+    links: [],
+    // Legal links, kept together at the end of the same row. The privacy
+    // page is linked by the "no cookies" badge above.
+    legal: [{ label: "impressum", href: "/impressum/" }],
   },
   images: {
     maxWidth: 1200,

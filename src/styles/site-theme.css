@@ -259,7 +259,7 @@ samp,
 .syndication,
 .pager,
 .facts dt,
-.colophon,
+.site-footer,
 .pagefind-ui__search-clear,
 .pagefind-ui__message,
 .pagefind-ui__button,
@@ -1426,52 +1426,83 @@ body {
 
 /* ===== Footer ===== */
 
-.site-footer .colophon {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: var(--s2) var(--s5);
-  padding: var(--s4) 0 var(--s6);
-  border-top: 1px solid var(--border);
+.site-footer {
+  --dot: 3ch;
   font: var(--t-meta);
   color: var(--muted-foreground);
 }
 
-.colophon:has(+ .footer-base) {
-  padding-bottom: var(--s4);
+.site-footer > :last-child {
+  padding-bottom: var(--s6);
+}
+
+.site-footer :is(ul, p) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-pages {
+  clip-path: inset(calc(-1 * var(--s1)));
+}
+
+.footer-pages > ul {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  margin-inline-start: calc(-1 * var(--dot));
+}
+
+.footer-pages li,
+.footer-inline li {
+  white-space: nowrap;
+}
+
+.footer-pages > ul > li:not(.footer-legal)::before,
+.footer-inline > li + li::before {
+  content: "·";
+  content: "·" / "";
+  display: inline-block;
+  width: var(--dot);
+  text-align: center;
+}
+
+.footer-pages .footer-legal,
+.footer-base > ul {
+  margin-inline-start: auto;
+}
+
+.footer-pages .footer-legal {
+  padding-inline-start: var(--dot);
+}
+
+.footer-inline {
+  display: flex;
+  align-items: baseline;
+}
+
+.footer-pages li > a,
+.footer-base :is(p, li > a, li > span) {
+  display: inline-block;
+  padding-block: var(--s1);
 }
 
 .footer-base {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: var(--s3) var(--s5);
-  padding-bottom: var(--s6);
+  column-gap: var(--s5);
 }
 
-.footer-base .badges {
-  padding-bottom: 0;
+.footer-pages + .footer-base {
+  margin-top: var(--s2);
+  padding-top: var(--s2);
+  border-top: 1px solid var(--border);
 }
 
-.footer-extra {
-  margin: 0 0 0 auto;
-  font: var(--t-meta);
-  color: var(--muted-foreground);
-}
-
-@media (max-width: 40rem) {
-  .site-footer .credit-sep {
-    display: none;
-  }
-
-  .site-footer .nowrap {
-    display: block;
-  }
-}
-
-.site-footer .nowrap {
-  white-space: nowrap;
+.site-footer .badges {
+  margin-top: var(--s7);
 }
 
 /* 88x31 badges */
@@ -1492,6 +1523,12 @@ body {
   }
 
   .badges:has(> li:nth-child(4):last-child) {
+    grid-template-columns: repeat(2, 88px);
+  }
+}
+
+@media (max-width: 20.4375rem) {
+  .badges {
     grid-template-columns: repeat(2, 88px);
   }
 }

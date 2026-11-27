@@ -574,12 +574,22 @@ export const starglowConfigSchema = z
          */
         credit: z.boolean().default(true),
         /**
-         * Extra text links on the right of the badge row, for example an
-         * Impressum or a privacy policy. A root-relative `href` such as
-         * "/impressum/" gets the base path; other hrefs are used as written.
+         * Text links in the footer's pages row, after contact and small web,
+         * for example a uses or a now page. A root-relative `href` such as
+         * "/uses/" gets the base path; other hrefs are used as written.
          * Defaults to none.
+         *
+         * Used by: src/utils/footer.ts.
          */
         links: z.array(footerLinkSchema).default([]),
+        /**
+         * Legal text links, for example an Impressum or a privacy policy,
+         * kept together at the end of the footer's pages row. An `href` works
+         * as in `links`. Defaults to none.
+         *
+         * Used by: src/utils/footer.ts.
+         */
+        legal: z.array(footerLinkSchema).default([]),
       })
       .prefault({}),
     /** Build-time processing of Markdown and MDX images. */

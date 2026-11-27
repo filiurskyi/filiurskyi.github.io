@@ -47,12 +47,26 @@ describe("config schema", () => {
       light: "starglow",
     });
     expect(config.links).toEqual([]);
-    expect(config.footer).toEqual({ credit: true, links: [] });
+    expect(config.footer).toEqual({ credit: true, links: [], legal: [] });
     expect(config.images).toEqual({
       maxWidth: 1200,
       format: "webp",
       quality: 80,
     });
+  });
+
+  it("takes footer page and legal links in the same shape", () => {
+    const link = { label: "impressum", href: "/impressum/" };
+    expect(
+      parseStarglowConfig({ site, footer: { links: [link], legal: [link] } })
+        .footer
+    ).toEqual({ credit: true, links: [link], legal: [link] });
+    expect(
+      problems({ site, footer: { legal: [{ label: "", href: "/x/" }] } })
+    ).toHaveLength(1);
+    expect(
+      problems({ site, footer: { legal: [{ label: "x", url: "/x/" }] } })[0]
+    ).toMatch(/^footer\.legal\[0\]\.href: /);
   });
 
   it("checks the image options", () => {
