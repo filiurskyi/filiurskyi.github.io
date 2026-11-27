@@ -112,7 +112,7 @@ export default defineStarglowConfig({
   // Your 88x31 button at /88x31.png, shown on /small-web/ with HTML to copy.
   // Add a label (e.g. your site name) to publish it. Listing webrings without
   // one publishes a TODO placeholder, which fails the deploy.
-  button: { icon: "sparkle", label: "filiurskyi" },
+  button: { icon: "sparkle", label: "flrsk" },
   footer: {
     // "powered by starglow" in the footer. Keeping it is appreciated.
     credit: true,
