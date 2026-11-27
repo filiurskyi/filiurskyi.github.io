@@ -39,7 +39,7 @@ version elsewhere. Follow the steps of every release you skip.
 
 ## Upgrade steps
 
-### v0.2.1
+### v0.2.0
 
 - Build values live in `starglow.config.ts`. Move each one from `.env` or a
   repository variable to its key, then delete the `.env` file and the
@@ -52,8 +52,6 @@ version elsewhere. Follow the steps of every release you skip.
   | `BASE_PATH`                       | `site.base`                 |
   | `PUBLIC_CF_WEB_ANALYTICS_TOKEN`   | `analytics.cloudflareToken` |
   | `PUBLIC_GOOGLE_SITE_VERIFICATION` | `site.googleVerification`   |
-
-### v0.2.0
 
 - Translations: add the new `footer.smallWeb`, `footer.legal` and
   `smallWeb.*` strings to your `src/i18n/lang/<lang>.ts` (copy them from
