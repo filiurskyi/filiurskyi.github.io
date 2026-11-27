@@ -7,7 +7,9 @@ import Main from "@/components/Main.astro";
 import IndexRow from "@/components/IndexRow.astro";
 import Footer from "@/components/Footer.astro";
 import { badgeIcon } from "@/utils/badges";
+import EmailReveal from "@/components/EmailReveal.astro";
 import { getContactPage } from "@/utils/content/sections";
+import { decodeEmail, spellEmail } from "@/utils/hiddenEmail";
 import { excerpt } from "@/utils/excerpt";
 import { useTranslations, useLocale } from "@/i18n";
 import config from "@/config";
@@ -58,9 +60,10 @@ type Props = {
   entry?: CollectionEntry<"pages">;
   /** Profile badges, listed on /contact/ only. */
   profiles?: (typeof config.links)[number][];
+  email?: (typeof config.links)[number];
 };
 
-const { entry, profiles = [] } = Astro.props;
+const { entry, profiles = [], email } = Astro.props;
 const t = useTranslations(useLocale(Astro));
 const data = entry?.data;
 const Content = entry?.body?.trim() ? (await render(entry)).Content : undefined;
@@ -89,7 +92,7 @@ const rows = profiles.map(link => ({
         <Content />
       </article>
     )}
-    {rows.length > 0 && (
+    {(rows.length > 0 || email?.email) && (
       <section aria-labelledby="contact-methods">
         <h2 id="contact-methods" class="section-title">
           {t.contact.methods}
@@ -98,7 +101,17 @@ const rows = profiles.map(link => ({
           {rows.map(({ label, url, display }) => (
             <IndexRow href={url} title={label} end={display} rel="me" />
           ))}
+          {email?.email && (
+            <IndexRow
+              href="#email"
+              id="email"
+              title={email.title ?? badgeIcon(email.type).title}
+              end={spellEmail(decodeEmail(email.email))}
+              email={email.email}
+            />
+          )}
         </ul>
+        {email?.email && <EmailReveal />}
       </section>
     )}
   </Main>

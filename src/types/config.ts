@@ -502,6 +502,18 @@ const badgeSchema = z.strictObject({
     .string()
     .regex(/^\/(?!\/)/, { error: 'expected a path starting with "/"' })
     .optional(),
+  /**
+   * For a mailto: `url`: keep the address out of the built HTML. The badge
+   * links to /contact/#email, where the address is listed, and a small
+   * script makes it a mailto: link on hover, focus or click. Without
+   * JavaScript, /contact/ spells the address as "hi [at] example [dot] com".
+   * Being on /contact/, the badge takes the place of the footer's contact
+   * link. Defaults to false.
+   *
+   * Used by: src/config.ts, src/utils/content/sections.ts,
+   * src/components/EmailReveal.astro.
+   */
+  hideAddress: z.boolean().optional(),
 });
 
 const httpUrl = z.string().refine(url => isHttpUrl(url.trim()), {
@@ -597,7 +609,15 @@ export const starglowConfigSchema = z
      * Used by: src/utils/footer.ts, src/pages/index.astro (sameAs),
      * src/config.ts (fediverse:creator).
      */
-    links: z.array(badgeSchema).default([]),
+    links: z
+      .array(
+        badgeSchema.refine(
+          badge =>
+            !badge.hideAddress || /^mailto:/i.test(badge.url?.trim() ?? ""),
+          { error: "needs a mailto: url", path: ["hideAddress"] }
+        )
+      )
+      .default([]),
     /**
      * Webrings this site is a member of, listed on /small-web/, which the
      * footer links while the page has a ring or the button. Defaults to none.
@@ -720,7 +740,7 @@ export interface ResolvedStarglowConfig {
   };
   appearance: Parsed["appearance"];
   /** Badges with a usable URL. The footer drops repeated URLs (utils/footer.ts). */
-  links: (BadgeLink & { url: string })[];
+  links: (BadgeLink & { url: string; email?: string })[];
   webrings: Parsed["webrings"];
   button: Parsed["button"];
   footer: Parsed["footer"];

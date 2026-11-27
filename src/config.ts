@@ -5,6 +5,7 @@ import {
   type BadgeLink,
   type ResolvedStarglowConfig,
 } from "./types/config";
+import { EMAIL_CONTACT_PATH, encodeEmail } from "./utils/hiddenEmail";
 
 // public/default-og.jpg is intentionally absent. It is only used when
 // `dynamicOgImage` is false; add a real image here before turning that off.
@@ -33,10 +34,19 @@ function resolveEditPost(
 }
 
 /** Badges with a URL; the schema has already checked its form. */
-const resolveLinks = (list: BadgeLink[]) =>
+const resolveLinks = (list: BadgeLink[]): ResolvedStarglowConfig["links"] =>
   list.flatMap(entry => {
     const url = entry.url?.trim();
-    return url ? [{ ...entry, url }] : [];
+    if (!url) return [];
+    return entry.hideAddress
+      ? [
+          {
+            ...entry,
+            url: EMAIL_CONTACT_PATH,
+            email: encodeEmail(url.replace(/^mailto:/i, "")),
+          },
+        ]
+      : [{ ...entry, url }];
   });
 
 const parsed = parseStarglowConfig(userConfig);

@@ -215,6 +215,21 @@ describe("config schema", () => {
       ]);
   });
 
+  it("hides an address only for a mailto: badge", () => {
+    expect(
+      parseStarglowConfig({
+        site,
+        links: [{ type: "email", url: "mailto:hi@x.org", hideAddress: true }],
+      }).links[0]?.hideAddress
+    ).toBe(true);
+    expect(
+      problems({
+        site,
+        links: [{ type: "email", url: "/contact/", hideAddress: true }],
+      })
+    ).toEqual(["links[0].hideAddress: needs a mailto: url"]);
+  });
+
   it("checks webrings", () => {
     const ring = { name: "Ring", url: "https://ring.example/" };
     expect(parseStarglowConfig({ site }).webrings).toEqual([]);
