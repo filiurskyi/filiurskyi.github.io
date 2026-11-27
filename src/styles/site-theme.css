@@ -100,6 +100,13 @@
   --badge-email: #c9b8ff;
   --badge-rss: #ffa040;
   --badge-sparkle: #ffd75e;
+  --badge-512kb-green: #5ee08a;
+  --badge-512kb-orange: #ff9a3c;
+  --badge-512kb-blue: #5aa9ff;
+  --badge-250kb: #6fdccb;
+  --badge-1mb: #f0eff5;
+  --badge-darktheme: #c9c4ff;
+  --badge-nocookies: #ff9aa8;
   --badge-link: #f0eff5;
 }
 

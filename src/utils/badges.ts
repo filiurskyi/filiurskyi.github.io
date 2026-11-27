@@ -11,6 +11,20 @@ export type BadgeIcon = {
   bitmap: string[];
 };
 
+const FLOPPY = [
+  "#########..",
+  "##.....###.",
+  "##.....####",
+  "##.....####",
+  "###########",
+  "###########",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "#.........#",
+  "###########",
+];
+
 export const BADGE_ICONS: Record<string, BadgeIcon> = {
   github: {
     label: "github",
@@ -231,6 +245,65 @@ export const BADGE_ICONS: Record<string, BadgeIcon> = {
       ".....#.....",
       ".....#.....",
       "...........",
+    ],
+  },
+  "512kb-green": {
+    label: "512kb club",
+    title: "512KB Club, green team",
+    bitmap: FLOPPY,
+  },
+  "512kb-orange": {
+    label: "512kb club",
+    title: "512KB Club, orange team",
+    bitmap: FLOPPY,
+  },
+  "512kb-blue": {
+    label: "512kb club",
+    title: "512KB Club, blue team",
+    bitmap: FLOPPY,
+  },
+  "250kb": {
+    label: "250kb club",
+    title: "250KB Club",
+    bitmap: FLOPPY,
+  },
+  "1mb": {
+    label: "1mb club",
+    title: "1MB Club",
+    bitmap: FLOPPY,
+  },
+  darktheme: {
+    label: "dark theme",
+    title: "Proud member of darktheme.club",
+    bitmap: [
+      "...###.....",
+      "..##.......",
+      ".##........",
+      "###........",
+      "###........",
+      "###........",
+      "####......#",
+      "#####....##",
+      ".#########.",
+      "..#######..",
+      "...#####...",
+    ],
+  },
+  nocookies: {
+    label: "no cookies",
+    title: "No cookies",
+    bitmap: [
+      "...#####...",
+      "..#.....#..",
+      ".#.#.....#.",
+      "#...#.....#",
+      "#....#....#",
+      "#.....#...#",
+      "#......#..#",
+      "#.......#.#",
+      ".#.......#.",
+      "..#.....#..",
+      "...#####...",
     ],
   },
   link: {

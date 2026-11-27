@@ -91,7 +91,7 @@ export default defineStarglowConfig({
       label: "astro",
       title: "Built with Astro",
     },
-    { type: "link", url: "/privacy/", label: "no cookies", title: "Privacy" },
+    { type: "nocookies", url: "/privacy/" },
   ],
   // Webrings on /small-web/, linked from the footer once one is listed:
   // { name, url, prev?, next?, random? }, prev and next together.

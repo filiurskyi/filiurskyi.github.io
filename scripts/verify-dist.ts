@@ -5,7 +5,7 @@ import { existsSync, readFileSync, statSync } from "node:fs";
 import { registerHooks } from "node:module";
 import { join, relative, sep } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { gunzipSync } from "node:zlib";
+import { gunzipSync, gzipSync } from "node:zlib";
 import { findDraftOnlyAssets } from "./draft-assets.ts";
 import { profileLinks } from "../src/utils/badges.ts";
 import { NOTE_PATH, PROJECT_PATH } from "../src/utils/content/entryIds.ts";
@@ -17,6 +17,13 @@ import {
 } from "../src/utils/contentFiles.ts";
 import { contrast } from "../src/utils/contrast.ts";
 import {
+  NO_COOKIES_BADGE,
+  cookieApisIn,
+  inlineScripts,
+  isCrossOrigin,
+  pageSubresources,
+} from "../src/utils/cookieFree.ts";
+import {
   attr,
   decodeEntities,
   footerOf,
@@ -27,6 +34,16 @@ import {
   relations,
   visibleMarkup,
 } from "../src/utils/htmlScan.ts";
+import {
+  LOADING_RELATIONS,
+  codePointsOf,
+  cssRequests,
+  cssSubresources,
+  scriptImports,
+  sizeClub,
+  sizeClubProblem,
+  type PageWeight,
+} from "../src/utils/pageWeight.ts";
 import { sameLinkKey } from "../src/utils/sameLinkKey.ts";
 
 if (existsSync(".env")) process.loadEnvFile(".env");
@@ -157,7 +174,17 @@ function distFileOf(url: string, base = site.href): string | undefined {
   }
 }
 
+function footerBadgeTypes(html: string): Set<string> {
+  return new Set(
+    [...footerOf(html).matchAll(/var\(--badge-([\w-]+)\)/g)].map(
+      ([, type = ""]) => type
+    )
+  );
+}
+
 const CF_BEACON = "https://static.cloudflareinsights.com/beacon.min.js";
+const CF_BEACON_UNCOMPRESSED_BYTES = 24_000;
+const CF_BEACON_GZIP_BYTES = 9_000;
 const CF_TOKEN =
   config.analytics.cloudflareToken?.trim() ||
   process.env.PUBLIC_CF_WEB_ANALYTICS_TOKEN?.trim();
@@ -662,36 +689,109 @@ function checkPalettes(): void {
   }
 }
 
-// --- Third parties ----------------------------------------------------------
+// --- Badge claims: page weight and cookies ----------------------------------
 
-function isThirdParty(url: string): boolean {
-  if (url.startsWith("data:")) return false;
-  if (url.startsWith("//")) return true;
-  if (!/^[a-z][a-z0-9+.-]*:/i.test(url)) return false;
-  try {
-    return new URL(url).origin !== origin;
-  } catch {
-    return true;
+function largestFile(candidates: string[]): string | undefined {
+  return candidates.sort((a, b) => statSync(b).size - statSync(a).size)[0];
+}
+
+function homepageWeight(): PageWeight {
+  const codePoints = codePointsOf(plainText(visibleMarkup(home)));
+  const loaded = new Set<string>();
+  const pending: string[] = [];
+  const add = (file: string | undefined) => {
+    if (!file || loaded.has(file)) return;
+    loaded.add(file);
+    pending.push(file);
+  };
+  const load = (url: string | undefined, base?: string) =>
+    add(url ? distFileOf(url, base) : undefined);
+  const tags = pageTags(home);
+  for (const { tag, name, body } of tags) {
+    for (const url of cssRequests(
+      `${name === "style" ? (body ?? "") : ""}\n${attr(tag, "style") ?? ""}`,
+      codePoints
+    ))
+      load(url);
+    if (name === "link") {
+      if (LOADING_RELATIONS.some(rel => relations(tag).includes(rel)))
+        load(attr(tag, "href"));
+    } else if (name === "script") {
+      load(attr(tag, "src"));
+      if (attr(tag, "type") === "module")
+        for (const url of scriptImports(body ?? "")) load(url);
+    } else if (name === "img" || name === "source") {
+      const candidates = (attr(tag, "srcset") ?? "")
+        .split(",")
+        .flatMap(item => distFileOf(item.trim().split(/\s+/)[0] ?? "") ?? []);
+      if (candidates.length > 0) add(largestFile(candidates));
+      else load(attr(tag, "src"));
+    } else if (name === "video") {
+      load(attr(tag, "poster"));
+    }
+  }
+  while (pending.length > 0) {
+    const file = pending.shift() ?? "";
+    const base = new URL(rel(file), site).href;
+    if (file.endsWith(".css"))
+      for (const url of cssRequests(read(file), codePoints)) load(url, base);
+    else if (/\.m?js$/.test(file))
+      for (const url of scriptImports(read(file))) load(url, base);
+  }
+  const bodies = [
+    Buffer.from(home),
+    ...[...loaded].map(file => readFileSync(file)),
+  ];
+  const beacon = tags.some(({ tag }) => isAllowedBeacon(tag));
+  return {
+    raw:
+      bodies.reduce((sum, body) => sum + body.length, 0) +
+      (beacon ? CF_BEACON_UNCOMPRESSED_BYTES : 0),
+    gzip:
+      bodies.reduce((sum, body) => sum + gzipSync(body).length, 0) +
+      (beacon ? CF_BEACON_GZIP_BYTES : 0),
+  };
+}
+
+function checkPageWeight(): void {
+  const clubs = [...footerBadgeTypes(home)].flatMap(
+    type => sizeClub(type) ?? []
+  );
+  if (clubs.length === 0) return;
+  const weight = homepageWeight();
+  for (const club of clubs) {
+    const problem = sizeClubProblem(club, weight);
+    if (problem) fail("index.html", `${club.type} badge: ${problem}`);
   }
 }
 
-function checkThirdParties({ name, html, markup }: Page): void {
-  for (const [tag] of html.matchAll(/<script\b[^>]*>/gi)) {
-    const src = attr(tag, "src");
-    if (isAllowedBeacon(tag)) continue;
-    if (src !== undefined && isThirdParty(src))
-      fail(name, `third-party script ${src}`);
-  }
-  for (const [tag] of html.matchAll(/<link\b[^>]*>/gi)) {
-    const href = attr(tag, "href");
-    const kind = ["stylesheet", "preload", "modulepreload", "icon"].find(
-      value => relations(tag).includes(value)
+function checkDarkTheme(): void {
+  if (!footerBadgeTypes(home).has("darktheme")) return;
+  if (config.appearance.defaultMode === "light")
+    fail(
+      "index.html",
+      'the darktheme badge needs appearance.defaultMode "dark" or "system"'
     );
-    if (kind && href !== undefined && isThirdParty(href))
-      fail(name, `third-party ${kind} ${href}`);
+}
+
+function checkCookies(): void {
+  if (!footerBadgeTypes(home).has(NO_COOKIES_BADGE)) return;
+  for (const { name, html } of pages) {
+    for (const { url, source } of pageSubresources(html, isAllowedBeacon))
+      if (isCrossOrigin(url, site))
+        fail(name, `${source} loads ${url} from another origin`);
+    for (const script of inlineScripts(html))
+      for (const api of cookieApisIn(script))
+        fail(name, `an inline script uses ${api}`);
   }
-  for (const [tag] of markup.matchAll(/<iframe\b[^>]*>/gi)) {
-    fail(name, `third-party iframe ${attr(tag, "src") ?? "(no src)"}`);
+  for (const file of files) {
+    const name = rel(file);
+    if (name.endsWith(".css"))
+      for (const url of cssSubresources(read(file)))
+        if (isCrossOrigin(url, new URL(name, site)))
+          fail(name, `loads ${url} from another origin`);
+    if (/\.m?js$/.test(name))
+      for (const api of cookieApisIn(read(file))) fail(name, `uses ${api}`);
   }
 }
 
@@ -807,7 +907,11 @@ run("accessibility", () => {
   pages.forEach(checkImageAlt);
 });
 run("type-scale", checkTypeScale);
-run("third-parties", () => pages.forEach(checkThirdParties));
+run("claims", () => {
+  checkPageWeight();
+  checkCookies();
+  checkDarkTheme();
+});
 
 const failed = checks.filter(check => check.problems.length > 0);
 const scope = `${checks.length} checks on ${pages.length} pages`;

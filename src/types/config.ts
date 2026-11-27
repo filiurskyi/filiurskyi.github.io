@@ -31,6 +31,13 @@ export type BadgeType =
   | "email"
   | "rss"
   | "sparkle"
+  | "512kb-green"
+  | "512kb-orange"
+  | "512kb-blue"
+  | "250kb"
+  | "1mb"
+  | "darktheme"
+  | "nocookies"
   | (string & {});
 
 /**
@@ -418,7 +425,13 @@ const badgeSchema = z.strictObject({
   /**
    * Icon and default label: "github", "gitlab", "codeberg", "srht",
    * "linkedin", "mastodon", "bluesky", "stack", "hackaday", "crates",
-   * "email", "rss" or "sparkle". Any other name gets a generic icon.
+   * "email", "rss", "sparkle", the size clubs "512kb-green",
+   * "512kb-orange", "512kb-blue", "250kb", "1mb" (pnpm verify checks the
+   * homepage weight against them), "darktheme" or "nocookies" (pnpm verify
+   * then requires every page to load its files from the site's own origin
+   * and its scripts to leave the cookie APIs alone; the Cloudflare Web
+   * Analytics beacon is the one exception). Any other name gets a generic
+   * icon.
    */
   type: z.custom<BadgeType>(
     value => typeof value === "string" && value !== "",
