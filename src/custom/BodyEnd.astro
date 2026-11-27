@@ -6,11 +6,11 @@
 
 <script>
   // The email address is put together in the browser, so the HTML holds no
-  // address for crawlers. Email links point to /contact/#email, which shows
-  // it in words without JS; on hover, focus or click they become mailto:.
+  // address for crawlers. The email badge (a bare mailto:) and the link on
+  // /contact/ get the address on hover, focus or click.
   const address = () =>
     atob("ZWNhcHMuZ25pd29sZ0BpaA==").split("").reverse().join("");
-  const SELECTOR = 'a[href$="/contact/#email"], a#email';
+  const SELECTOR = 'a[data-badge="email"], a#email';
 
   const reveal = (event: Event) => {
     const link =
