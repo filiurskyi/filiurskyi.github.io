@@ -71,7 +71,7 @@ Some palettes pass with room to spare. Some don't:
 A failure looks like this, one line per pair:
 
 ```text
-verify-dist: FAIL palettes: palette: light palette "starglow" --green on --crust is 4.39:1, below 4.5
+verify-dist: FAIL accessibility: palette: light palette "starglow" --green on --crust is 4.39:1, below 4.5
 ```
 
 ## What it doesn't check
