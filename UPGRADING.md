@@ -24,7 +24,7 @@ below say how to move it.
 
 ## How to upgrade
 
-If you cloned starglow as in [Install](docs/01-getting-started.md), the
+If you cloned starglow as in [Get started](README.md#get-started), the
 `starglow` remote is already there. Sites created another way (the npm template, "Use this template") add
 it once:
 
@@ -174,9 +174,6 @@ Other changes:
 - Unit tests run with Vitest (`pnpm test`, `./dev.sh test`) as part of
   `./dev.sh ci` and the checks workflow. They live in `tests/`; delete a
   test there if you remove the helper it covers.
-- `.agents/skills/` holds short recipes for AI coding agents: add a post,
-  add a project, deploy. They are theme files; delete the folder if you
-  do not use agents.
 - The Inter files are new (a subset of Inter 4.1 with a tailed `l` and a
   serif `I` as default glyphs). If you replaced Inter, keep your files.
 

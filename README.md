@@ -8,21 +8,18 @@ Dark first, its own colour palettes, a little 2000s glow.
   <img alt="Home page of the demo site in the dark starglow palette: a pink pixel wordmark under a softly glowing header band, a short intro, a row of specialties in monospace, a list of posts and notes with their dates, and the preview tab in the bottom left corner" src=".github/assets/home-dark.png">
 </picture>
 
-**[Live demo](https://glowing-space.github.io/starglow/)** · [Docs](docs/README.md) · [Releases](https://github.com/glowing-space/starglow/releases)
+**[Live demo](https://glowing-space.github.io/starglow/)** · [Releases](https://github.com/glowing-space/starglow/releases)
 
 ## Features
 
-- Posts, short notes and projects, with tags and related content
-- Banded page header with an optional ambient glow and a pixel wordmark
-- Labelled code, table and callout blocks; GitHub alert callouts; MDX
-- Optional Obsidian-flavoured Markdown: wikilinks, image embeds, comments
-- Vim-style statusline on posts and notes with h/j/k/l keys (off on touch screens and phones), 88x31 footer badges that list each link once, a terminal-style 404 page
+- Posts, notes and projects, with tags and related content
+- Banded header with an optional ambient glow and a pixel wordmark
+- Labelled code, table and callout blocks; GitHub alerts; MDX; optional Obsidian syntax
+- Vim-style statusline with h/j/k/l, 88x31 footer badges, a terminal-style 404
 - Pagefind search, RSS, sitemap, generated Open Graph images, JSON-LD
-- 4 dark and 5 light palettes, chosen separately; your own in a few lines; WCAG AA checked at build
-- A live preview panel for demos: palette, ambient light, glow, statusline
-- Almost no client JavaScript; plain static `dist/` for any host
-- One typed config file, `starglow.config.ts`, checked on every build: a typo fails and names the key you meant
-- Unit tests, and checks over every build: routes, canonical URLs, search index and links
+- 4 dark and 5 light palettes, or your own, checked for WCAG AA; a live preview panel for demos
+- Almost no client JavaScript; a static `dist/` for any host
+- One typed, validated config file: a typo fails the build and names the key you meant
 
 ## Screenshots
 
@@ -38,9 +35,15 @@ Dark first, its own colour palettes, a little 2000s glow.
 
 ## Get started
 
-Start with [Install](docs/01-getting-started.md). The [docs](docs/README.md) go on
-from there: configure, write, customise, deploy, develop and
-[upgrade](UPGRADING.md).
+```bash
+git clone https://github.com/glowing-space/starglow.git my-site
+cd my-site
+git remote rename origin starglow   # keeps upgrades a merge, see UPGRADING.md
+pnpm install
+pnpm dev                            # http://localhost:4321/
+```
+
+Edit `starglow.config.ts` (hover a key for its docs), set `SITE_URL` to your origin, replace the demo content in `src/content/` and push: the GitHub Pages workflow deploys `dist/`.
 
 ## Contributing
 

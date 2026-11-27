@@ -15,8 +15,7 @@ feature: it saves both of us time.
 
 ## Setup
 
-Install as in [docs/01-getting-started.md](docs/01-getting-started.md);
-[docs/07-development.md](docs/07-development.md) lists every command.
+Install as in the [README](README.md#get-started).
 
 ## Before you open a pull request
 
